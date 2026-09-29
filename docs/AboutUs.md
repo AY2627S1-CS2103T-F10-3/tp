@@ -17,7 +17,8 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](https://github.com/tianyu487)]
 
 
-* Role: Project Advisor
+* Role: Developer
+* Responsibilities: Code quality (coding standards, code reviews)
 
 ### Shee En
 
