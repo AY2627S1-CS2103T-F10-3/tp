@@ -13,4 +13,4 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 <img src="images/psq21.png" width="200px">
 [[github](https://github.com/psq21)]
 
-* Role: Team Member
+* Role: Team Lead
