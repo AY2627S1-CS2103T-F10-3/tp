@@ -25,6 +25,9 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 [[github](https://github.com/HSE888)]
 
+- Role: Documentation Lead
+- Responsibilities: Coordinate and maintain the README, Developer Guide, User Guide, and project website documentation.
+
 ### Johnny Doe
 
 <img src="images/johndoe.png" width="200px">
