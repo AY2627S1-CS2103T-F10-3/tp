@@ -9,6 +9,13 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Phung Si Qi
+<img src="images/psq21.png" width="200px">
+[[github](https://github.com/psq21)]
+
+* Role: Team Lead
+* Responsibilities: Responsible for overall project coordination.
+
 ### Tianyu
 
 <img src="images/tianyu487.png" width="200px">
