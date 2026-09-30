@@ -14,3 +14,50 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](https://github.com/psq21)]
 
 * Role: Team Lead
+* Responsibilities: Responsible for overall project coordination.
+
+### Tianyu
+
+<img src="images/tianyu487.png" width="200px">
+
+
+[[github](https://github.com/tianyu487)]
+
+
+* Role: Developer
+* Responsibilities: Code quality (coding standards, code reviews)
+
+### Shee En
+
+<img src="images/hse888.png" width="200px">
+
+[[github](https://github.com/HSE888)]
+
+### Johnny Doe
+
+<img src="images/johndoe.png" width="200px">
+
+[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+
+* Role: Developer
+* Responsibilities: Data
+
+### Jean Doe
+
+<img src="images/johndoe.png" width="200px">
+
+[[github](http://github.com/johndoe)]
+[[portfolio](team/johndoe.md)]
+
+* Role: Developer
+* Responsibilities: Dev Ops + Threading
+
+### James Doe
+
+<img src="images/johndoe.png" width="200px">
+
+[[github](http://github.com/johndoe)]
+[[portfolio](team/johndoe.md)]
+
+* Role: Developer
+* Responsibilities: UI
