@@ -9,6 +9,13 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Phung Si Qi
+<img src="images/psq21.png" width="200px">
+[[github](https://github.com/psq21)]
+
+* Role: Team Lead
+* Responsibilities: Responsible for overall project coordination.
+
 ### Tianyu
 
 <img src="images/tianyu487.png" width="200px">
@@ -17,17 +24,17 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](https://github.com/tianyu487)]
 
 
-* Role: Project Advisor
+* Role: Developer
+* Responsibilities: Code quality (coding standards, code reviews)
 
-### Jane Doe
+### Shee En
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/hse888.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/HSE888)]
 
-* Role: Team Lead
-* Responsibilities: UI
+- Role: Documentation Lead
+- Responsibilities: Coordinate and maintain the README, Developer Guide, User Guide, and project website documentation.
 
 ### Johnny Doe
 
