@@ -8,10 +8,11 @@ We are a team based in the [School of Computing, National University of Singapor
 You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
-
 ### Phung Si Qi
+
 <img src="images/psq21.png" width="200px">
-[[github](https://github.com/psq21)]
+
+[[github](https://github.com/tianyu487)]
 
 * Role: Team Lead
 * Responsibilities: Responsible for overall project coordination.
@@ -36,14 +37,14 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 - Role: Documentation Lead
 - Responsibilities: Coordinate and maintain the README, Developer Guide, User Guide, and project website documentation.
 
-### Johnny Doe
+### Hoque Shehroz Awadul
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/barcaboy109.png" width="200px">
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+[[github](http://github.com/BarcaBoy109)] [[portfolio](team/johndoe.md)]
 
 * Role: Developer
-* Responsibilities: Data
+* Responsibilities: Data, UI, Team Logistics
 
 ### Jean Doe
 
