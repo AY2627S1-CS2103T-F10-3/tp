@@ -261,13 +261,11 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* is a member of the administrative staff at a small private tuition centre
+* handles a high volume of daily student enrollments, parent inquiries, class schedules, and fee updates
+* prefers using rapid keyboard commands over clicking through multi-step GUI forms
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Centralizes student-parent relationships, class rosters, fee payments, and educational records into a unified CLI tool, enabling tuition centre admins to update enrollments, log attendance, and track assignment submissions significantly faster than with multi-step GUI systems.
 
 
 ### User stories
