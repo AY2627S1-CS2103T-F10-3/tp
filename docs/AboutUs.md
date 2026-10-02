@@ -17,7 +17,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Team Lead
 * Responsibilities: Responsible for overall project coordination.
 
-### Tianyu
+### Deng Tianyu
 
 <img src="images/tianyu487.png" width="200px">
 
@@ -28,7 +28,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Code quality (coding standards, code reviews)
 
-### Shee En
+### Hoo Shee En
 
 <img src="images/hse888.png" width="200px">
 
@@ -46,27 +46,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Data, UI, Team Logistics
 
-### Jean Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
-
-### James Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: UI
-
-### Joel
+### Yap Ray Kai Joel 
 
 <img src="images/joelyrk.png" width="200px">
 
