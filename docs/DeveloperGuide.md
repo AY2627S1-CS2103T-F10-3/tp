@@ -272,22 +272,21 @@ _{Explain here how the data archiving feature will be implemented}_
 
 ### User stories
 
-Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
+Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
 
 #### 1st use
 
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
 | `***` | tuition centre admin | add a new student's details | maintain an up-to-date record of students enrolled at the tuition centre |
-| `**` | administrator | quickly import past students' information into the app | migrate existing records without manually entering each student individually |
 | `***` | tuition centre admin | search for a student by name | locate their record quickly |
 | `***` | tuition centre admin | view a student's details | quickly retrieve information when handling an enquiry |
 | `**` | tuition centre admin | enrol a student into a class | maintain accurate class rosters |
 | `***` | tuition centre admin | remove a student's record | remove records that were created incorrectly |
 | `**` | tuition centre admin | search for a student using their phone number or email address | identify them when I do not know their full name |
-| `**` | user adverse to changing my workflow | easily see all the features available | try it to determine if I should switch to using the app |
+| `**` | tuition centre admin averse to changing my workflow | view a list of available features | try it to determine if I should switch to using the app |
 | `**` | tuition centre admin new to this app | view helpful error messages | fix mistakes without having to refer back to the user manual |
-| `**` | tuition centre admin new to this app | import my existing student data from a CSV file | migrate my current data without manually re-typing |
+| `**` | tuition centre admin | import existing student records from a CSV file | migrate my data without manually entering each student's details |
 | `**` | tuition centre admin | find students by class | retrieve the relevant group of students quickly |
 | `**` | tuition centre admin | record whether a student attended a lesson | keep an attendance record for the centre |
 | `**` | tuition centre admin | record a student's fee payment | keep track of whether payment has been received |
@@ -297,34 +296,23 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
 | `**` | tuition centre admin | identify students with outstanding fees | know which payments require follow-up |
-| `**` | second time user | quickly refresh my memory on the features available | start using the app again |
-| `**` | second time user | easily remember how to use the features available | start using the app again |
-| `**` | tuition centre admin | easily import my existing data into the app | avoid manually entering all my data, which is troublesome |
+| `**` | tuition centre admin returning to the app | view a list of available commands | find the command I need without recalling every command name |
+| `**` | tuition centre admin returning to the app | view command syntax and examples | enter commands correctly when I have forgotten how to use them |
 
 #### 10th use
 
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
-| `***` | tuition-centre administrative staff member | distinguish between students with identical names | avoid accessing or updating the wrong contact |
+| `***` | tuition centre admin | distinguish between students with identical names | avoid accessing or updating the wrong contact |
 | `***` | tuition centre admin | link a guardian profile directly to a student record | know who to contact for a specific student |
-| `**` | administrator | load student records quickly | perform administrative tasks efficiently |
-| `**` | administrator | edit a student's information | keep their details accurate and up to date |
-| `**` | fast-typing admin | search for a student by their partial name | locate a student's information during a live call in under 5 seconds |
+| `**` | tuition centre admin | load student records quickly | perform administrative tasks efficiently |
+| `**` | tuition centre admin | edit a student's information | keep their details accurate and up to date |
+| `**` | tuition centre admin who types quickly | search for a student by their partial name | locate a student's information during a live call in under 5 seconds |
 | `**` | tuition centre admin | search for a contact by phone number | instantly identify who is calling before I answer the phone |
 | `**` | tuition centre admin | assign tags to students | flexibly categorize students by tags |
 | `*` | tuition centre admin | auto-complete commands using the Tab key | issue commands faster with minimal typos |
 | `*` | tuition centre admin | view recent command history using arrow keys | repeat or modify previous commands without having to type them again |
 | `**` | tuition centre admin | add detailed notes to a student profile | keep track of special requests or student's learning needs |
-
-#### 100th use
-
-| Priority | As a … | I want to … | So that I can … |
-| --- | --- | --- | --- |
-| `*` | experienced user | do things using shortcuts | save time |
-| `*` | experienced user | customise the behaviour of the app | make the app more effective for the tasks I can complete |
-| `*` | experienced user | manage the data in the app to a finer level | be more in control |
-| `**` | busy employee | use the app with no worry about the response time | be more productive and get more things done |
-| `*` | person who may mess up repetitive tasks | reduce repetitive work | avoid messing up as much |
 
 ### Use cases
 
