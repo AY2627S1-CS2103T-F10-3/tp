@@ -368,6 +368,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Attendance**: A record of whether a student attended a scheduled lesson.
 * **Class roster**: The list of students enrolled in a particular class.
 * **Command**: A text instruction entered by an administrator to perform an action in EduReg.
+* **Command-line interface (CLI)**: An interface where users interact with software by entering text commands instead of clicking through graphical controls.
 * **EduReg**: The command-driven student and tuition-centre administration application described in this guide.
 * **Enrolment**: The process of registering a student for a class or tuition-centre programme.
 * **Fee status**: The current payment state of a student's tuition fees, such as paid, pending, or overdue.
