@@ -371,8 +371,13 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **EduReg**: The command-driven student and tuition-centre administration application described in this guide.
 * **Enrolment**: The process of registering a student for a class or tuition-centre programme.
 * **Fee status**: The current payment state of a student's tuition fees, such as paid, pending, or overdue.
-* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Graphical user interface (GUI)**: A visual interface that allows users to interact with software using elements such as windows, buttons, and menus.
+* **JAR file**: A Java Archive file that packages the application and its required resources for distribution.
+* **Local storage**: Saving data on the same device that runs EduReg, without depending on a remote server.
+* **Mainstream OS**: A commonly used operating system such as Windows, Linux, or macOS.
 * **Parent contact**: The contact information of a student's parent or guardian.
+* **Database management system (DBMS)**: Software used to create, manage, and access databases; EduReg does not require one.
+* **Remote server**: A computer or service accessed over a network to provide data or application functionality.
 * **Student record**: The collection of information associated with a student, including contact, class, attendance, fee, and educational details.
 
 --------------------------------------------------------------------------------------------------------------------
