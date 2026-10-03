@@ -365,8 +365,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Attendance**: A record of whether a student attended a scheduled lesson.
+* **Class roster**: The list of students enrolled in a particular class.
+* **Command**: A text instruction entered by an administrator to perform an action in EduReg.
+* **EduReg**: The command-driven student and tuition-centre administration application described in this guide.
+* **Enrolment**: The process of registering a student for a class or tuition-centre programme.
+* **Fee status**: The current payment state of a student's tuition fees, such as paid, pending, or overdue.
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Parent contact**: The contact information of a student's parent or guardian.
+* **Student record**: The collection of information associated with a student, including contact, class, attendance, fee, and educational details.
 
 --------------------------------------------------------------------------------------------------------------------
 
