@@ -262,7 +262,7 @@ _{Explain here how the data archiving feature will be implemented}_
 **Target user profile**:
 
 * is a member of the administrative staff at a small private tuition centre
-* handles a high volume of daily student enrollments, parent inquiries, class schedules, and fee updates
+* handles daily student enrollments, parent inquiries, class schedules, and fee updates
 * prefers using rapid keyboard commands over clicking through multi-step GUI forms
 
 **Value proposition**: Centralizes student-parent relationships, class rosters, fee payments, and educational records into a unified CLI tool, enabling tuition centre admins to update enrollments, log attendance, and track assignment submissions significantly faster than with multi-step GUI systems.
