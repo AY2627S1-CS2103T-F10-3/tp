@@ -11,7 +11,7 @@ fee payments, and educational records using fast keyboard commands.
 ## Target users
 
 EduReg is designed for administrative staff at small private tuition centres who
-handle high-volume student enrolments, parent enquiries, class schedules, and fee
+handle daily student enrolments, parent enquiries, class schedules, and fee
 updates. These users prefer rapid keyboard commands over multi-step graphical
 interface forms.
 
