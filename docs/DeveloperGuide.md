@@ -261,33 +261,30 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* is a member of the administrative staff at a small private tuition centre
+* handles daily student enrollments, parent inquiries, class schedules, and fee updates
+* prefers using rapid keyboard commands over clicking through multi-step GUI forms
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Centralizes student-parent relationships, class rosters, fee payments, and educational records into a unified CLI tool, enabling tuition centre admins to update enrollments, log attendance, and track assignment submissions significantly faster than with multi-step GUI systems.
 
 
 ### User stories
 
-Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
+Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
 
 #### 1st use
 
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
 | `***` | tuition centre admin | add a new student's details | maintain an up-to-date record of students enrolled at the tuition centre |
-| `**` | administrator | quickly import past students' information into the app | migrate existing records without manually entering each student individually |
 | `***` | tuition centre admin | search for a student by name | locate their record quickly |
 | `***` | tuition centre admin | view a student's details | quickly retrieve information when handling an enquiry |
 | `**` | tuition centre admin | enrol a student into a class | maintain accurate class rosters |
 | `***` | tuition centre admin | remove a student's record | remove records that were created incorrectly |
 | `**` | tuition centre admin | search for a student using their phone number or email address | identify them when I do not know their full name |
-| `**` | user adverse to changing my workflow | easily see all the features available | try it to determine if I should switch to using the app |
+| `**` | tuition centre admin averse to changing my workflow | view a list of available features | try it to determine if I should switch to using the app |
 | `**` | tuition centre admin new to this app | view helpful error messages | fix mistakes without having to refer back to the user manual |
-| `**` | tuition centre admin new to this app | import my existing student data from a CSV file | migrate my current data without manually re-typing |
+| `**` | tuition centre admin | import existing student records from a CSV file | migrate my data without manually entering each student's details |
 | `**` | tuition centre admin | find students by class | retrieve the relevant group of students quickly |
 | `**` | tuition centre admin | record whether a student attended a lesson | keep an attendance record for the centre |
 | `**` | tuition centre admin | record a student's fee payment | keep track of whether payment has been received |
@@ -297,49 +294,115 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
 | `**` | tuition centre admin | identify students with outstanding fees | know which payments require follow-up |
-| `**` | second time user | quickly refresh my memory on the features available | start using the app again |
-| `**` | second time user | easily remember how to use the features available | start using the app again |
-| `**` | tuition centre admin | easily import my existing data into the app | avoid manually entering all my data, which is troublesome |
+| `**` | tuition centre admin returning to the app | view a list of available commands | find the command I need without recalling every command name |
+| `**` | tuition centre admin returning to the app | view command syntax and examples | enter commands correctly when I have forgotten how to use them |
 
 #### 10th use
 
 | Priority | As a … | I want to … | So that I can … |
 | --- | --- | --- | --- |
-| `***` | tuition-centre administrative staff member | distinguish between students with identical names | avoid accessing or updating the wrong contact |
+| `***` | tuition centre admin | distinguish between students with identical names | avoid accessing or updating the wrong contact |
 | `***` | tuition centre admin | link a guardian profile directly to a student record | know who to contact for a specific student |
-| `**` | administrator | load student records quickly | perform administrative tasks efficiently |
-| `**` | administrator | edit a student's information | keep their details accurate and up to date |
-| `**` | fast-typing admin | search for a student by their partial name | locate a student's information during a live call in under 5 seconds |
+| `**` | tuition centre admin | load student records quickly | perform administrative tasks efficiently |
+| `**` | tuition centre admin | edit a student's information | keep their details accurate and up to date |
+| `**` | tuition centre admin who types quickly | search for a student by their partial name | locate a student's information during a live call in under 5 seconds |
 | `**` | tuition centre admin | search for a contact by phone number | instantly identify who is calling before I answer the phone |
 | `**` | tuition centre admin | assign tags to students | flexibly categorize students by tags |
 | `*` | tuition centre admin | auto-complete commands using the Tab key | issue commands faster with minimal typos |
 | `*` | tuition centre admin | view recent command history using arrow keys | repeat or modify previous commands without having to type them again |
 | `**` | tuition centre admin | add detailed notes to a student profile | keep track of special requests or student's learning needs |
 
-#### 100th use
-
-| Priority | As a … | I want to … | So that I can … |
-| --- | --- | --- | --- |
-| `*` | experienced user | do things using shortcuts | save time |
-| `*` | experienced user | customise the behaviour of the app | make the app more effective for the tasks I can complete |
-| `*` | experienced user | manage the data in the app to a finer level | be more in control |
-| `**` | busy employee | use the app with no worry about the response time | be more productive and get more things done |
-| `*` | person who may mess up repetitive tasks | reduce repetitive work | avoid messing up as much |
+### Use cases
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `EduReg` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: UC01 - Add a student contact**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1. User requests to add a new student contact by specifying their details (e.g., name, phone number, email, address, and optional tags).
+2. EduReg validates the input format of the provided details.
+3. EduReg adds the new student to the student directory.
+4. EduReg displays a success message showing the newly added student's details.
 
-    Use case ends.
+   Use case ends.
+
+**Extensions**
+
+* 2a. The provided details do not follow the required format (e.g., missing mandatory fields, invalid phone number, malformed email).
+
+    * 2a1. EduReg displays an error message specifying the formatting error and required command usage.
+
+      Use case resumes at step 1.
+
+* 2b. EduReg detects a duplicate student entry (a student with the same name and phone number already exists).
+
+    * 2b1. EduReg displays an error message rejecting the duplicate entry.
+
+      Use case resumes at step 1.
+
+**Use case: UC02 - View student details**
+
+**MSS**
+
+1. User requests to list all students.
+2. EduReg displays the list of students.
+3. User views a student's full details (phone number, email, address, tags, and attached parent/guardian contacts) directly in the detail panel.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The student directory is empty.
+
+    * 2a1. EduReg displays a message indicating that no students are present in the list.
+
+      Use case ends.
+
+**Use case: UC03 - Search student by name**
+
+**MSS**
+
+1. User requests to search for students by providing a name keyword or partial name.
+2. EduReg searches for students whose names match the provided keyword(s).
+3. EduReg updates the displayed list to show only matching students.
+4. EduReg displays a summary message showing the number of matching students found.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The search keyword is missing or empty (e.g., `find n/`).
+
+    * 1a1. EduReg displays an error message specifying that the name parameter cannot be empty and shows correct usage.
+
+      Use case resumes at step 1.
+
+* 1b. The search term contains invalid special characters.
+
+    * 1b1. EduReg displays an error message stating acceptable name character formats.
+
+      Use case resumes at step 1.
+
+* 2a. No students match the search criteria.
+
+    * 2a1. EduReg displays an empty list and indicates that 0 students were found.
+
+      Use case ends.
+
+**Use case: UC04 - Delete a student contact**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to delete a specific student by specifying their index in the displayed list.
+4. EduReg deletes the student from the directory.
+5. EduReg displays a success message confirming the deletion.
+
+   Use case ends.
 
 **Extensions**
 
@@ -347,13 +410,116 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
   Use case ends.
 
-* 3a. The given index is invalid.
+* 3a. The given index is invalid (e.g., non-integer, negative, or greater than current list size).
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. EduReg displays an error message indicating that the specified index is invalid.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+**Use case: UC05 - Add parent contact to a student record**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
+4. EduReg validates the index and guardian details.
+5. EduReg attaches the parent contact to the specified student record.
+6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The student list is empty.
+
+    * 2a1. EduReg displays an error message indicating no students are available.
+
+      Use case ends.
+
+* 4a. The specified student index is invalid or missing.
+
+    * 4a1. EduReg displays an error message indicating an invalid index.
+
+      Use case resumes at step 2.
+
+* 4b. The parent details are incomplete or formatted incorrectly.
+
+    * 4b1. EduReg displays an error message specifying the invalid or missing field.
+
+      Use case resumes at step 2.
+
+* 4c. The parent contact is a duplicate for that student (matching phone or email).
+
+    * 4c1. EduReg displays an error message indicating that this parent contact already exists for the student.
+
+      Use case resumes at step 2.
+
+* 4d. The student already has the maximum allowable number of guardian contacts (1).
+
+    * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
+
+      Use case resumes at step 2.
+
+**Use case: UC06 - Edit a student's information**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to edit a specific student in the displayed list, specifying the student's id and the details to update.
+4. EduReg updates the student's information.
+5. EduReg displays a success message showing the updated student's details.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given id is missing or invalid.
+
+    * 3a1. EduReg displays an error message.
+
+      Use case resumes at step 2.
+
+* 3b. No fields to update are provided.
+
+    * 3b1. EduReg displays an error message indicating that at least one field to update must be provided.
+
+      Use case resumes at step 3.
+
+* 3c. The provided details are formatted incorrectly.
+
+    * 3c1. EduReg displays an error message specifying the invalid field or command format.
+
+      Use case resumes at step 3.
+
+* 3d. The updated details would create a duplicate student entry.
+
+    * 3d1. EduReg displays an error message rejecting the duplicate entry.
+
+      Use case resumes at step 3.
+
+**Use case: UC07 - Clear all student records**
+
+**MSS**
+
+1. User requests to clear all student records.
+2. EduReg removes all student records from the student directory.
+3. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student directory is already empty.
+
+    * 1a1. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 

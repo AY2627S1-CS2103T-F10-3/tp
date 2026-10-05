@@ -1,4 +1,4 @@
-[![CI Status](https://github.com/AY2627S1-CS2103T-F10-3/tp/actions/workflows/gradle.yml/badge.svg)](https://github.com/AY2627S1-CS2103T-F10-3/tp/actions/workflows/gradle.yml)
+[![CI Status](https://github.com/AY2627S1-CS2103T-F10-3/tp/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/AY2627S1-CS2103T-F10-3/tp/actions/workflows/gradle.yml)
 
 # EduReg
 
