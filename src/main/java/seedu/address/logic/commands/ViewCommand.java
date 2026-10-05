@@ -12,7 +12,7 @@ public class ViewCommand extends Command {
 
     public static final String COMMAND_WORD = "view";
 
-    public static final String MESSAGE_SUCCESS = "Listed all persons.";
+    public static final String MESSAGE_SUCCESS = "Viewing all students.";
 
 
     @Override
