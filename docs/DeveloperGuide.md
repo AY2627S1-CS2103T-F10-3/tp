@@ -531,8 +531,26 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Attendance**: A record of whether a student attended a scheduled lesson.
+* **Basic computer literacy**: The ability to perform common computer tasks, such as opening applications, entering text, and reading instructions.
+* **Class roster**: The list of students enrolled in a particular class.
+* **Command**: A text instruction entered by an administrator to perform an action in EduReg.
+* **Command-line interface (CLI)**: An interface where users interact with software by entering text commands instead of clicking through graphical controls.
+* **EduReg**: The command-driven student and tuition-centre administration application described in this guide.
+* **Enrolment**: The process of registering a student for a class or tuition-centre programme.
+* **Fee status**: The current payment state of a student's tuition fees, such as paid, pending, or overdue.
+* **Graphical user interface (GUI)**: A visual interface that allows users to interact with software using elements such as windows, buttons, and menus.
+* **Guardian**: An adult responsible for a student's care or education, such as a parent or legal guardian.
+* **Human-editable**: A file format whose contents can be read and modified directly by a person using a text editor.
+* **JAR file**: A Java Archive file that packages the application and its required resources for distribution.
+* **Local storage**: Saving data on the same device that runs EduReg, without depending on a remote server.
+* **Mainstream OS**: A commonly used operating system such as Windows, Linux, or macOS.
+* **Parent contact**: The contact information of a student's parent or guardian.
+* **Permissive license terms**: License conditions that allow software to be used and distributed with few restrictions; trial licenses that require payment after a time or usage limit do not qualify.
+* **Server**: A computer or service that provides data or application functionality to another computer over a network.
+* **Database management system (DBMS)**: Software used to create, manage, and access databases; EduReg does not require one.
+* **Remote server**: A server accessed over a network rather than running on the same device as EduReg.
+* **Student record**: The collection of information associated with a student, including contact, class, attendance, fee, and educational details.
 
 --------------------------------------------------------------------------------------------------------------------
 
