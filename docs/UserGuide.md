@@ -126,6 +126,22 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
+### Adding or clearing a remark: `remark`
+
+Adds an optional note to a person, replacing any previous remark.
+
+Format: `remark INDEX [r/REMARK]`
+
+* `INDEX` is a positive integer referring to the currently displayed list.
+* Use `remark INDEX r/` or `remark INDEX` to clear the note.
+* Remarks appear on the person's card and are saved with the address book.
+* Editing another contact field preserves its remark.
+
+Examples:
+
+* `remark 1 r/Prefers email after 6pm`
+* `remark 1 r/`
+
 ### Deleting a person: `delete`
 
 Deletes the specified person from the address book.
