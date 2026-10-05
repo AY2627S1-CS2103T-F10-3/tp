@@ -436,7 +436,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1. User requests to list students.
 2. EduReg shows a list of students.
-3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, and email).
+3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
 4. EduReg validates the index and guardian details.
 5. EduReg attaches the parent contact to the specified student record.
 6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
@@ -469,11 +469,71 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 4d. The student already has the maximum allowable number of guardian contacts (4).
+* 4d. The student already has the maximum allowable number of guardian contacts (1).
 
     * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
 
       Use case resumes at step 2.
+
+**Use case: UC06 - Edit a student's information**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to edit a specific student in the displayed list, specifying the student's id and the details to update.
+4. EduReg updates the student's information.
+5. EduReg displays a success message showing the updated student's details.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given id is missing or invalid.
+
+    * 3a1. EduReg displays an error message.
+
+      Use case resumes at step 2.
+
+* 3b. No fields to update are provided.
+
+    * 3b1. EduReg displays an error message indicating that at least one field to update must be provided.
+
+      Use case resumes at step 3.
+
+* 3c. The provided details are formatted incorrectly.
+
+    * 3c1. EduReg displays an error message specifying the invalid field or command format.
+
+      Use case resumes at step 3.
+
+* 3d. The updated details would create a duplicate student entry.
+
+    * 3d1. EduReg displays an error message rejecting the duplicate entry.
+
+      Use case resumes at step 3.
+
+**Use case: UC07 - Clear all student records**
+
+**MSS**
+
+1. User requests to clear all student records.
+2. EduReg removes all student records from the student directory.
+3. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student directory is already empty.
+
+    * 1a1. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
