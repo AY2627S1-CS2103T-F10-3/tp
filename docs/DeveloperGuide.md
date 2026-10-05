@@ -314,18 +314,95 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+### Use cases
 
-**Use case: Delete a person**
+(For all use cases below, the **System** is `EduReg` and the **Actor** is the `user`, unless specified otherwise)
+
+**Use case: UC01 - Add a student contact**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1. User requests to add a new student contact by specifying their details (e.g., name, phone number, email, address, and optional tags).
+2. EduReg validates the input format of the provided details.
+3. EduReg adds the new student to the student directory.
+4. EduReg displays a success message showing the newly added student's details.
 
-    Use case ends.
+   Use case ends.
+
+**Extensions**
+
+* 2a. The provided details do not follow the required format (e.g., missing mandatory fields, invalid phone number, malformed email).
+
+    * 2a1. EduReg displays an error message specifying the formatting error and required command usage.
+
+      Use case resumes at step 1.
+
+* 2b. EduReg detects a duplicate student entry (a student with the same name and phone number already exists).
+
+    * 2b1. EduReg displays an error message rejecting the duplicate entry.
+
+      Use case resumes at step 1.
+
+**Use case: UC02 - View student details**
+
+**MSS**
+
+1. User requests to list all students.
+2. EduReg displays the list of students.
+3. User views a student's full details (phone number, email, address, tags, and attached parent/guardian contacts) directly in the detail panel.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The student directory is empty.
+
+    * 2a1. EduReg displays a message indicating that no students are present in the list.
+
+      Use case ends.
+
+**Use case: UC03 - Search student by name**
+
+**MSS**
+
+1. User requests to search for students by providing a name keyword or partial name.
+2. EduReg searches for students whose names match the provided keyword(s).
+3. EduReg updates the displayed list to show only matching students.
+4. EduReg displays a summary message showing the number of matching students found.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The search keyword is missing or empty (e.g., `find n/`).
+
+    * 1a1. EduReg displays an error message specifying that the name parameter cannot be empty and shows correct usage.
+
+      Use case resumes at step 1.
+
+* 1b. The search term contains invalid special characters.
+
+    * 1b1. EduReg displays an error message stating acceptable name character formats.
+
+      Use case resumes at step 1.
+
+* 2a. No students match the search criteria.
+
+    * 2a1. EduReg displays an empty list and indicates that 0 students were found.
+
+      Use case ends.
+
+**Use case: UC04 - Delete a student contact**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to delete a specific student by specifying their index in the displayed list.
+4. EduReg deletes the student from the directory.
+5. EduReg displays a success message confirming the deletion.
+
+   Use case ends.
 
 **Extensions**
 
@@ -333,13 +410,116 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
   Use case ends.
 
-* 3a. The given index is invalid.
+* 3a. The given index is invalid (e.g., non-integer, negative, or greater than current list size).
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. EduReg displays an error message indicating that the specified index is invalid.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+**Use case: UC05 - Add parent contact to a student record**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
+4. EduReg validates the index and guardian details.
+5. EduReg attaches the parent contact to the specified student record.
+6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The student list is empty.
+
+    * 2a1. EduReg displays an error message indicating no students are available.
+
+      Use case ends.
+
+* 4a. The specified student index is invalid or missing.
+
+    * 4a1. EduReg displays an error message indicating an invalid index.
+
+      Use case resumes at step 2.
+
+* 4b. The parent details are incomplete or formatted incorrectly.
+
+    * 4b1. EduReg displays an error message specifying the invalid or missing field.
+
+      Use case resumes at step 2.
+
+* 4c. The parent contact is a duplicate for that student (matching phone or email).
+
+    * 4c1. EduReg displays an error message indicating that this parent contact already exists for the student.
+
+      Use case resumes at step 2.
+
+* 4d. The student already has the maximum allowable number of guardian contacts (1).
+
+    * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
+
+      Use case resumes at step 2.
+
+**Use case: UC06 - Edit a student's information**
+
+**MSS**
+
+1. User requests to list students.
+2. EduReg shows a list of students.
+3. User requests to edit a specific student in the displayed list, specifying the student's id and the details to update.
+4. EduReg updates the student's information.
+5. EduReg displays a success message showing the updated student's details.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given id is missing or invalid.
+
+    * 3a1. EduReg displays an error message.
+
+      Use case resumes at step 2.
+
+* 3b. No fields to update are provided.
+
+    * 3b1. EduReg displays an error message indicating that at least one field to update must be provided.
+
+      Use case resumes at step 3.
+
+* 3c. The provided details are formatted incorrectly.
+
+    * 3c1. EduReg displays an error message specifying the invalid field or command format.
+
+      Use case resumes at step 3.
+
+* 3d. The updated details would create a duplicate student entry.
+
+    * 3d1. EduReg displays an error message rejecting the duplicate entry.
+
+      Use case resumes at step 3.
+
+**Use case: UC07 - Clear all student records**
+
+**MSS**
+
+1. User requests to clear all student records.
+2. EduReg removes all student records from the student directory.
+3. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student directory is already empty.
+
+    * 1a1. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
