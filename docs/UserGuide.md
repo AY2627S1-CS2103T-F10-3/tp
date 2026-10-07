@@ -75,16 +75,27 @@ Format: `help`
 
 ### Adding a student: `addstudent`
 
-Adds a person to the address book.
+Adds a student to the address book.
 
-Format: `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
+A student can have any number of tags, including zero.
+A student can have any number of lessons, including zero.
 </div>
 
+**Lessons** \
+Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
+where: 
+- year is in the form yyyy eg. 2026
+- subj (subject) is either `ENGLISH`, `MATH` or `SCIENCE`
+- day is any day of the week, eg. `MONDAY`
+- starttime and endtime are any hour between 10am to 7pm in 24h time eg. TEN for 10am and THIRTEEN for 1pm
+- cost is any non negative integer
+
 Examples:
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
+l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1`
 * `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
 
 ### Listing all persons: `list`
