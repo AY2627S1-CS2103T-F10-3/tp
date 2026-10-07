@@ -17,6 +17,9 @@ import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
@@ -177,6 +180,23 @@ public class ParserUtilTest {
     @Test
     public void parseTags_collectionWithInvalidTags_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseTags(List.of(VALID_TAG_1, INVALID_TAG)));
+    }
+
+    @Test
+    public void parseLesson_validValue_returnsLesson() throws Exception {
+        var lesson = ParserUtil.parseLesson("2026-MATH-MONDAY-TEN-ELEVEN-30");
+        assertEquals(2026, lesson.getYear().getValue());
+        assertEquals(Subject.MATH, lesson.getSubject());
+        assertEquals(Day.MONDAY, lesson.getDay());
+        assertEquals(Time.TEN, lesson.getStartTime());
+        assertEquals(Time.ELEVEN, lesson.getEndTime());
+        assertEquals(30, lesson.getCost());
+    }
+
+    @Test
+    public void parseLesson_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class,
+                () -> ParserUtil.parseLesson("2026-MATH-MONDAY-TEN-ELEVEN--30"));
     }
 
     @Test

@@ -3,6 +3,7 @@ package seedu.address.model.lesson;
 import seedu.address.model.lesson.exceptions.LessonException;
 
 import java.time.Year;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -75,5 +76,22 @@ public class Lesson {
     public Time getStartTime() { return startTime; }
     public Time getEndTime() { return endTime; }
     public int getCost() { return cost; }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Lesson otherLesson)) {
+            return false;
+        }
+        return year.equals(otherLesson.year) && subject == otherLesson.subject && day == otherLesson.day
+                && startTime == otherLesson.startTime && endTime == otherLesson.endTime && cost == otherLesson.cost;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(year, subject, day, startTime, endTime, cost);
+    }
 
 }

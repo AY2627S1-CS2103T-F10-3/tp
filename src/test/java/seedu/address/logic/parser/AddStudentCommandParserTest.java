@@ -10,6 +10,11 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_YEAR_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_SUBJECT_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_DAY_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_TIME_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_COST_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
@@ -18,12 +23,16 @@ import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_NON_EMPTY;
 import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
+import static seedu.address.logic.commands.CommandTestUtil.LESSON_DESC_MATH;
+import static seedu.address.logic.commands.CommandTestUtil.LESSON_DESC_ENGLISH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -63,6 +72,21 @@ public class AddStudentCommandParserTest {
         assertParseSuccess(parser,
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND,
                 new AddStudentCommand(expectedPersonMultipleTags));
+    }
+
+    @Test
+    public void parse_validLesson_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withTags(VALID_TAG_FRIEND)
+                .withLessons(VALID_LESSON_MATH).build();
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + TAG_DESC_FRIEND + LESSON_DESC_MATH, new AddStudentCommand(expectedPerson));
+    }
+
+    @Test
+    public void parse_multipleLessons_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + LESSON_DESC_MATH + LESSON_DESC_ENGLISH, new AddStudentCommand(expectedPerson));
     }
 
     @Test
@@ -187,6 +211,17 @@ public class AddStudentCommandParserTest {
         // two invalid values, only first invalid value reported
         assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC,
                 Name.MESSAGE_CONSTRAINTS);
+
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + INVALID_LESSON_YEAR_DESC, seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + INVALID_LESSON_SUBJECT_DESC, seedu.address.model.lesson.Lesson.SUBJECT_CONSTRAINT);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + INVALID_LESSON_DAY_DESC, seedu.address.model.lesson.Lesson.DAY_CONSTRAINT);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + INVALID_LESSON_TIME_DESC, seedu.address.model.lesson.Lesson.TIME_CONSTRAINT);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + INVALID_LESSON_COST_DESC, seedu.address.model.lesson.Lesson.COST_CONSTRAINT);
 
         // non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
