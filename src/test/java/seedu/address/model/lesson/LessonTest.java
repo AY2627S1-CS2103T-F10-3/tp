@@ -28,4 +28,12 @@ public class LessonTest {
         assertEquals(Time.ELEVEN, lesson.getEndTime());
         assertEquals(30, lesson.getCost());
     }
+
+    @Test
+    public void toString_returnsInputFormat() {
+        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30);
+
+        assertEquals("2026-MATH-MONDAY-TEN-ELEVEN-30", lesson.toString());
+    }
 }

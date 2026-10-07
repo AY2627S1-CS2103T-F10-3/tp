@@ -118,4 +118,8 @@ public class Lesson {
         return Objects.hash(year, subject, day, startTime, endTime, cost);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s-%s-%s-%s-%s-%d", year, subject, day, startTime, endTime, cost);
+    }
 }
