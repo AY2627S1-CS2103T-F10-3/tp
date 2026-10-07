@@ -359,13 +359,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Compatibility and Portability**
 1. Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `25` or above installed.
-2. Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3. The software should work without requiring an installer.
-4. The software should not depend on a remote server.
-5. Should be packaged into a single JAR file.
-6. JAR file size must fall below 100MB.
-7. JAR file should not be unnecessarily bloated, ie. does not have largely unused libraries.
-8. External software used must be:
+2. The software should work without requiring an installer.
+3. The software should not depend on a remote server.
+4. Should be packaged into a single JAR file.
+5. JAR file size must fall below 100MB.
+6. JAR file should not be unnecessarily bloated, ie. does not have largely unused libraries.
+7. External software used must be:
     1. free, open source
     2. have permissive license terms
     3. does not require installation by user
@@ -377,13 +376,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 3. A new admin with basic computer literacy should be able to complete the core tasks within 15 minutes using only the user guide.
 
 **Performance**
-1. The GUI should work well (i.e., should not cause any resolution-related inconveniences to the user) at:
+1. Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
+2. The GUI should work well (i.e., should not cause any resolution-related inconveniences to the user) at:
     1. standard screen resolutions 1920x1080 and higher
     2. screen scales 100% and 125%
-2. The GUI should be usable (i.e., all functions can be used even if the user experience is not optimal) at:
+3. The GUI should be usable (i.e., all functions can be used even if the user experience is not optimal) at:
     1. resolutions 1280x720 and higher
     2. screen scales 150%
-3. Saving of data to storage should not impact the user's ability to do other actions ie. no lag or blocking.
+4. Saving of data to storage should not impact the user's ability to do other actions ie. no lag or blocking.
 
 **Data Storage**
 1. The data should be stored locally and should be in a human-editable text file.
