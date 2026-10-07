@@ -1,14 +1,15 @@
 package seedu.address.model.lesson;
 
-import seedu.address.model.lesson.exceptions.LessonException;
+import static java.util.Objects.requireNonNull;
 
 import java.time.Year;
 import java.util.Objects;
 
-import static java.util.Objects.requireNonNull;
+import seedu.address.model.lesson.exceptions.LessonException;
 
+/** Represents a lesson with a subject, schedule, and session cost. */
 public class Lesson {
-    public static String CONSTRAINTS = """
+    public static final String CONSTRAINTS = """
             Lessons must be in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`,
             where:
             year is of the form yyyy eg. 2026
@@ -17,11 +18,11 @@ public class Lesson {
             startTime and endTime are any allowed hour
             cost is any non negative integer
             """;
-    public static String YEAR_CONSTRAINT = "Year must be of the form yyyy eg. 2026";
-    public static String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
-    public static String DAY_CONSTRAINT  = "Day is any day of the week eg. MONDAY";
-    public static String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to nineteen";
-    public static String COST_CONSTRAINT = "Cost must be a non negative integer";
+    public static final String YEAR_CONSTRAINT = "Year must be of the form yyyy eg. 2026";
+    public static final String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
+    public static final String DAY_CONSTRAINT = "Day is any day of the week eg. MONDAY";
+    public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to nineteen";
+    public static final String COST_CONSTRAINT = "Cost must be a non negative integer";
 
     // Fields
     private final Year year;
@@ -71,17 +72,34 @@ public class Lesson {
     }
 
     /** Returns the year in which the lesson is conducted. */
-    public Year getYear() { return year; }
+    public Year getYear() {
+        return year;
+    }
+
     /** Returns the subject taught in the lesson. */
-    public Subject getSubject() { return subject; }
+    public Subject getSubject() {
+        return subject;
+    }
+
     /** Returns the day on which the lesson is conducted. */
-    public Day getDay() { return day; }
+    public Day getDay() {
+        return day;
+    }
+
     /** Returns the lesson's start time. */
-    public Time getStartTime() { return startTime; }
+    public Time getStartTime() {
+        return startTime;
+    }
+
     /** Returns the lesson's end time. */
-    public Time getEndTime() { return endTime; }
+    public Time getEndTime() {
+        return endTime;
+    }
+
     /** Returns the cost of one lesson session. */
-    public int getCost() { return cost; }
+    public int getCost() {
+        return cost;
+    }
 
     @Override
     public boolean equals(Object other) {

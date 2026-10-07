@@ -1,5 +1,6 @@
 package seedu.address.model.lesson.exceptions;
 
+/** Exception thrown when a lesson violates its model constraints. */
 public class LessonException extends RuntimeException {
     /**
      * Constructs a lesson exception with the given detail message.
