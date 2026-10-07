@@ -52,6 +52,9 @@ class JsonAdaptedPerson {
         }
     }
 
+    /**
+     * Constructs a JSON-adapted person without lessons for backward compatibility.
+     */
     public JsonAdaptedPerson(String name, String phone, String email, String address,
             List<JsonAdaptedTag> tags) {
         this(name, phone, email, address, tags, null);

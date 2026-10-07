@@ -5,10 +5,10 @@ import java.util.Set;
 
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
-import seedu.address.model.lesson.Lesson;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 
@@ -69,6 +69,9 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Parses the {@code lessons} into a {@code Set<Lesson>} and sets it to the {@code Person} that we are building.
+     */
     public PersonBuilder withLessons(Lesson... lessons) {
         this.lessons = Set.of(lessons);
         return this;

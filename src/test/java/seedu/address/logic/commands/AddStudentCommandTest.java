@@ -38,7 +38,7 @@ public class AddStudentCommandTest {
 
         CommandResult commandResult = new AddStudentCommand(validPerson).execute(modelStub);
 
-        assertEquals(String.format(seedu.address.logic.commands.AddStudentCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
+        assertEquals(String.format(AddStudentCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
                 commandResult.getFeedbackToUser());
         assertEquals(List.of(validPerson), modelStub.personsAdded);
     }
@@ -49,7 +49,8 @@ public class AddStudentCommandTest {
         AddStudentCommand addStudentCommand = new AddStudentCommand(validPerson);
         ModelStub modelStub = new ModelStubWithPerson(validPerson);
 
-        assertThrows(CommandException.class, seedu.address.logic.commands.AddStudentCommand.MESSAGE_DUPLICATE_PERSON, () -> addStudentCommand.execute(modelStub));
+        assertThrows(CommandException.class, AddStudentCommand.MESSAGE_DUPLICATE_PERSON, ()
+                -> addStudentCommand.execute(modelStub));
     }
 
     @Test

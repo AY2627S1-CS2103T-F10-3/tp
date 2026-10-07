@@ -20,6 +20,9 @@ class JsonAdaptedLesson {
     private final String endTime;
     private final int cost;
 
+    /**
+     * Constructs a JSON-adapted lesson from serialized fields.
+     */
     @JsonCreator
     public JsonAdaptedLesson(@JsonProperty("year") String year, @JsonProperty("subject") String subject,
             @JsonProperty("day") String day, @JsonProperty("startTime") String startTime,
@@ -32,6 +35,7 @@ class JsonAdaptedLesson {
         this.cost = cost;
     }
 
+    /** Constructs a JSON-adapted lesson from a model lesson. */
     public JsonAdaptedLesson(Lesson source) {
         year = source.getYear().toString();
         subject = source.getSubject().name();
@@ -41,6 +45,7 @@ class JsonAdaptedLesson {
         cost = source.getCost();
     }
 
+    /** Converts this JSON-adapted lesson into a model lesson. */
     public Lesson toModelType() throws IllegalValueException {
         try {
             Year modelYear = ParserUtil.parseYear(year);

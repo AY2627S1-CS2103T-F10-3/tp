@@ -70,11 +70,17 @@ public class Lesson {
         return (cost >= 0);
     }
 
+    /** Returns the year in which the lesson is conducted. */
     public Year getYear() { return year; }
+    /** Returns the subject taught in the lesson. */
     public Subject getSubject() { return subject; }
+    /** Returns the day on which the lesson is conducted. */
     public Day getDay() { return day; }
+    /** Returns the lesson's start time. */
     public Time getStartTime() { return startTime; }
+    /** Returns the lesson's end time. */
     public Time getEndTime() { return endTime; }
+    /** Returns the cost of one lesson session. */
     public int getCost() { return cost; }
 
     @Override

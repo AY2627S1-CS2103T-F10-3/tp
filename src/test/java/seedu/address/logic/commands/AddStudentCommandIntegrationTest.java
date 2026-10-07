@@ -34,7 +34,7 @@ public class AddStudentCommandIntegrationTest {
         expectedModel.addPerson(validPerson);
 
         assertCommandSuccess(new AddStudentCommand(validPerson), model,
-                String.format(seedu.address.logic.commands.AddStudentCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
+                String.format(AddStudentCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
                 expectedModel);
     }
 

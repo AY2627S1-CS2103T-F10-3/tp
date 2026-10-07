@@ -193,6 +193,13 @@ public class ParserUtil {
         return parsedCost;
     }
 
+    /**
+     * Parses a lesson string into a {@link Lesson}.
+     *
+     * @param lesson lesson in year-subject-day-start time-end time-cost format
+     * @return the parsed lesson
+     * @throws ParseException if any lesson component is invalid
+     */
     public static Lesson parseLesson(String lesson) throws ParseException {
         requireNonNull(lesson);
         String trimmedLesson = lesson.trim();
@@ -209,6 +216,13 @@ public class ParserUtil {
         return new Lesson(year, subject, day, startTime, endTime, cost);
     }
 
+    /**
+     * Parses a collection of lesson strings into a set of lessons.
+     *
+     * @param lessons lesson strings to parse
+     * @return the parsed lessons
+     * @throws ParseException if any lesson string is invalid
+     */
     public static Set<Lesson> parseLessons(Collection<String> lessons) throws ParseException {
         requireNonNull(lessons);
         final Set<Lesson> lessonSet = new HashSet<>();
