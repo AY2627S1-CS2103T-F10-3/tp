@@ -56,7 +56,7 @@ public class PersonCard extends UiPart<Region> {
         address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);
         lessons.setText(person.getLessons().stream()
-                .map(lesson -> String.format("%s-%s-%s-%s-%s-$%d", lesson.getYear(), lesson.getSubject(),
+                .map(lesson -> String.format("%s-%s-%s-%s-%s-%d", lesson.getYear(), lesson.getSubject(),
                         lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost()))
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
