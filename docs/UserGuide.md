@@ -87,11 +87,19 @@ Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
 * `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
 
-### Listing all persons: `list`
+### Viewing persons and contact values: `view`
 
-Shows a list of all persons in the address book.
+With no selector, shows all persons in the address book. An optional selector shows each
+distinct value and the number of contacts that have it. Summaries include all saved contacts,
+regardless of the current list filter, and sort values alphabetically. Each tag is counted
+separately.
 
-Format: `list`
+Format: `view [/name | /phone | /email | /address | /tag]`
+
+Examples:
+* `view /email` shows each distinct email and its frequency.
+* `view /address` shows each distinct address and its frequency.
+* `view /tag` shows each tag and how many contacts have it.
 
 ### Editing a person: `edit`
 
@@ -194,5 +202,5 @@ Action | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**List** | `list`
+**View** | `view [/name | /phone | /email | /address | /tag]`
 **Help** | `help`
