@@ -84,7 +84,8 @@ public class AddStudentCommandParserTest {
 
     @Test
     public void parse_multipleLessons_success() {
-        Person expectedPerson = new PersonBuilder(BOB).withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+        Person expectedPerson = new PersonBuilder(BOB).withTags()
+                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + LESSON_DESC_MATH + LESSON_DESC_ENGLISH, new AddStudentCommand(expectedPerson));
     }
