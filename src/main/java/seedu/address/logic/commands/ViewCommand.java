@@ -24,16 +24,19 @@ public class ViewCommand extends Command {
 
     private final String field;
 
-    /** Creates a command that lists all contacts. */
+    /**
+     * Creates a command that lists all contacts.
+     */
     public ViewCommand() {
         this("");
     }
 
-    /** Creates a view command; an empty field lists all contacts. */
+    /**
+     * Creates a view command; an empty field lists all contacts.
+     */
     public ViewCommand(String field) {
         this.field = requireNonNull(field);
     }
-
 
     @Override
     public CommandResult execute(Model model) {
@@ -57,12 +60,12 @@ public class ViewCommand extends Command {
 
     private Stream<String> valuesOf(Person person) {
         return switch (field) {
-        case "name" -> Stream.of(person.getName().toString());
-        case "phone" -> Stream.of(person.getPhone().toString());
-        case "email" -> Stream.of(person.getEmail().toString());
-        case "address" -> Stream.of(person.getAddress().toString());
-        case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
-        default -> throw new IllegalArgumentException("Unsupported view field: " + field);
+            case "name" -> Stream.of(person.getName().toString());
+            case "phone" -> Stream.of(person.getPhone().toString());
+            case "email" -> Stream.of(person.getEmail().toString());
+            case "address" -> Stream.of(person.getAddress().toString());
+            case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
+            default -> throw new IllegalArgumentException("Unsupported view field: " + field);
         };
     }
 
@@ -74,5 +77,12 @@ public class ViewCommand extends Command {
     @Override
     public int hashCode() {
         return field.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new seedu.address.commons.util.ToStringBuilder(this)
+                .add("field", field)
+                .toString();
     }
 }

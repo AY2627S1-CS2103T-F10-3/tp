@@ -3,12 +3,17 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.ViewCommand;
 
+/**
+ * Tests the parsing of optional view command selectors.
+ */
 public class ViewCommandParserTest {
+
     private final ViewCommandParser parser = new ViewCommandParser();
 
     @Test
@@ -16,7 +21,7 @@ public class ViewCommandParserTest {
         assertParseSuccess(parser, "  ", new ViewCommand(""));
         for (String field : new String[] {"name", "phone", "email", "address", "tag"}) {
             assertParseSuccess(parser, " /" + field + " ", new ViewCommand(field));
-            org.junit.jupiter.api.Assertions.assertEquals(new ViewCommand(field),
+            assertEquals(new ViewCommand(field),
                     new AddressBookParser().parseCommand("view /" + field));
         }
     }
@@ -27,4 +32,5 @@ public class ViewCommandParserTest {
             assertParseFailure(parser, args, String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE));
         }
     }
+
 }

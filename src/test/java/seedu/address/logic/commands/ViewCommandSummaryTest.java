@@ -10,7 +10,11 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.testutil.PersonBuilder;
 
+/**
+ * Tests the optional summary views of {@link ViewCommand}.
+ */
 public class ViewCommandSummaryTest {
+
     @Test
     public void execute_summary_countsAllSavedContactsAndPreservesFilter() {
         AddressBook book = new AddressBook();
@@ -49,4 +53,5 @@ public class ViewCommandSummaryTest {
         assertEquals(new CommandResult("Distinct " + field + " values (frequency):\n" + rows),
                 new ViewCommand(field).execute(model));
     }
+
 }
