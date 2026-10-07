@@ -69,4 +69,11 @@ public class Lesson {
         return (cost >= 0);
     }
 
+    public Year getYear() { return year; }
+    public Subject getSubject() { return subject; }
+    public Day getDay() { return day; }
+    public Time getStartTime() { return startTime; }
+    public Time getEndTime() { return endTime; }
+    public int getCost() { return cost; }
+
 }
