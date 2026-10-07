@@ -181,7 +181,12 @@ public class ParserUtil {
      */
     public static int parseCost(String cost) throws ParseException {
         requireNonNull(cost);
-        int parsedCost = Integer.parseInt(cost.trim());
+        final int parsedCost;
+        try {
+            parsedCost = Integer.parseInt(cost.trim());
+        } catch (NumberFormatException exception) {
+            throw new ParseException(Lesson.COST_CONSTRAINT, exception);
+        }
         if (!Lesson.isValidCost(parsedCost)) {
             throw new ParseException(Lesson.COST_CONSTRAINT);
         }
