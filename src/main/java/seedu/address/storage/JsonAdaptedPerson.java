@@ -3,6 +3,7 @@ package seedu.address.storage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,15 +29,25 @@ class JsonAdaptedPerson {
     private final String phone;
     private final String email;
     private final String address;
+    private final JsonAdaptedGuardian guardian;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
+    public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
+        this(name, phone, email, address, tags, null);
+    }
+
+    /**
+     * Reads guardian information when present, while accepting legacy records.
+     */
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags) {
+            @JsonProperty("tags") List<JsonAdaptedTag> tags,
+            @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
+        this.guardian = guardian;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -50,6 +61,7 @@ class JsonAdaptedPerson {
      * Converts a given {@code Person} into this class for Jackson use.
      */
     public JsonAdaptedPerson(Person source) {
+        guardian = source.getGuardian().map(JsonAdaptedGuardian::new).orElse(null);
         name = source.getName().fullName;
         phone = source.getPhone().value;
         email = source.getEmail().value;
@@ -103,7 +115,8 @@ class JsonAdaptedPerson {
         final Address modelAddress = new Address(address);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags);
+        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags,
+                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()));
     }
 
 }
