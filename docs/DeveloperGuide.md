@@ -384,7 +384,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     1. resolutions 1280x720 and higher
     2. screen scales 150%
 3. Saving of data to storage should not impact the user's ability to do other actions ie. no lag or blocking.
-4. Every command should complete and update the UI within 1 second for up to 1000 records.
 
 **Data Storage**
 1. The data should be stored locally and should be in a human-editable text file.
