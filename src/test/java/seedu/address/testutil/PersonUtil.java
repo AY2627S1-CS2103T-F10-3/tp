@@ -42,6 +42,11 @@ public class PersonUtil {
         person.getLessons().stream().forEach(
                 s -> sb.append(PREFIX_LESSON + s.toString())
         );
+        person.getGuardian().ifPresent(guardian -> sb.append("gn/").append(guardian.getName())
+                .append(" gp/").append(guardian.getPhone())
+                .append(" ge/").append(guardian.getEmail())
+                .append(" gr/").append(guardian.getRelationship())
+                .append(" ga/").append(guardian.getAddress()).append(" "));
         return sb.toString();
     }
 

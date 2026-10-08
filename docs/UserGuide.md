@@ -28,7 +28,8 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
+   gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -77,7 +78,13 @@ Format: `help`
 
 Adds a student to the address book.
 
-Format: `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON]…​`
+Format: `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​`
+
+All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are mandatory when adding a student.
+Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
+validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
+`Mother` or `Legal guardian`. Guardian details are saved with the student and preserved when editing
+student fields. Existing records without guardian information remain readable.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A student can have any number of tags, including zero.
@@ -94,15 +101,25 @@ where:
 - cost is any non negative integer
 
 Examples:
+* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
 l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1`
 * `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
 
-### Listing all persons: `list`
+### Viewing persons and contact values: `view`
 
-Shows a list of all persons in the address book.
+With no selector, shows all persons in the address book. An optional selector shows each
+distinct value and the number of contacts that have it. Summaries include all saved contacts,
+regardless of the current list filter, and sort values alphabetically. Each tag is counted
+separately.
 
-Format: `list`
+Format: `view [/name | /phone | /email | /address | /tag]`
+
+Examples:
+* `view /email` shows each distinct email and its frequency.
+* `view /address` shows each distinct address and its frequency.
+* `view /tag` shows each tag and how many contacts have it.
 
 ### Editing a person: `edit`
 
@@ -200,10 +217,11 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add Student** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
+\<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**List** | `list`
+**View** | `view [/name | /phone | /email | /address | /tag]`
 **Help** | `help`

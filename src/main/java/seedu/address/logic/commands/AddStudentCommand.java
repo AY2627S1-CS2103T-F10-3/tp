@@ -3,6 +3,11 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
@@ -27,6 +32,11 @@ public class AddStudentCommand extends Command {
             + PREFIX_PHONE + "PHONE "
             + PREFIX_EMAIL + "EMAIL "
             + PREFIX_ADDRESS + "ADDRESS "
+            + PREFIX_GUARDIAN_NAME + "GUARDIAN_NAME "
+            + PREFIX_GUARDIAN_PHONE + "GUARDIAN_PHONE "
+            + PREFIX_GUARDIAN_EMAIL + "GUARDIAN_EMAIL "
+            + PREFIX_GUARDIAN_RELATIONSHIP + "GUARDIAN_RELATIONSHIP "
+            + PREFIX_GUARDIAN_ADDRESS + "GUARDIAN_ADDRESS "
             + "[" + PREFIX_TAG + "TAG]..."
             + "[" + PREFIX_LESSON + "LESSON]...\n"
             + "Example: " + COMMAND_WORD + " "
@@ -34,6 +44,11 @@ public class AddStudentCommand extends Command {
             + PREFIX_PHONE + "98765432 "
             + PREFIX_EMAIL + "johnd@example.com "
             + PREFIX_ADDRESS + "311, Clementi Ave 2, #02-25 "
+            + PREFIX_GUARDIAN_NAME + "Mary Doe "
+            + PREFIX_GUARDIAN_PHONE + "91234567 "
+            + PREFIX_GUARDIAN_EMAIL + "mary@example.com "
+            + PREFIX_GUARDIAN_RELATIONSHIP + "Mother "
+            + PREFIX_GUARDIAN_ADDRESS + "311, Clementi Ave 2, #02-25 "
             + PREFIX_TAG + "friends "
             + PREFIX_TAG + "owesMoney "
             + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN-1 "
