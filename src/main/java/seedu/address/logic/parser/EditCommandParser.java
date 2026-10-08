@@ -4,6 +4,11 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -32,7 +37,9 @@ public class EditCommandParser implements Parser<EditCommand> {
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
-                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG);
+                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG,
+                        PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
+                        PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS);
 
         Index index;
 
@@ -42,7 +49,9 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
+                PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
+                PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
@@ -59,12 +68,40 @@ public class EditCommandParser implements Parser<EditCommand> {
             editPersonDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
+        parseGuardianForEdit(argMultimap, editPersonDescriptor);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
         }
 
         return new EditCommand(index, editPersonDescriptor);
+    }
+
+    /**
+     * Parses the guardian fields present in {@code argMultimap} into {@code editPersonDescriptor}.
+     */
+    private void parseGuardianForEdit(ArgumentMultimap argMultimap, EditPersonDescriptor editPersonDescriptor)
+            throws ParseException {
+        if (argMultimap.getValue(PREFIX_GUARDIAN_NAME).isPresent()) {
+            editPersonDescriptor.setGuardianName(
+                    ParserUtil.parseName(argMultimap.getValue(PREFIX_GUARDIAN_NAME).get()));
+        }
+        if (argMultimap.getValue(PREFIX_GUARDIAN_PHONE).isPresent()) {
+            editPersonDescriptor.setGuardianPhone(
+                    ParserUtil.parsePhone(argMultimap.getValue(PREFIX_GUARDIAN_PHONE).get()));
+        }
+        if (argMultimap.getValue(PREFIX_GUARDIAN_EMAIL).isPresent()) {
+            editPersonDescriptor.setGuardianEmail(
+                    ParserUtil.parseEmail(argMultimap.getValue(PREFIX_GUARDIAN_EMAIL).get()));
+        }
+        if (argMultimap.getValue(PREFIX_GUARDIAN_RELATIONSHIP).isPresent()) {
+            editPersonDescriptor.setGuardianRelationship(
+                    ParserUtil.parseRelationship(argMultimap.getValue(PREFIX_GUARDIAN_RELATIONSHIP).get()));
+        }
+        if (argMultimap.getValue(PREFIX_GUARDIAN_ADDRESS).isPresent()) {
+            editPersonDescriptor.setGuardianAddress(
+                    ParserUtil.parseAddress(argMultimap.getValue(PREFIX_GUARDIAN_ADDRESS).get()));
+        }
     }
 
     /**

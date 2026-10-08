@@ -41,6 +41,12 @@ public class GuardianIntegrationTest {
         assertEquals("88888888", restored.getPhone().value);
         assertEquals(MARY, restored.getGuardian().orElseThrow());
         assertEquals(model.getAddressBook().getPersonList().getFirst(), restored);
+
+        logic.execute("edit 1 gp/99999999 gr/Father");
+        restored = addressStorage.readAddressBook().orElseThrow().getPersonList().getFirst();
+        assertEquals("99999999", restored.getGuardian().orElseThrow().getPhone().value);
+        assertEquals("Father", restored.getGuardian().orElseThrow().getRelationship().value);
+        assertEquals(MARY.getName(), restored.getGuardian().orElseThrow().getName());
     }
 
     @Test
