@@ -26,6 +26,7 @@ public class Person {
     // Data fields
     private final Address address;
     private final Optional<Guardian> guardian;
+    private final Remark remark;
     private final Set<Tag> tags = new HashSet<>();
 
     /**
@@ -40,8 +41,17 @@ public class Person {
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
             Optional<Guardian> guardian) {
-        requireAllNonNull(name, phone, email, address, tags, guardian);
+        this(name, phone, email, address, tags, guardian, new Remark(""));
+    }
+
+    /**
+     * Creates a person with guardian information and a remark. Every field must be non-null.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
+            Optional<Guardian> guardian, Remark remark) {
+        requireAllNonNull(name, phone, email, address, tags, guardian, remark);
         this.guardian = guardian;
+        this.remark = remark;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -67,6 +77,10 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Remark getRemark() {
+        return remark;
     }
 
     /**
@@ -110,13 +124,14 @@ public class Person {
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
-                && guardian.equals(otherPerson.guardian);
+                && guardian.equals(otherPerson.guardian)
+                && remark.equals(otherPerson.remark);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, guardian);
+        return Objects.hash(name, phone, email, address, tags, guardian, remark);
     }
 
     @Override
@@ -126,7 +141,8 @@ public class Person {
                 .add("phone", phone)
                 .add("email", email)
                 .add("address", address)
-                .add("tags", tags);
+                .add("tags", tags)
+                .add("remark", remark);
         guardian.ifPresent(value -> builder.add("guardian", value));
         return builder.toString();
     }

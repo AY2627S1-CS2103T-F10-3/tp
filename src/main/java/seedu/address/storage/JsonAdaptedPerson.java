@@ -16,6 +16,7 @@ import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Remark;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -30,24 +31,27 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     private final JsonAdaptedGuardian guardian;
+    private final String remark;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null);
+        this(name, phone, email, address, tags, null, null);
     }
 
     /**
-     * Reads guardian information when present, while accepting legacy records.
+     * Reads guardian information and remark when present, while accepting legacy records.
      */
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
-            @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
+            @JsonProperty("guardian") JsonAdaptedGuardian guardian,
+            @JsonProperty("remark") String remark) {
         this.guardian = guardian;
+        this.remark = remark;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -66,6 +70,7 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
+        remark = source.getRemark().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -114,9 +119,12 @@ class JsonAdaptedPerson {
         }
         final Address modelAddress = new Address(address);
 
+        // Records saved before remarks existed have no remark field; treat them as having an empty remark.
+        final Remark modelRemark = new Remark(remark == null ? "" : remark);
+
         final Set<Tag> modelTags = new HashSet<>(personTags);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags,
-                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()));
+                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), modelRemark);
     }
 
 }
