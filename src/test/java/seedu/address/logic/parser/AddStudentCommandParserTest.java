@@ -85,18 +85,18 @@ public class AddStudentCommandParserTest {
 
     @Test
     public void parse_validLesson_success() {
-        Person expectedPerson = new PersonBuilder(BOB).withTags(VALID_TAG_FRIEND)
+        Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags(VALID_TAG_FRIEND)
                 .withLessons(VALID_LESSON_MATH).build();
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + TAG_DESC_FRIEND + LESSON_DESC_MATH, new AddStudentCommand(expectedPerson));
+                + TAG_DESC_FRIEND + LESSON_DESC_MATH + GUARDIAN_DETAILS, new AddStudentCommand(expectedPerson));
     }
 
     @Test
     public void parse_multipleLessons_success() {
-        Person expectedPerson = new PersonBuilder(BOB).withTags()
+        Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags()
                 .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + LESSON_DESC_MATH + LESSON_DESC_ENGLISH, new AddStudentCommand(expectedPerson));
+                + LESSON_DESC_MATH + LESSON_DESC_ENGLISH + GUARDIAN_DETAILS, new AddStudentCommand(expectedPerson));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class AddStudentCommandParserTest {
     @Test
     public void parse_optionalFieldsMissing_success() {
         // zero tags
-        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
+        Person expectedPerson = new PersonBuilder(AMY).withGuardian(MARY).withTags().build();
         assertParseSuccess(parser, NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY
                 + GUARDIAN_DETAILS,
                 new AddStudentCommand(expectedPerson));
@@ -230,15 +230,15 @@ public class AddStudentCommandParserTest {
                 Name.MESSAGE_CONSTRAINTS);
 
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_YEAR_DESC, YEAR_CONSTRAINT);
+                + INVALID_LESSON_YEAR_DESC + GUARDIAN_DETAILS, YEAR_CONSTRAINT);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_SUBJECT_DESC, SUBJECT_CONSTRAINT);
+                + INVALID_LESSON_SUBJECT_DESC + GUARDIAN_DETAILS, SUBJECT_CONSTRAINT);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_DAY_DESC, DAY_CONSTRAINT);
+                + INVALID_LESSON_DAY_DESC + GUARDIAN_DETAILS, DAY_CONSTRAINT);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_TIME_DESC, TIME_CONSTRAINT);
+                + INVALID_LESSON_TIME_DESC + GUARDIAN_DETAILS, TIME_CONSTRAINT);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_COST_DESC, COST_CONSTRAINT);
+                + INVALID_LESSON_COST_DESC + GUARDIAN_DETAILS, COST_CONSTRAINT);
 
         // non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB

@@ -38,7 +38,7 @@ class JsonAdaptedPerson {
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null);
+        this(name, phone, email, address, tags, null, null);
     }
 
     /**
@@ -61,14 +61,6 @@ class JsonAdaptedPerson {
         if (lessons != null) {
             this.lessons.addAll(lessons);
         }
-    }
-
-    /**
-     * Constructs a JSON-adapted person without lessons for backward compatibility.
-     */
-    public JsonAdaptedPerson(String name, String phone, String email, String address,
-            List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null);
     }
 
     /**

@@ -34,7 +34,7 @@ public class Person {
      * Creates a legacy person without guardian information. Other fields must be non-null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        this(name, phone, email, address, tags, HashSet.newHashSet(), Optional.empty());
+        this(name, phone, email, address, tags, HashSet.newHashSet(0), Optional.empty());
     }
 
     /**

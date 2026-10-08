@@ -30,7 +30,7 @@ public class GuardianIntegrationTest {
         ModelManager model = new ModelManager();
         LogicManager logic = new LogicManager(model, storage);
 
-        var result = logic.execute("add n/Alice Tan p/87654321 e/alice@example.com a/456 Student Road"
+        var result = logic.execute("addstudent n/Alice Tan p/87654321 e/alice@example.com a/456 Student Road"
                 + GUARDIAN_DETAILS);
         assertTrue(result.getFeedbackToUser().contains("Guardian: Mary Tan"));
         assertEquals(MARY, addressStorage.readAddressBook().orElseThrow().getPersonList().getFirst()
