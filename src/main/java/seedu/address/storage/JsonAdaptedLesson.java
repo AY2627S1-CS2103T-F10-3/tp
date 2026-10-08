@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.logic.parser.ParserUtil;
-import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
@@ -50,16 +48,19 @@ class JsonAdaptedLesson {
     /** Converts this JSON-adapted lesson into a model lesson. */
     public Lesson toModelType() throws IllegalValueException {
         try {
-            Year modelYear = ParserUtil.parseYear(year);
-            Subject modelSubject = ParserUtil.parseSubject(subject);
-            Day modelDay = ParserUtil.parseDay(day);
-            Time modelStartTime = ParserUtil.parseTime(startTime);
-            Time modelEndTime = ParserUtil.parseTime(endTime);
+            if (!Lesson.isValidYear(year)) {
+                throw new IllegalArgumentException(Lesson.YEAR_CONSTRAINT);
+            }
+            Year modelYear = Year.parse(year.trim());
+            Subject modelSubject = Subject.valueOf(subject.trim());
+            Day modelDay = Day.valueOf(day.trim());
+            Time modelStartTime = Time.valueOf(startTime.trim());
+            Time modelEndTime = Time.valueOf(endTime.trim());
             if (!Lesson.isValidCost(cost)) {
-                throw new ParseException(Lesson.COST_CONSTRAINT);
+                throw new IllegalArgumentException(Lesson.COST_CONSTRAINT);
             }
             return new Lesson(modelYear, modelSubject, modelDay, modelStartTime, modelEndTime, cost);
-        } catch (ParseException | IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | NullPointerException exception) {
             throw new IllegalValueException(Lesson.CONSTRAINTS, exception);
         }
     }

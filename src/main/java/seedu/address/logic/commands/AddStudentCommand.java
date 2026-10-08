@@ -27,7 +27,7 @@ public class AddStudentCommand extends Command {
             + PREFIX_PHONE + "PHONE "
             + PREFIX_EMAIL + "EMAIL "
             + PREFIX_ADDRESS + "ADDRESS "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_TAG + "TAG]..."
             + "[" + PREFIX_LESSON + "LESSON]...\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
@@ -35,8 +35,8 @@ public class AddStudentCommand extends Command {
             + PREFIX_EMAIL + "johnd@example.com "
             + PREFIX_ADDRESS + "311, Clementi Ave 2, #02-25 "
             + PREFIX_TAG + "friends "
-            + PREFIX_TAG + "owesMoney"
-            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN-1"
+            + PREFIX_TAG + "owesMoney "
+            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN-1 "
             + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN-1";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";

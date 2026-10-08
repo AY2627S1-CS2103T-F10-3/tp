@@ -3,6 +3,7 @@ package seedu.address.model.lesson;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Year;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import seedu.address.model.lesson.exceptions.LessonException;
@@ -69,6 +70,19 @@ public class Lesson {
      */
     public static boolean isValidCost(int cost) {
         return (cost >= 0);
+    }
+
+    /** Checks if the given string represents a valid lesson year. */
+    public static boolean isValidYear(String year) {
+        if (year == null) {
+            return false;
+        }
+        try {
+            Year.parse(year.trim());
+            return true;
+        } catch (DateTimeParseException exception) {
+            return false;
+        }
     }
 
     /** Returns the year in which the lesson is conducted. */
