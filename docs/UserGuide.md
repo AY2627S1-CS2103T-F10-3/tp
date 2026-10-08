@@ -82,8 +82,7 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIA
 All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are mandatory when adding a student.
 Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
 validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
-`Mother` or `Legal guardian`. Guardian details are saved with the student and preserved when editing
-student fields. Existing records without guardian information remain readable.
+`Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`. Existing records without guardian information remain readable.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
@@ -111,17 +110,21 @@ Examples:
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
+* Guardian fields can be edited individually. Guardian fields that are not provided keep their existing values.
+* If the student has no guardian (for example, a record created before guardians were required), you must provide
+  all five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) to add one.
 
 Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and `Father` respectively.
 
 ### Locating persons by name: `find`
 
@@ -206,7 +209,7 @@ Action | Format, Examples
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **View** | `view [/name | /phone | /email | /address | /tag]`
 **Help** | `help`

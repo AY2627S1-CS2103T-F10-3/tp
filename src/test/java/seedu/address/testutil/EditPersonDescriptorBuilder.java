@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.guardian.Relationship;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -37,6 +38,13 @@ public class EditPersonDescriptorBuilder {
         descriptor.setEmail(person.getEmail());
         descriptor.setAddress(person.getAddress());
         descriptor.setTags(person.getTags());
+        person.getGuardian().ifPresent(guardian -> {
+            descriptor.setGuardianName(guardian.getName());
+            descriptor.setGuardianPhone(guardian.getPhone());
+            descriptor.setGuardianEmail(guardian.getEmail());
+            descriptor.setGuardianRelationship(guardian.getRelationship());
+            descriptor.setGuardianAddress(guardian.getAddress());
+        });
     }
 
     /**
@@ -78,6 +86,46 @@ public class EditPersonDescriptorBuilder {
     public EditPersonDescriptorBuilder withTags(String... tags) {
         Set<Tag> tagSet = Stream.of(tags).map(Tag::new).collect(Collectors.toSet());
         descriptor.setTags(tagSet);
+        return this;
+    }
+
+    /**
+     * Sets the guardian {@code Name} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withGuardianName(String guardianName) {
+        descriptor.setGuardianName(new Name(guardianName));
+        return this;
+    }
+
+    /**
+     * Sets the guardian {@code Phone} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withGuardianPhone(String guardianPhone) {
+        descriptor.setGuardianPhone(new Phone(guardianPhone));
+        return this;
+    }
+
+    /**
+     * Sets the guardian {@code Email} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withGuardianEmail(String guardianEmail) {
+        descriptor.setGuardianEmail(new Email(guardianEmail));
+        return this;
+    }
+
+    /**
+     * Sets the guardian {@code Relationship} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withGuardianRelationship(String guardianRelationship) {
+        descriptor.setGuardianRelationship(new Relationship(guardianRelationship));
+        return this;
+    }
+
+    /**
+     * Sets the guardian {@code Address} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withGuardianAddress(String guardianAddress) {
+        descriptor.setGuardianAddress(new Address(guardianAddress));
         return this;
     }
 
