@@ -37,6 +37,11 @@ public class PersonUtil {
         person.getTags().stream().forEach(
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
+        person.getGuardian().ifPresent(guardian -> sb.append("gn/").append(guardian.getName())
+                .append(" gp/").append(guardian.getPhone())
+                .append(" ge/").append(guardian.getEmail())
+                .append(" gr/").append(guardian.getRelationship())
+                .append(" ga/").append(guardian.getAddress()).append(" "));
         return sb.toString();
     }
 

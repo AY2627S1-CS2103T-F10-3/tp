@@ -9,6 +9,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.guardian.Relationship;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -21,6 +22,20 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+
+    /**
+     * Parses a relationship, trimming surrounding whitespace.
+     *
+     * @throws ParseException if the relationship is blank.
+     */
+    public static Relationship parseRelationship(String relationship) throws ParseException {
+        requireNonNull(relationship);
+        String trimmed = relationship.trim();
+        if (!Relationship.isValidRelationship(trimmed)) {
+            throw new ParseException(Relationship.MESSAGE_CONSTRAINTS);
+        }
+        return new Relationship(trimmed);
+    }
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be

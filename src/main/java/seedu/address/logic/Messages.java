@@ -45,6 +45,11 @@ public class Messages {
                 .append(person.getAddress())
                 .append("; Tags: ");
         person.getTags().forEach(builder::append);
+        person.getGuardian().ifPresent(guardian -> builder.append("; Guardian: ").append(guardian.getName())
+                .append("; Guardian phone: ").append(guardian.getPhone())
+                .append("; Guardian email: ").append(guardian.getEmail())
+                .append("; Relationship: ").append(guardian.getRelationship())
+                .append("; Guardian address: ").append(guardian.getAddress()));
         return builder.toString();
     }
 

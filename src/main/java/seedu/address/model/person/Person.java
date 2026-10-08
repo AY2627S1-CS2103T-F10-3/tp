@@ -5,9 +5,11 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.guardian.Guardian;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -23,18 +25,32 @@ public class Person {
 
     // Data fields
     private final Address address;
+    private final Optional<Guardian> guardian;
     private final Set<Tag> tags = new HashSet<>();
 
     /**
-     * Every field must be present and not null.
+     * Creates a legacy person without guardian information. Other fields must be non-null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+        this(name, phone, email, address, tags, Optional.empty());
+    }
+
+    /**
+     * Creates a person with guardian information; an empty guardian represents a legacy record.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
+            Optional<Guardian> guardian) {
+        requireAllNonNull(name, phone, email, address, tags, guardian);
+        this.guardian = guardian;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+    }
+
+    public Optional<Guardian> getGuardian() {
+        return guardian;
     }
 
     public Name getName() {
@@ -93,24 +109,26 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
-                && tags.equals(otherPerson.tags);
+                && tags.equals(otherPerson.tags)
+                && guardian.equals(otherPerson.guardian);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags);
+        return Objects.hash(name, phone, email, address, tags, guardian);
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        ToStringBuilder builder = new ToStringBuilder(this)
                 .add("name", name)
                 .add("phone", phone)
                 .add("email", email)
                 .add("address", address)
-                .add("tags", tags)
-                .toString();
+                .add("tags", tags);
+        guardian.ifPresent(value -> builder.add("guardian", value));
+        return builder.toString();
     }
 
 }
