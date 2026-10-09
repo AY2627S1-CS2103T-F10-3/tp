@@ -5,8 +5,18 @@ import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.GUARDIAN_ADDRESS_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.GUARDIAN_EMAIL_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.GUARDIAN_NAME_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.GUARDIAN_PHONE_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.GUARDIAN_RELATIONSHIP_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_ADDRESS_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_ADDRESS_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_EMAIL_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_NAME_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_PHONE_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_RELATIONSHIP_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
@@ -17,6 +27,11 @@ import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_ADDRESS_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
@@ -24,6 +39,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -38,6 +55,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.guardian.Relationship;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -193,6 +211,44 @@ public class EditCommandParserTest {
 
         assertParseFailure(parser, userInput,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS));
+    }
+
+    @Test
+    public void parse_guardianFieldsSpecified_success() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+
+        // single guardian field
+        String userInput = targetIndex.getOneBased() + GUARDIAN_PHONE_DESC_BOB;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withGuardianPhone(VALID_GUARDIAN_PHONE_BOB).build();
+        assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
+
+        // all guardian fields together with a student field
+        userInput = targetIndex.getOneBased() + PHONE_DESC_AMY + GUARDIAN_NAME_DESC_BOB + GUARDIAN_PHONE_DESC_BOB
+                + GUARDIAN_EMAIL_DESC_BOB + GUARDIAN_RELATIONSHIP_DESC_BOB + GUARDIAN_ADDRESS_DESC_BOB;
+        descriptor = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_AMY)
+                .withGuardianName(VALID_GUARDIAN_NAME_BOB).withGuardianPhone(VALID_GUARDIAN_PHONE_BOB)
+                .withGuardianEmail(VALID_GUARDIAN_EMAIL_BOB).withGuardianRelationship(VALID_GUARDIAN_RELATIONSHIP_BOB)
+                .withGuardianAddress(VALID_GUARDIAN_ADDRESS_BOB).build();
+        assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
+    public void parse_invalidGuardianValue_failure() {
+        assertParseFailure(parser, "1" + INVALID_GUARDIAN_NAME_DESC, Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1" + INVALID_GUARDIAN_PHONE_DESC, Phone.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1" + INVALID_GUARDIAN_EMAIL_DESC, Email.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1" + INVALID_GUARDIAN_RELATIONSHIP_DESC, Relationship.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1" + INVALID_GUARDIAN_ADDRESS_DESC, Address.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_repeatedGuardianFields_failure() {
+        String userInput = INDEX_FIRST_PERSON.getOneBased() + GUARDIAN_NAME_DESC_BOB + GUARDIAN_PHONE_DESC_BOB
+                + GUARDIAN_NAME_DESC_BOB + GUARDIAN_PHONE_DESC_BOB;
+
+        assertParseFailure(parser, userInput,
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE));
     }
 
     @Test

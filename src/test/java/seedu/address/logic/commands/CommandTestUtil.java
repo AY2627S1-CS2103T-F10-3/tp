@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
@@ -41,6 +46,11 @@ public class CommandTestUtil {
     public static final String VALID_ADDRESS_BOB = "Block 123, Bobby Street 3";
     public static final String VALID_TAG_HUSBAND = "husband";
     public static final String VALID_TAG_FRIEND = "friend";
+    public static final String VALID_GUARDIAN_NAME_BOB = "Betty Choo";
+    public static final String VALID_GUARDIAN_PHONE_BOB = "33333333";
+    public static final String VALID_GUARDIAN_EMAIL_BOB = "betty@example.com";
+    public static final String VALID_GUARDIAN_RELATIONSHIP_BOB = "Aunt";
+    public static final String VALID_GUARDIAN_ADDRESS_BOB = "Block 456, Betty Street 5";
     public static final Lesson VALID_LESSON_MATH = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
             Time.TEN, Time.ELEVEN, 30);
     public static final Lesson VALID_LESSON_ENGLISH = new Lesson(Year.of(2026), Subject.ENGLISH, Day.WEDNESDAY,
@@ -56,6 +66,13 @@ public class CommandTestUtil {
     public static final String ADDRESS_DESC_BOB = " " + PREFIX_ADDRESS + VALID_ADDRESS_BOB;
     public static final String TAG_DESC_FRIEND = " " + PREFIX_TAG + VALID_TAG_FRIEND;
     public static final String TAG_DESC_HUSBAND = " " + PREFIX_TAG + VALID_TAG_HUSBAND;
+    public static final String GUARDIAN_NAME_DESC_BOB = " " + PREFIX_GUARDIAN_NAME + VALID_GUARDIAN_NAME_BOB;
+    public static final String GUARDIAN_PHONE_DESC_BOB = " " + PREFIX_GUARDIAN_PHONE + VALID_GUARDIAN_PHONE_BOB;
+    public static final String GUARDIAN_EMAIL_DESC_BOB = " " + PREFIX_GUARDIAN_EMAIL + VALID_GUARDIAN_EMAIL_BOB;
+    public static final String GUARDIAN_RELATIONSHIP_DESC_BOB =
+            " " + PREFIX_GUARDIAN_RELATIONSHIP + VALID_GUARDIAN_RELATIONSHIP_BOB;
+    public static final String GUARDIAN_ADDRESS_DESC_BOB =
+            " " + PREFIX_GUARDIAN_ADDRESS + VALID_GUARDIAN_ADDRESS_BOB;
     public static final String LESSON_DESC_MATH = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-30";
     public static final String LESSON_DESC_ENGLISH = " " + PREFIX_LESSON
                                                     + "2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40";
@@ -65,6 +82,11 @@ public class CommandTestUtil {
     public static final String INVALID_EMAIL_DESC = " " + PREFIX_EMAIL + "bob!yahoo"; // missing '@' symbol
     public static final String INVALID_ADDRESS_DESC = " " + PREFIX_ADDRESS; // empty string not allowed for addresses
     public static final String INVALID_TAG_DESC = " " + PREFIX_TAG + "hubby*"; // '*' not allowed in tags
+    public static final String INVALID_GUARDIAN_NAME_DESC = " " + PREFIX_GUARDIAN_NAME + "Mary&";
+    public static final String INVALID_GUARDIAN_PHONE_DESC = " " + PREFIX_GUARDIAN_PHONE + "911a";
+    public static final String INVALID_GUARDIAN_EMAIL_DESC = " " + PREFIX_GUARDIAN_EMAIL + "mary!yahoo";
+    public static final String INVALID_GUARDIAN_RELATIONSHIP_DESC = " " + PREFIX_GUARDIAN_RELATIONSHIP + " ";
+    public static final String INVALID_GUARDIAN_ADDRESS_DESC = " " + PREFIX_GUARDIAN_ADDRESS;
     public static final String INVALID_LESSON_YEAR_DESC = " " + PREFIX_LESSON + "20x6-MATH-MONDAY-TEN-ELEVEN-30";
     public static final String INVALID_LESSON_SUBJECT_DESC = " " + PREFIX_LESSON + "2026-HISTORY-MONDAY-TEN-ELEVEN-30";
     public static final String INVALID_LESSON_DAY_DESC = " " + PREFIX_LESSON + "2026-MATH-FUNDAY-TEN-ELEVEN-30";

@@ -5,12 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_ADDRESS_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
+import static seedu.address.testutil.TypicalGuardians.MARY;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -24,7 +30,13 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.guardian.Guardian;
+import seedu.address.model.guardian.Relationship;
+import seedu.address.model.person.Address;
+import seedu.address.model.person.Email;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
 
@@ -97,6 +109,84 @@ public class EditCommandTest {
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_someGuardianFieldsSpecified_success() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithGuardian = new PersonBuilder(firstPerson).withGuardian(MARY).build();
+        model.setPerson(firstPerson, personWithGuardian);
+
+        Guardian editedGuardian = new Guardian(MARY.getName(), new Phone(VALID_GUARDIAN_PHONE_BOB),
+                MARY.getEmail(), new Relationship(VALID_GUARDIAN_RELATIONSHIP_BOB), MARY.getAddress());
+        Person editedPerson = new PersonBuilder(personWithGuardian).withGuardian(editedGuardian).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withGuardianPhone(VALID_GUARDIAN_PHONE_BOB)
+                .withGuardianRelationship(VALID_GUARDIAN_RELATIONSHIP_BOB).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personWithGuardian, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_studentAndGuardianFieldsSpecified_success() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithGuardian = new PersonBuilder(firstPerson).withGuardian(MARY).build();
+        model.setPerson(firstPerson, personWithGuardian);
+
+        Guardian editedGuardian = new Guardian(new Name(VALID_GUARDIAN_NAME_BOB), MARY.getPhone(),
+                MARY.getEmail(), MARY.getRelationship(), MARY.getAddress());
+        Person editedPerson = new PersonBuilder(personWithGuardian).withPhone(VALID_PHONE_BOB)
+                .withGuardian(editedGuardian).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_BOB)
+                .withGuardianName(VALID_GUARDIAN_NAME_BOB).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personWithGuardian, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_allGuardianFieldsSpecifiedNoGuardian_success() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertTrue(firstPerson.getGuardian().isEmpty());
+
+        Guardian newGuardian = new Guardian(new Name(VALID_GUARDIAN_NAME_BOB), new Phone(VALID_GUARDIAN_PHONE_BOB),
+                new Email(VALID_GUARDIAN_EMAIL_BOB), new Relationship(VALID_GUARDIAN_RELATIONSHIP_BOB),
+                new Address(VALID_GUARDIAN_ADDRESS_BOB));
+        Person editedPerson = new PersonBuilder(firstPerson).withGuardian(newGuardian).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withGuardianName(VALID_GUARDIAN_NAME_BOB)
+                .withGuardianPhone(VALID_GUARDIAN_PHONE_BOB).withGuardianEmail(VALID_GUARDIAN_EMAIL_BOB)
+                .withGuardianRelationship(VALID_GUARDIAN_RELATIONSHIP_BOB)
+                .withGuardianAddress(VALID_GUARDIAN_ADDRESS_BOB).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(firstPerson, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_someGuardianFieldsSpecifiedNoGuardian_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertTrue(firstPerson.getGuardian().isEmpty());
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB)
+                .withGuardianPhone(VALID_GUARDIAN_PHONE_BOB).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        assertCommandFailure(editCommand, model, EditCommand.MESSAGE_INCOMPLETE_GUARDIAN);
     }
 
     @Test
