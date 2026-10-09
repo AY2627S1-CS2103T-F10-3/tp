@@ -10,6 +10,7 @@ import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.guardian.Guardian;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -27,26 +28,28 @@ public class Person {
     private final Address address;
     private final Optional<Guardian> guardian;
     private final Set<Tag> tags = new HashSet<>();
+    private final Set<Lesson> lessons = new HashSet<>();
 
     /**
      * Creates a legacy person without guardian information. Other fields must be non-null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        this(name, phone, email, address, tags, Optional.empty());
+        this(name, phone, email, address, tags, HashSet.newHashSet(0), Optional.empty());
     }
 
     /**
      * Creates a person with guardian information; an empty guardian represents a legacy record.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
-            Optional<Guardian> guardian) {
-        requireAllNonNull(name, phone, email, address, tags, guardian);
-        this.guardian = guardian;
+    public Person(Name name, Phone phone, Email email, Address address,
+                Set<Tag> tags, Set<Lesson> lessons, Optional<Guardian> guardian) {
+        requireAllNonNull(name, phone, email, address, tags, lessons, guardian);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.lessons.addAll(lessons);
+        this.guardian = guardian;
     }
 
     public Optional<Guardian> getGuardian() {
@@ -75,6 +78,14 @@ public class Person {
      */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+
+    /**
+     * Returns an immutable lesson set, which throws {@code UnsupportedOperationException}
+     * if modification is attempted.
+     */
+    public Set<Lesson> getLessons() {
+        return Collections.unmodifiableSet(lessons);
     }
 
     /**
@@ -110,13 +121,14 @@ public class Person {
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
+                && lessons.equals(otherPerson.lessons)
                 && guardian.equals(otherPerson.guardian);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, guardian);
+        return Objects.hash(name, phone, email, address, tags, lessons, guardian);
     }
 
     @Override

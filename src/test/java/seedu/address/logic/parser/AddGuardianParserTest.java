@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
-import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddStudentCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.guardian.Relationship;
@@ -24,11 +24,11 @@ public class AddGuardianParserTest {
     private static final String STUDENT = " n/Alice Tan p/87654321 e/alice@example.com a/456 Student Road";
     private static final List<String> FIELDS = List.of(" gn/Mary Tan", " gp/91234567", " ge/mary@example.com",
             " gr/Mother", " ga/123 Example Road");
-    private final AddCommandParser parser = new AddCommandParser();
+    private final AddStudentCommandParser parser = new AddStudentCommandParser();
 
     @Test
     public void parse_missingGuardianField_failure() {
-        String message = String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
+        String message = String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT, AddStudentCommand.MESSAGE_USAGE);
         assertParseFailure(parser, STUDENT, message);
         for (String field : FIELDS) {
             assertParseFailure(parser, STUDENT + GUARDIAN_DETAILS.replace(field, ""), message);

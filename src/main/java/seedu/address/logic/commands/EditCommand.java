@@ -28,6 +28,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -121,10 +122,12 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
+        Set<Lesson> updatedLessons = editPersonDescriptor.getLessons().orElse(personToEdit.getLessons());
 
         Optional<Guardian> updatedGuardian = createEditedGuardian(personToEdit.getGuardian(), editPersonDescriptor);
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedGuardian);
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress,
+                updatedTags, updatedLessons, updatedGuardian);
     }
 
     /**
@@ -192,6 +195,7 @@ public class EditCommand extends Command {
         private Email email;
         private Address address;
         private Set<Tag> tags;
+        private Set<Lesson> lessons;
         private Name guardianName;
         private Phone guardianPhone;
         private Email guardianEmail;
@@ -210,6 +214,7 @@ public class EditCommand extends Command {
             setEmail(toCopy.email);
             setAddress(toCopy.address);
             setTags(toCopy.tags);
+            setLessons(toCopy.lessons);
             setGuardianName(toCopy.guardianName);
             setGuardianPhone(toCopy.guardianPhone);
             setGuardianEmail(toCopy.guardianEmail);
@@ -287,6 +292,23 @@ public class EditCommand extends Command {
          */
         public Optional<Set<Tag>> getTags() {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
+        }
+
+        /**
+         * Sets {@code lessons} to this object's {@code lessons}.
+         * A defensive copy of {@code lessons} is used internally.
+         */
+        public void setLessons(Set<Lesson> lessons) {
+            this.lessons = (lessons != null) ? new HashSet<>(lessons) : null;
+        }
+
+        /**
+         * Returns an unmodifiable lesson set, which throws {@code UnsupportedOperationException}
+         * if modification is attempted.
+         * Returns {@code Optional#empty()} if {@code lessons} is null.
+         */
+        public Optional<Set<Lesson>> getLessons() {
+            return (lessons != null) ? Optional.of(Collections.unmodifiableSet(lessons)) : Optional.empty();
         }
 
         public void setGuardianName(Name guardianName) {

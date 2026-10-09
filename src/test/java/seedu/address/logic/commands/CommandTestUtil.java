@@ -9,11 +9,13 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,10 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -45,6 +51,10 @@ public class CommandTestUtil {
     public static final String VALID_GUARDIAN_EMAIL_BOB = "betty@example.com";
     public static final String VALID_GUARDIAN_RELATIONSHIP_BOB = "Aunt";
     public static final String VALID_GUARDIAN_ADDRESS_BOB = "Block 456, Betty Street 5";
+    public static final Lesson VALID_LESSON_MATH = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
+            Time.TEN, Time.ELEVEN, 30);
+    public static final Lesson VALID_LESSON_ENGLISH = new Lesson(Year.of(2026), Subject.ENGLISH, Day.WEDNESDAY,
+            Time.THIRTEEN, Time.FOURTEEN, 40);
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;
@@ -63,6 +73,9 @@ public class CommandTestUtil {
             " " + PREFIX_GUARDIAN_RELATIONSHIP + VALID_GUARDIAN_RELATIONSHIP_BOB;
     public static final String GUARDIAN_ADDRESS_DESC_BOB =
             " " + PREFIX_GUARDIAN_ADDRESS + VALID_GUARDIAN_ADDRESS_BOB;
+    public static final String LESSON_DESC_MATH = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-30";
+    public static final String LESSON_DESC_ENGLISH = " " + PREFIX_LESSON
+                                                    + "2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40";
 
     public static final String INVALID_NAME_DESC = " " + PREFIX_NAME + "James&"; // '&' not allowed in names
     public static final String INVALID_PHONE_DESC = " " + PREFIX_PHONE + "911a"; // 'a' not allowed in phones
@@ -74,6 +87,11 @@ public class CommandTestUtil {
     public static final String INVALID_GUARDIAN_EMAIL_DESC = " " + PREFIX_GUARDIAN_EMAIL + "mary!yahoo";
     public static final String INVALID_GUARDIAN_RELATIONSHIP_DESC = " " + PREFIX_GUARDIAN_RELATIONSHIP + " ";
     public static final String INVALID_GUARDIAN_ADDRESS_DESC = " " + PREFIX_GUARDIAN_ADDRESS;
+    public static final String INVALID_LESSON_YEAR_DESC = " " + PREFIX_LESSON + "20x6-MATH-MONDAY-TEN-ELEVEN-30";
+    public static final String INVALID_LESSON_SUBJECT_DESC = " " + PREFIX_LESSON + "2026-HISTORY-MONDAY-TEN-ELEVEN-30";
+    public static final String INVALID_LESSON_DAY_DESC = " " + PREFIX_LESSON + "2026-MATH-FUNDAY-TEN-ELEVEN-30";
+    public static final String INVALID_LESSON_TIME_DESC = " " + PREFIX_LESSON + "2026-MATH-MONDAY-NINE-ELEVEN-30";
+    public static final String INVALID_LESSON_COST_DESC = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-abc";
 
     public static final String PREAMBLE_WHITESPACE = "\t  \r  \n";
     public static final String PREAMBLE_NON_EMPTY = "NonEmptyPreamble";
@@ -96,7 +114,7 @@ public class CommandTestUtil {
      * - the {@code actualModel} matches {@code expectedModel}
      */
     public static void assertCommandSuccess(Command command, Model actualModel, CommandResult expectedCommandResult,
-            Model expectedModel) {
+                                            Model expectedModel) {
         try {
             CommandResult result = command.execute(actualModel);
             assertEquals(expectedCommandResult, result);
@@ -111,7 +129,7 @@ public class CommandTestUtil {
      * that takes a string {@code expectedMessage}.
      */
     public static void assertCommandSuccess(Command command, Model actualModel, String expectedMessage,
-            Model expectedModel) {
+                                            Model expectedModel) {
         CommandResult expectedCommandResult = new CommandResult(expectedMessage);
         assertCommandSuccess(command, actualModel, expectedCommandResult, expectedModel);
     }
@@ -132,6 +150,7 @@ public class CommandTestUtil {
         assertEquals(expectedAddressBook, actualModel.getAddressBook());
         assertEquals(expectedFilteredList, actualModel.getFilteredPersonList());
     }
+
     /**
      * Updates {@code model}'s filtered list to show only the person at the given {@code targetIndex} in the
      * {@code model}'s address book.
