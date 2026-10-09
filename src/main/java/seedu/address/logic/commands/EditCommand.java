@@ -126,7 +126,8 @@ public class EditCommand extends Command {
 
         Optional<Guardian> updatedGuardian = createEditedGuardian(personToEdit.getGuardian(), editPersonDescriptor);
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedLessons, updatedGuardian);
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress,
+                updatedTags, updatedLessons, updatedGuardian);
     }
 
     /**
