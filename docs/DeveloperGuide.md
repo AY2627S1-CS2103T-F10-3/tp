@@ -111,8 +111,8 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 <img src="images/ParserClasses.png" width="600"/>
 
 How the parsing works:
-* When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
-* All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+* When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddStudentCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddStudentCommand`). The `AddressBookParser` returns that object as a `Command` object.
+* All `XYZCommandParser` classes, such as `AddStudentCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
@@ -177,7 +177,7 @@ Step 2. The user executes `delete 5` command to delete the 5th person in the add
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `addstudent n/David …​` to add a new person. The `addstudent` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -216,7 +216,7 @@ Step 5. The user then decides to execute the command `list`. Commands that do no
 
 ![UndoRedoState4](images/UndoRedoState4.png)
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `addstudent n/David …​` command. This is the behavior that most modern desktop applications follow.
 
 ![UndoRedoState5](images/UndoRedoState5.png)
 
@@ -523,11 +523,40 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+**Compatibility and Portability**
+1. Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `25` or above installed.
+2. The software should work without requiring an installer.
+3. The software should not depend on a remote server.
+4. Should be packaged into a single JAR file.
+5. JAR file size must fall below 100MB.
+6. JAR file should not be unnecessarily bloated, ie. does not have largely unused libraries.
+7. External software used must be:
+    1. free, open source
+    2. have permissive license terms
+    3. does not require installation by user
+    4. does not require account creation
 
-*{More to be added}*
+**Usability**
+1. A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+2. Should be used by only one user.
+3. A new admin with basic computer literacy should be able to complete the core tasks within 15 minutes using only the user guide.
+
+**Performance**
+1. Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
+2. The GUI should work well (i.e., should not cause any resolution-related inconveniences to the user) at:
+    1. standard screen resolutions 1920x1080 and higher
+    2. screen scales 100% and 125%
+3. The GUI should be usable (i.e., all functions can be used even if the user experience is not optimal) at:
+    1. resolutions 1280x720 and higher
+    2. screen scales 150%
+4. Saving of data to storage should not impact the user's ability to do other actions ie. no lag or blocking.
+
+**Data Storage**
+1. The data should be stored locally and should be in a human-editable text file.
+2. Data should not be stored in a database management system (DBMS).
+3. Data saved to storage must be identical after closing and reopening the app on the same device.
+4. If the app crashes or the save fails midway, the previous valid data file should not be corrupted.
+5. Failed commands must leave existing data unchanged.
 
 ### Glossary
 
