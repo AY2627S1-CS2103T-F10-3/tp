@@ -140,20 +140,32 @@ Examples:
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 *  `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and `Father` respectively.
 
-### Locating persons by name: `find`
+### Locating students by student or guardian details: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds students using partial student names, student phone numbers, guardian names, or guardian phone numbers.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`
+
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
+* Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
+  `gn/` guardian names, and `gp/` guardian phone numbers.
+* Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
+* With multiple prefixes, every specified field must match (`AND`). Within each field, any keyword may match (`OR`).
+* Supply at least one non-empty search value. Repeated or unsupported prefixes and mixing unprefixed keywords with
+  prefixed criteria are rejected.
+* Students without guardian details do not match guardian searches. Search results always show students.
 * Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
+* `find n/Alice` searches student names containing `Alice`.
+* `find p/9123` searches student phone numbers containing `9123`.
+* `find gn/Mary` returns students whose guardian names contain `Mary`.
+* `find gp/9876` returns students whose guardian phone numbers contain `9876`.
+* `find n/Alice gp/9876` requires both the student name and guardian phone number to match.
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
@@ -225,6 +237,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
 **View** | `view [/name | /phone | /email | /address | /tag]`
 **Help** | `help`
