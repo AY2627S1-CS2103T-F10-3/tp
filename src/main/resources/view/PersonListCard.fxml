@@ -32,6 +32,21 @@
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
       <Label fx:id="lessons" styleClass="cell_small_label" text="\$lessons" wrapText="true" />
+      <VBox spacing="2" minWidth="0">
+        <padding>
+          <Insets top="8" />
+        </padding>
+        <Label text="Guardian" styleClass="cell_big_label" />
+        <VBox fx:id="guardianDetails" spacing="2" minWidth="0">
+          <Label fx:id="guardianName" styleClass="cell_small_label" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+          <Label fx:id="guardianPhone" styleClass="cell_small_label" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+          <Label fx:id="guardianEmail" styleClass="cell_small_label" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+          <Label fx:id="guardianRelationship" styleClass="cell_small_label" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+          <Label fx:id="guardianAddress" styleClass="cell_small_label" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+        </VBox>
+        <Label fx:id="guardianMissing" text="No guardian information recorded." styleClass="cell_small_label"
+               wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
+      </VBox>
     </VBox>
   </GridPane>
 </HBox>

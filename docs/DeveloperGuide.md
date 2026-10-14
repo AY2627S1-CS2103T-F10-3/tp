@@ -83,6 +83,13 @@ The `UI` component,
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
 * depends on some classes in the `Model` component because it displays `Person` objects from the model.
 
+`PersonListPanel` renders each student using `PersonCard` and `PersonListCard.fxml`.
+The card reads `Person#getGuardian()` and displays the guardian's five fields in a labelled
+section below the student's details and lessons. Guardian labels wrap long values.
+For legacy records with an empty guardian, the card hides and unmanages the detail container
+and displays `No guardian information recorded.` instead. `PersonListPanel` recreates cards
+when model entries change, so guardian edits appear without restarting the application.
+
 ### Logic component
 
 **API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
@@ -349,7 +356,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 1. User requests to list all students.
 2. EduReg displays the list of students.
-3. User views a student's full details (phone number, email, address, tags, and attached parent/guardian contacts) directly in the detail panel.
+3. User views the student's details directly on the student card. The **Guardian** section shows the guardian's name,
+   phone, email, relationship, and address, or `No guardian information recorded.` if none is recorded.
 
    Use case ends.
 
@@ -609,6 +617,29 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Displaying guardian details with a student
+
+1. Add a student in a disposable test address book:
+   `addstudent n/Guardian Display Test p/98765432 e/student@example.com a/Student Road gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`.<br>
+   Expected: The student's card shows a **Guardian** section containing `Name: Mary Tan`,
+   `Phone: 91234567`, `Email: mary@example.com`, `Relationship: Mother`, and `Address: 123 Example Road`.
+   The student's own contact details remain visible above it.
+
+1. Run `find Guardian Display Test`, note the student's displayed index, then run
+   `edit INDEX gp/92345678` using that index.<br>
+   Expected: The guardian phone updates on the card immediately; the student's phone stays `98765432`.
+   Run `view`. The updated guardian details should still appear with the same student.
+
+1. Edit the guardian address to a long value, for example:
+   `edit INDEX ga/123 Example Road Block 456 Unit 07 89 Singapore Near the Community Centre`.
+   Narrow the window.<br>
+   Expected: Guardian details wrap onto additional lines without overlapping the next card.
+
+1. Load a valid legacy data file containing a student with no `guardian` field.<br>
+   Expected: The student's card shows **No guardian information recorded.**, with no empty guardian field rows.
+   Run `edit INDEX gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`.<br>
+   Expected: The message is replaced by the five guardian fields immediately.
 
 ### Deleting a person
 

@@ -100,8 +100,8 @@ where:
 - cost is any non negative integer
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
 l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1`
 * `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
@@ -119,6 +119,19 @@ Examples:
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
+
+**Guardian details on student cards**
+
+Each student card includes a **Guardian** section below the student's details and lessons.
+It displays the guardian's name, phone, email, relationship to the student, and address,
+with a label for each field to distinguish these details from the student's own contact information.
+Long guardian details wrap onto additional lines.
+
+Use `view` to show all students, or `find NAME` to find a student and see their guardian on the same card.
+After `addstudent` or `edit`, the card displays the saved guardian details immediately.
+
+Older records without a guardian show **No guardian information recorded.**
+See [Editing a person](#editing-a-person-edit) to add or update guardian details.
 
 ### Editing a person: `edit`
 
@@ -232,8 +245,8 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add Student** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
-\<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
+\<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
