@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,9 +20,11 @@ public class ViewCommandSummaryTest {
     public void execute_summary_countsAllSavedContactsAndPreservesFilter() {
         AddressBook book = new AddressBook();
         book.addPerson(new PersonBuilder().withName("Alice").withEmail("shared@example.com")
-                .withAddress("Shared address").withPhone("12345678").withTags("friends", "team").build());
+                .withAddress("Shared address").withPhone("12345678").withTags("friends", "team")
+                .withLessons(VALID_LESSON_MATH).build());
         book.addPerson(new PersonBuilder().withName("Bob").withEmail("shared@example.com")
-                .withAddress("Shared address").withPhone("12345678").withTags("friends").build());
+                .withAddress("Shared address").withPhone("12345678").withTags("friends")
+                .withLessons(VALID_LESSON_MATH).build());
         Model model = new ModelManager(book, new UserPrefs());
         model.updateFilteredPersonList(person -> person.getName().toString().equals("Alice"));
 
@@ -30,6 +33,7 @@ public class ViewCommandSummaryTest {
         assertSummary(model, "phone", "12345678 : 2");
         assertSummary(model, "name", "Alice : 1\nBob : 1");
         assertSummary(model, "tag", "friends : 2\nteam : 1");
+        assertSummary(model, "lesson", VALID_LESSON_MATH + " : 2");
         assertEquals(1, model.getFilteredPersonList().size());
         assertEquals(book, model.getAddressBook());
     }

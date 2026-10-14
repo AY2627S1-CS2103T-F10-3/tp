@@ -113,12 +113,13 @@ distinct value and the number of contacts that have it. Summaries include all sa
 regardless of the current list filter, and sort values alphabetically. Each tag is counted
 separately.
 
-Format: `view [/name | /phone | /email | /address | /tag]`
+Format: `view [/name | /phone | /email | /address | /tag | /lesson]`
 
 Examples:
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
+* `view /lesson` shows each distinct lesson and how many students have it.
 
 ### Editing a person: `edit`
 
@@ -226,5 +227,5 @@ Action | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**View** | `view [/name | /phone | /email | /address | /tag]`
+**View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`
