@@ -9,6 +9,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -22,6 +23,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -38,7 +40,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG,
-                        PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
+                        PREFIX_LESSON, PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
                         PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS);
 
         Index index;
@@ -68,6 +70,7 @@ public class EditCommandParser implements Parser<EditCommand> {
             editPersonDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
+        parseLessonsForEdit(argMultimap.getAllValues(PREFIX_LESSON)).ifPresent(editPersonDescriptor::setLessons);
         parseGuardianForEdit(argMultimap, editPersonDescriptor);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
@@ -117,6 +120,21 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
         Collection<String> tagSet = tags.size() == 1 && tags.contains("") ? Collections.emptySet() : tags;
         return Optional.of(ParserUtil.parseTags(tagSet));
+    }
+
+    /**
+     * Parses {@code Collection<String> lessons} into a {@code Set<Lesson>} if {@code lessons} is non-empty.
+     * If {@code lessons} contains only one element which is an empty string, it will be parsed into a
+     * {@code Set<Lesson>} containing zero lessons.
+     */
+    private Optional<Set<Lesson>> parseLessonsForEdit(Collection<String> lessons) throws ParseException {
+        assert lessons != null;
+
+        if (lessons.isEmpty()) {
+            return Optional.empty();
+        }
+        Collection<String> lessonSet = lessons.size() == 1 && lessons.contains("") ? Collections.emptySet() : lessons;
+        return Optional.of(ParserUtil.parseLessons(lessonSet));
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Prefix;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Person;
 
 /**
@@ -45,6 +46,11 @@ public class Messages {
                 .append(person.getAddress())
                 .append("; Tags: ");
         person.getTags().forEach(builder::append);
+        builder.append("; Lessons: ")
+                .append(person.getLessons().stream()
+                        .map(Lesson::toString)
+                        .sorted()
+                        .collect(Collectors.joining(", ")));
         person.getGuardian().ifPresent(guardian -> builder.append("; Guardian: ").append(guardian.getName())
                 .append("; Guardian phone: ").append(guardian.getPhone())
                 .append("; Guardian email: ").append(guardian.getEmail())
