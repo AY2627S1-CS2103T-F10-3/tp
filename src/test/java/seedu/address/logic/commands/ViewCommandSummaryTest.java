@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,26 @@ public class ViewCommandSummaryTest {
     public void execute_emptyAddressBook_showsNoValues() {
         Model model = new ModelManager();
         assertSummary(model, "email", "No values found.");
+    }
+
+    @Test
+    public void execute_lessonSummary_countsDistinctLessonsAndSkipsStudentsWithoutLessons() {
+        AddressBook book = new AddressBook();
+        book.addPerson(new PersonBuilder().withName("Alice")
+                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build());
+        book.addPerson(new PersonBuilder().withName("Bob").withLessons(VALID_LESSON_MATH).build());
+        book.addPerson(new PersonBuilder().withName("Charlie").build());
+        Model model = new ModelManager(book, new UserPrefs());
+
+        assertSummary(model, "lesson", VALID_LESSON_ENGLISH + " : 1\n" + VALID_LESSON_MATH + " : 2");
+    }
+
+    @Test
+    public void execute_lessonSummary_withStudentsButNoLessons_showsNoValues() {
+        Model model = new ModelManager();
+        model.addPerson(new PersonBuilder().withName("Charlie").build());
+
+        assertSummary(model, "lesson", "No values found.");
     }
 
     @Test

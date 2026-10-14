@@ -119,7 +119,7 @@ Examples:
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
-* `view /lesson` shows each distinct lesson and how many students have it.
+* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
 
 ### Editing a person: `edit`
 
