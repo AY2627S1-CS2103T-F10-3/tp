@@ -211,7 +211,7 @@ EduReg automatically saves data after every command. You do not need to save man
 
 ### Editing the data file
 
-EduReg data is saved automatically as a JSON file `[JAR file location]/data/edureg.json`. Advanced users are
+EduReg data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are
 welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
