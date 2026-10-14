@@ -58,7 +58,7 @@ public class ViewCommandSummaryTest {
     }
 
     @Test
-    public void execute_lessonSummary_withStudentsButNoLessons_showsNoValues() {
+    public void execute_lessonSummary_noLessons() {
         Model model = new ModelManager();
         model.addPerson(new PersonBuilder().withName("Charlie").build());
 
