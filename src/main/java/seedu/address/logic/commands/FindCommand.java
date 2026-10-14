@@ -10,18 +10,21 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Finds and lists all persons in the address book whose name contains any of the argument keywords.
- * Keyword matching is case insensitive.
+ * Finds and lists students by partial student or guardian details.
+ * Matching is case insensitive, with AND across fields and OR across keywords within a field.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all persons whose names contain any of "
-            + "the specified keywords (case-insensitive) and displays them as a list with index numbers.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds students by partial student names, student phone numbers, guardian names, or guardian "
+            + "phone numbers (case-insensitive), and displays them as a list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]... or [n/KEYWORDS] [p/KEYWORDS] "
             + "[gn/KEYWORDS] [gp/KEYWORDS]\n"
-            + "Example: " + COMMAND_WORD + " alice bob charlie";
+            + "Without a prefix, only student names are searched. All specified fields must match; "
+            + "any keyword within each field may match. Supply each prefix once with a non-empty value.\n"
+            + "Examples: " + COMMAND_WORD + " alice bob; " + COMMAND_WORD + " n/Alice Bob gp/9876";
 
     private final Predicate<Person> predicate;
 

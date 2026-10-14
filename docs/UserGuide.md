@@ -166,15 +166,22 @@ Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORD
 * Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
   `gn/` guardian names, and `gp/` guardian phone numbers.
 * Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
-* With multiple prefixes, every specified field must match (`AND`). Within each field, any keyword may match (`OR`).
+* With multiple prefixes, every specified field must match (`AND`). For example, `find n/Alice gp/9876` returns
+  only students whose name contains `Alice` and whose guardian phone number contains `9876`.
+* Within each field, any keyword may match (`OR`). For example, `find n/Alice Bob` matches student names containing
+  either `Alice` or `Bob`. Use space-separated keywords after one prefix, rather than repeating it as `n/Alice n/Bob`.
+* These rules combine: `find n/Alice Bob gp/9876` requires a student name containing either `Alice` or `Bob`,
+  together with a guardian phone number containing `9876`.
 * Supply at least one non-empty search value. Repeated or unsupported prefixes and mixing unprefixed keywords with
   prefixed criteria are rejected.
 * Students without guardian details do not match guardian searches. Search results always show students.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Unprefixed searches also use `OR` between name keywords; for example, `find Hans Bo` matches student names
+  containing either `Hans` or `Bo`, such as `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
 * `find n/Alice` searches student names containing `Alice`.
+* `find n/Alice Bob` searches student names containing either `Alice` or `Bob`.
 * `find p/9123` searches student phone numbers containing `9123`.
 * `find gn/Mary` returns students whose guardian names contain `Mary`.
 * `find gp/9876` returns students whose guardian phone numbers contain `9876`.
