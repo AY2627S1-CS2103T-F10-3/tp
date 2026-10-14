@@ -8,6 +8,7 @@ We are a team based in the [School of Computing, National University of Singapor
 You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
+
 ### Phung Si Qi
 
 <img src="images/psq21.png" width="200px">
@@ -23,7 +24,6 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 
 [[github](https://github.com/tianyu487)]
-
 
 * Role: Developer
 * Responsibilities: Code quality (coding standards, code reviews)
@@ -46,10 +46,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Data, UI, Team Logistics
 
-### Yap Ray Kai Joel 
+### Yap Ray Kai Joel
 
 <img src="images/joelyrk.png" width="200px">
 
 [[github](https://github.com/joelyrk)]
 
 * Role: Integration
+* Responsibilities: In charge of versioning the code, maintaining the code repository, and integrating various parts of
+  the software to create a whole.
