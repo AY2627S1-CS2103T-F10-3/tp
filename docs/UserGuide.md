@@ -34,9 +34,8 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
     * `view` : Lists all contacts.
 
-    * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, 
-   #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-      \: Adds a contact named `John Doe` to the Address Book.
+    * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+      : Adds a contact named `John Doe` to the Address Book.
 
     * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -114,10 +113,8 @@ where:
 
 Examples:
 
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 
-ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1`
-* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income
-gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN-30`
+* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 ### Viewing persons and contact values: `view`
 
@@ -152,18 +149,20 @@ See [Editing a person](#editing-a-person-edit) to add or update guardian details
 Edits an existing person in the address book.
 
 Format:
-`edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ 
-[gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`
+`edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS] [t/TAG]…​ [l/LESSON]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list.
   The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
 * Guardian fields can be edited individually. Guardian fields that are not provided keep their existing values.
 * If the student has no guardian (for example, a record created before guardians were required), you must provide
   all five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) to add one.
+* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
+* To remove all of a person's tags, enter `t/` without a tag after it.
+* When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
+  cumulative. Lessons use the same format as in [`addstudent`](#adding-a-student-addstudent).
+* To remove all of a person's lessons, enter `l/` without a lesson after it.
 
 Examples:
 
@@ -172,6 +171,9 @@ Examples:
 * `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 * `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
   `Father` respectively. (Note: this example requires the student to already have guardian information stored)
+* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN-30 l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` Replaces the lessons of the
+  1st person with the two given lessons.
+* `edit 2 l/` Removes all lessons of the 2nd person.
 
 ### Locating persons by name: `find`
 
@@ -268,7 +270,7 @@ previous EduReg home folder.
 | **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​` <br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` |
 | **Clear**       | `clear`                                                                                                                                                                                                                                                                                                                                                            |
 | **Delete**      | `delete INDEX`<br> e.g., `delete 3`                                                                                                                                                                                                                                                                                                                                |
-| **Edit**        | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`                                                                                                                     |
+| **Edit**        | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS] [t/TAG]…​ [l/LESSON]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567 l/2026-MATH-MONDAY-TEN-ELEVEN-30` |
 | **Find**        | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James`                                                                                                                                                                                                                                                                                                         |
 | **View**        | `view [/name \| /phone \| /email \| /address \| /tag]`                                                                                                                                                                                                                                                                                                                   |
 | **Help**        | `help`                                                                                                                                                                                                                                                                                                                                                             |
