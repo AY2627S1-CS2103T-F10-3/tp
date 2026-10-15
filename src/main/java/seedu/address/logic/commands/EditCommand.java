@@ -8,6 +8,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -51,16 +52,18 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]... "
             + "[" + PREFIX_GUARDIAN_NAME + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIAN_PHONE + "GUARDIAN_PHONE] "
             + "[" + PREFIX_GUARDIAN_EMAIL + "GUARDIAN_EMAIL] "
             + "[" + PREFIX_GUARDIAN_RELATIONSHIP + "GUARDIAN_RELATIONSHIP] "
-            + "[" + PREFIX_GUARDIAN_ADDRESS + "GUARDIAN_ADDRESS]\n"
+            + "[" + PREFIX_GUARDIAN_ADDRESS + "GUARDIAN_ADDRESS] "
+            + "[" + PREFIX_TAG + "TAG]... "
+            + "[" + PREFIX_LESSON + "LESSON]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com "
-            + PREFIX_GUARDIAN_PHONE + "98765432";
+            + PREFIX_GUARDIAN_PHONE + "98765432 "
+            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-30";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
@@ -226,7 +229,8 @@ public class EditCommand extends Command {
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags) || isAnyGuardianFieldEdited();
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, lessons)
+                    || isAnyGuardianFieldEdited();
         }
 
         /**
@@ -367,6 +371,7 @@ public class EditCommand extends Command {
                     && Objects.equals(email, otherEditPersonDescriptor.email)
                     && Objects.equals(address, otherEditPersonDescriptor.address)
                     && Objects.equals(tags, otherEditPersonDescriptor.tags)
+                    && Objects.equals(lessons, otherEditPersonDescriptor.lessons)
                     && Objects.equals(guardianName, otherEditPersonDescriptor.guardianName)
                     && Objects.equals(guardianPhone, otherEditPersonDescriptor.guardianPhone)
                     && Objects.equals(guardianEmail, otherEditPersonDescriptor.guardianEmail)
@@ -382,6 +387,7 @@ public class EditCommand extends Command {
                     .add("email", email)
                     .add("address", address)
                     .add("tags", tags)
+                    .add("lessons", lessons)
                     .add("guardianName", guardianName)
                     .add("guardianPhone", guardianPhone)
                     .add("guardianEmail", guardianEmail)
