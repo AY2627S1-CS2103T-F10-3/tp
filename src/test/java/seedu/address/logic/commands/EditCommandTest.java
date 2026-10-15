@@ -124,6 +124,7 @@ public class EditCommandTest {
         EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+        assertTrue(expectedMessage.contains("Lessons: 2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40"));
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(personWithLesson, editedPerson);

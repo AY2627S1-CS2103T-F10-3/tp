@@ -289,6 +289,13 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_emptyLessonWithValidLesson_failure() {
+        // l/ only clears lessons when it is the only l/ given
+        assertParseFailure(parser, "1" + LESSON_EMPTY + LESSON_DESC_MATH, Lesson.CONSTRAINTS);
+        assertParseFailure(parser, "1" + LESSON_DESC_MATH + LESSON_EMPTY, Lesson.CONSTRAINTS);
+    }
+
+    @Test
     public void parse_resetTags_success() {
         Index targetIndex = INDEX_THIRD_PERSON;
         String userInput = targetIndex.getOneBased() + TAG_EMPTY;
