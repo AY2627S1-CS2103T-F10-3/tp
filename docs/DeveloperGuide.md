@@ -9,7 +9,7 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -562,9 +562,11 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 **Data Storage**
 1. The data should be stored locally and should be in a human-editable text file.
 2. Data should not be stored in a database management system (DBMS).
-3. Data saved to storage must be identical after closing and reopening the app on the same device.
-4. If the app crashes or the save fails midway, the previous valid data file should not be corrupted.
-5. Failed commands must leave existing data unchanged.
+3. The app may not read or write files outside the home folder.
+4. The app may not change any OS-level configuration settings.
+5. Data saved to storage must be identical after closing and reopening the app on the same device.
+6. If the app crashes or the save fails midway, the previous valid data file should not be corrupted.
+7. Failed commands must leave existing data unchanged.
 
 ### Glossary
 
@@ -579,9 +581,11 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 * **Graphical user interface (GUI)**: A visual interface that allows users to interact with software using elements such as windows, buttons, and menus.
 * **Guardian**: An adult responsible for a student's care or education, such as a parent or legal guardian.
 * **Human-editable**: A file format whose contents can be read and modified directly by a person using a text editor.
+* **Home folder**: The folder containing the JAR file.
 * **JAR file**: A Java Archive file that packages the application and its required resources for distribution.
 * **Local storage**: Saving data on the same device that runs EduReg, without depending on a remote server.
 * **Mainstream OS**: A commonly used operating system such as Windows, Linux, or macOS.
+* **OS-Level configuration settings**: Settings specific to the operating system, and not the application.
 * **Parent contact**: The contact information of a student's parent or guardian.
 * **Permissive license terms**: License conditions that allow software to be used and distributed with few restrictions; trial licenses that require payment after a time or usage limit do not qualify.
 * **Server**: A computer or service that provides data or application functionality to another computer over a network.
