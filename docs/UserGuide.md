@@ -176,22 +176,40 @@ Examples:
   1st person with the two given lessons.
 * `edit 2 l/` Removes all lessons of the 2nd person.
 
-### Locating persons by name: `find`
+### Locating students by student or guardian details: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds students using partial student names, student phone numbers, guardian names, or guardian phone numbers.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`
+
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and
-  `Bo Yang`.
+* Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
+  `gn/` guardian names, and `gp/` guardian phone numbers.
+* Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
+* With multiple prefixes, every specified field must match (`AND`). For example, `find n/Alice gp/9876` returns
+  only students whose name contains `Alice` and whose guardian phone number contains `9876`.
+* Within each field, any keyword may match (`OR`). For example, `find n/Alice Bob` matches student names containing
+  either `Alice` or `Bob`. Use space-separated keywords after one prefix, rather than repeating it as `n/Alice n/Bob`.
+* These rules combine: `find n/Alice Bob gp/9876` requires a student name containing either `Alice` or `Bob`,
+  together with a guardian phone number containing `9876`.
+* Supply at least one non-empty search value. Repeated or unsupported prefixes and mixing unprefixed keywords with
+  prefixed criteria are rejected.
+* Students without guardian details do not match guardian searches. Search results always show students.
+* Unprefixed searches also use `OR` between name keywords; for example, `find Hans Bo` matches student names
+  containing either `Hans` or `Bo`, such as `Hans Gruber` and `Bo Yang`.
 
 Examples:
 
 * `find John` returns `john` and `John Doe`
+* `find n/Alice` searches student names containing `Alice`.
+* `find n/Alice Bob` searches student names containing either `Alice` or `Bob`.
+* `find p/9123` searches student phone numbers containing `9123`.
+* `find gn/Mary` returns students whose guardian names contain `Mary`.
+* `find gp/9876` returns students whose guardian phone numbers contain `9876`.
+* `find n/Alice gp/9876` requires both the student name and guardian phone number to match.
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
@@ -232,8 +250,8 @@ EduReg data is saved automatically as a JSON file `[JAR file location]/data/addr
 welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, EduReg starts with an empty address book at the next run. 
-The invalid file remains on disk until you run a command (EduReg saves after every command). 
+If your changes make the data file invalid, EduReg starts with an empty address book at the next run.
+The invalid file remains on disk until you run a command (EduReg saves after every command).
 Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the EduReg to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range).
 Therefore, edit the data file only if you are confident that you can update it correctly.
@@ -273,6 +291,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`
