@@ -3,41 +3,47 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+# EduReg
+
+EduReg is a desktop application that centralizes student-parent relationships, class rosters, fee payments, and
+educational records into a unified CLI tool, enabling tuition centre admins to update enrollments, log attendance, and
+track assignment submissions significantly faster than multi-step GUI systems.
 
 * Table of Contents
-{:toc}
+  {:toc}
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Quick start
 
 1. Ensure that Java `25` or later is installed on your computer.<br>
-   **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+   **Mac users:** Ensure you have the precise JDK version
+   prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+2. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-F10-3/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+3. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
+4. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar edureg.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open
+   the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all contacts.
+    * `view` : Lists all contacts.
 
-   * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
-   gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` : Adds a contact named `John Doe` to the Address Book.
+    * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+      : Adds a contact named `John Doe` to the Address Book.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
-   * `clear` : Deletes all contacts.
+    * `clear` : Deletes all contacts.
 
-   * `exit` : Exits the app.
+    * `exit` : Exits the app.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -59,10 +65,13 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for commands that take no parameters, such as `help`, `view`, `exit`, and `clear`, are
+  ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
-* If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
+* If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines
+  as space characters surrounding line-breaks may be omitted when copied over to the application.
+
 </div>
 
 ### Viewing help: `help`
@@ -78,47 +87,50 @@ Format: `help`
 
 Adds a student to the address book.
 
-Format: `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​`
+Format:
+`addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP
+ ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​`
 
 All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are mandatory when adding a student.
 Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
 validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
-`Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`. Existing records without guardian information remain readable.
+`Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`. Existing
+records without guardian information remain readable.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A student can have any number of tags, including zero.
-A student can have any number of lessons, including zero.
+A student can have any number of tags or lessons, including zero.
 </div>
 
 **Lessons** \
 Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
-where: 
+where:
+
 - year is in the form yyyy eg. 2026
 - subj (subject) is either `ENGLISH`, `MATH` or `SCIENCE`
 - day is any day of the week, eg. `MONDAY`
 - starttime and endtime are any hour between 10am to 7pm in 24h time eg. TEN for 10am and THIRTEEN for 1pm
-- cost is any non negative integer
+- cost is any non-negative integer
 
 Examples:
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 
-l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1`
-* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN-30`
+* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 ### Viewing persons and contact values: `view`
 
 With no selector, shows all persons in the address book. An optional selector shows each
 distinct value and the number of contacts that have it. Summaries include all saved contacts,
-regardless of the current list filter, and sort values alphabetically. Each tag is counted
+regardless of the current view filter, and sort values alphabetically. Each tag is counted
 separately.
 
-Format: `view [/name | /phone | /email | /address | /tag]`
+Format: `view [/name | /phone | /email | /address | /tag | /lesson]`
 
 Examples:
+
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
+* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
 
 **Guardian details on student cards**
 
@@ -137,21 +149,32 @@ See [Editing a person](#editing-a-person-edit) to add or update guardian details
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`
+Format:
+`edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS] [t/TAG]…​ [l/LESSON]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list.
+  The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
 * Guardian fields can be edited individually. Guardian fields that are not provided keep their existing values.
 * If the student has no guardian (for example, a record created before guardians were required), you must provide
   all five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) to add one.
+* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
+* To remove all of a person's tags, enter `t/` without a tag after it.
+* When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
+  cumulative. Lessons use the same format as in [`addstudent`](#adding-a-student-addstudent).
+* To remove all of a person's lessons, enter `l/` without a lesson after it.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
-*  `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and `Father` respectively.
+
+* `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567`
+  and `johndoe@example.com` respectively.
+* `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+* `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
+  `Father` respectively. (Note: this example requires the student to already have guardian information stored)
+* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN-30 l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` Replaces the lessons of the
+  1st person with the two given lessons.
+* `edit 2 l/` Removes all lessons of the 2nd person.
 
 ### Locating students by student or guardian details: `find`
 
@@ -179,6 +202,7 @@ Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORD
   containing either `Hans` or `Bo`, such as `Hans Gruber` and `Bo Yang`.
 
 Examples:
+
 * `find John` returns `john` and `John Doe`
 * `find n/Alice` searches student names containing `Alice`.
 * `find n/Alice Bob` searches student names containing either `Alice` or `Bob`.
@@ -200,7 +224,8 @@ Format: `delete INDEX`
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
+
+* `view` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
@@ -217,15 +242,19 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+EduReg automatically saves data after every command. You do not need to save manually.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+EduReg data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are
+welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, EduReg starts with an empty address book at the next run.
+The invalid file remains on disk until you run a command (EduReg saves after every command).
+Still, we recommend backing up the file before editing it.<br>
+Furthermore, certain edits can cause the EduReg to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range).
+Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
 ### Archiving data files `[coming in v2.0]`
@@ -237,14 +266,19 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your
+previous EduReg home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only
+   the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the
+   application before running the application again.
+2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut
+   `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to
+   manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -252,11 +286,11 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
-\<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+**Add Student** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
+\<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
-**View** | `view [/name | /phone | /email | /address | /tag]`
+**View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`

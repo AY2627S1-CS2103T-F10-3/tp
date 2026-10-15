@@ -17,9 +17,12 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_EMAI
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_PHONE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_GUARDIAN_RELATIONSHIP_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_LESSON_DAY_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.LESSON_DESC_ENGLISH;
+import static seedu.address.logic.commands.CommandTestUtil.LESSON_DESC_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
@@ -32,6 +35,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
@@ -41,6 +46,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -56,6 +62,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.guardian.Relationship;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -66,6 +73,7 @@ import seedu.address.testutil.EditPersonDescriptorBuilder;
 public class EditCommandParserTest {
 
     private static final String TAG_EMPTY = " " + PREFIX_TAG;
+    private static final String LESSON_EMPTY = " " + PREFIX_LESSON;
 
     private static final String MESSAGE_INVALID_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
@@ -249,6 +257,42 @@ public class EditCommandParserTest {
 
         assertParseFailure(parser, userInput,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE));
+    }
+
+    @Test
+    public void parse_lessonsSpecified_success() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+        String userInput = targetIndex.getOneBased() + LESSON_DESC_MATH + LESSON_DESC_ENGLISH;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
+    public void parse_invalidLesson_failure() {
+        assertParseFailure(parser, "1" + INVALID_LESSON_DAY_DESC, Lesson.DAY_CONSTRAINT);
+
+        // valid lesson followed by invalid lesson
+        assertParseFailure(parser, "1" + LESSON_DESC_MATH + INVALID_LESSON_DAY_DESC, Lesson.DAY_CONSTRAINT);
+    }
+
+    @Test
+    public void parse_resetLessons_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        String userInput = targetIndex.getOneBased() + LESSON_EMPTY;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withLessons().build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
+    public void parse_emptyLessonWithValidLesson_failure() {
+        // l/ only clears lessons when it is the only l/ given
+        assertParseFailure(parser, "1" + LESSON_EMPTY + LESSON_DESC_MATH, Lesson.CONSTRAINTS);
+        assertParseFailure(parser, "1" + LESSON_DESC_MATH + LESSON_EMPTY, Lesson.CONSTRAINTS);
     }
 
     @Test
