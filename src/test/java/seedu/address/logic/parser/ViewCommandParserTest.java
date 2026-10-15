@@ -19,7 +19,7 @@ public class ViewCommandParserTest {
     @Test
     public void parse_validSelectors_success() throws Exception {
         assertParseSuccess(parser, "  ", new ViewCommand(""));
-        for (String field : new String[] {"name", "phone", "email", "address", "tag"}) {
+        for (String field : new String[] {"name", "phone", "email", "address", "tag", "lesson"}) {
             assertParseSuccess(parser, " /" + field + " ", new ViewCommand(field));
             assertEquals(new ViewCommand(field),
                     new AddressBookParser().parseCommand("view /" + field));

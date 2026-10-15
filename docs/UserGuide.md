@@ -123,13 +123,14 @@ distinct value and the number of contacts that have it. Summaries include all sa
 regardless of the current view filter, and sort values alphabetically. Each tag is counted
 separately.
 
-Format: `view [/name | /phone | /email | /address | /tag]`
+Format: `view [/name | /phone | /email | /address | /tag | /lesson]`
 
 Examples:
 
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
+* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
 
 **Guardian details on student cards**
 
@@ -265,12 +266,13 @@ previous EduReg home folder.
 
 ## Command summary
 
-| Action          | Format, Examples                                                                                                                                                                                                                                                                                                                                                   |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​` <br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` |
-| **Clear**       | `clear`                                                                                                                                                                                                                                                                                                                                                            |
-| **Delete**      | `delete INDEX`<br> e.g., `delete 3`                                                                                                                                                                                                                                                                                                                                |
-| **Edit**        | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS] [t/TAG]…​ [l/LESSON]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567 l/2026-MATH-MONDAY-TEN-ELEVEN-30` |
-| **Find**        | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James`                                                                                                                                                                                                                                                                                                         |
-| **View**        | `view [/name \| /phone \| /email \| /address \| /tag]`                                                                                                                                                                                                                                                                                                                   |
-| **Help**        | `help`                                                                                                                                                                                                                                                                                                                                                             |
+Action | Format, Examples
+--------|------------------
+**Add Student** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
+\<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+**Clear** | `clear`
+**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
+**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
+**Help** | `help`

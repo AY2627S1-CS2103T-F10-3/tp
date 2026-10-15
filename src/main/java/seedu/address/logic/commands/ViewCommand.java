@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import seedu.address.model.Model;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Person;
 
 /**
@@ -19,7 +20,7 @@ public class ViewCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "Viewing all students.";
     public static final String MESSAGE_USAGE = "view: Lists contacts or distinct values and their frequencies.\n"
-            + "Parameters: [/name | /phone | /email | /address | /tag]\n"
+            + "Parameters: [/name | /phone | /email | /address | /tag | /lesson]\n"
             + "Example: view /email";
 
     private final String field;
@@ -65,6 +66,7 @@ public class ViewCommand extends Command {
             case "email" -> Stream.of(person.getEmail().toString());
             case "address" -> Stream.of(person.getAddress().toString());
             case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
+            case "lesson" -> person.getLessons().stream().map(Lesson::toString);
             default -> throw new IllegalArgumentException("Unsupported view field: " + field);
         };
     }
