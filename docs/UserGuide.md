@@ -83,6 +83,7 @@ Shows a message explaining how to access the help page.
 
 Format: `help`
 
+
 ### Adding a student: `addstudent`
 
 Adds a student to the address book.
@@ -132,6 +133,19 @@ Examples:
 * `view /email` shows each distinct email and its frequency.
 * `view /address` shows each distinct address and its frequency.
 * `view /tag` shows each tag and how many contacts have it.
+
+**Guardian details on student cards**
+
+Each student card includes a **Guardian** section below the student's details and lessons.
+It displays the guardian's name, phone, email, relationship to the student, and address,
+with a label for each field to distinguish these details from the student's own contact information.
+Long guardian details wrap onto additional lines.
+
+Use `view` to show all students, or `find NAME` to find a student and see their guardian on the same card.
+After `addstudent` or `edit`, the card displays the saved guardian details immediately.
+
+Older records without a guardian show **No guardian information recorded.**
+See [Editing a person](#editing-a-person-edit) to add or update guardian details.
 
 ### Editing a person: `edit`
 
