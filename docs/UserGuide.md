@@ -32,7 +32,7 @@ track assignment submissions significantly faster than multi-step GUI systems.
    the help window.<br>
    Some example commands you can try:
 
-    * `list` : Lists all contacts.
+    * `view` : Lists all contacts.
 
     * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, 
    #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
@@ -66,7 +66,7 @@ track assignment submissions significantly faster than multi-step GUI systems.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are
+* Extraneous parameters for commands that take no parameters, such as `help`, `view`, `exit`, and `clear`, are
   ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
@@ -122,7 +122,7 @@ gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 With no selector, shows all persons in the address book. An optional selector shows each
 distinct value and the number of contacts that have it. Summaries include all saved contacts,
-regardless of the current list filter, and sort values alphabetically. Each tag is counted
+regardless of the current view filter, and sort values alphabetically. Each tag is counted
 separately.
 
 Format: `view [/name | /phone | /email | /address | /tag]`
@@ -157,7 +157,7 @@ Examples:
   and `johndoe@example.com` respectively.
 * `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 * `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
-  `Father` respectively.
+  `Father` respectively. (Note: this example requires the student to already have guardian information stored)
 
 ### Locating persons by name: `find`
 
@@ -190,7 +190,7 @@ Format: `delete INDEX`
 
 Examples:
 
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
+* `view` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
@@ -251,7 +251,7 @@ previous EduReg home folder.
 
 | Action          | Format, Examples                                                                                                                                                                                                                                                                                                                                                   |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​` <br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` |
+| **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​` <br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague l/2026-ENGLISH-MONDAY-TEN-NINETEEN-1 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road` |
 | **Clear**       | `clear`                                                                                                                                                                                                                                                                                                                                                            |
 | **Delete**      | `delete INDEX`<br> e.g., `delete 3`                                                                                                                                                                                                                                                                                                                                |
 | **Edit**        | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`                                                                                                                     |
