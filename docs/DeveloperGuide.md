@@ -9,7 +9,7 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -82,6 +82,13 @@ The `UI` component,
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
 * depends on some classes in the `Model` component because it displays `Person` objects from the model.
+
+`PersonListPanel` renders each student using `PersonCard` and `PersonListCard.fxml`.
+The card reads `Person#getGuardian()` and displays the guardian's five fields in a labelled
+section below the student's details and lessons. Guardian labels wrap long values.
+For legacy records with an empty guardian, the card hides and unmanages the detail container
+and displays `No guardian information recorded.` instead. `PersonListPanel` recreates cards
+when model entries change, so guardian edits appear without restarting the application.
 
 ### Logic component
 
@@ -349,7 +356,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 1. User requests to list all students.
 2. EduReg displays the list of students.
-3. User views a student's full details (phone number, email, address, tags, and attached parent/guardian contacts) directly in the detail panel.
+3. User views the student's details directly on the student card. The **Guardian** section shows the guardian's name,
+   phone, email, relationship, and address, or `No guardian information recorded.` if none is recorded.
 
    Use case ends.
 
@@ -554,9 +562,11 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 **Data Storage**
 1. The data should be stored locally and should be in a human-editable text file.
 2. Data should not be stored in a database management system (DBMS).
-3. Data saved to storage must be identical after closing and reopening the app on the same device.
-4. If the app crashes or the save fails midway, the previous valid data file should not be corrupted.
-5. Failed commands must leave existing data unchanged.
+3. The app may not read or write files outside the home folder.
+4. The app may not change any OS-level configuration settings.
+5. Data saved to storage must be identical after closing and reopening the app on the same device.
+6. If the app crashes or the save fails midway, the previous valid data file should not be corrupted.
+7. Failed commands must leave existing data unchanged.
 
 ### Glossary
 
@@ -571,9 +581,11 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 * **Graphical user interface (GUI)**: A visual interface that allows users to interact with software using elements such as windows, buttons, and menus.
 * **Guardian**: An adult responsible for a student's care or education, such as a parent or legal guardian.
 * **Human-editable**: A file format whose contents can be read and modified directly by a person using a text editor.
+* **Home folder**: The folder containing the JAR file.
 * **JAR file**: A Java Archive file that packages the application and its required resources for distribution.
 * **Local storage**: Saving data on the same device that runs EduReg, without depending on a remote server.
 * **Mainstream OS**: A commonly used operating system such as Windows, Linux, or macOS.
+* **OS-Level configuration settings**: Settings specific to the operating system, and not the application.
 * **Parent contact**: The contact information of a student's parent or guardian.
 * **Permissive license terms**: License conditions that allow software to be used and distributed with few restrictions; trial licenses that require payment after a time or usage limit do not qualify.
 * **Server**: A computer or service that provides data or application functionality to another computer over a network.
@@ -609,6 +621,29 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Displaying guardian details with a student
+
+1. Add a student in a disposable test address book:
+   `addstudent n/Guardian Display Test p/98765432 e/student@example.com a/Student Road gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`.<br>
+   Expected: The student's card shows a **Guardian** section containing `Name: Mary Tan`,
+   `Phone: 91234567`, `Email: mary@example.com`, `Relationship: Mother`, and `Address: 123 Example Road`.
+   The student's own contact details remain visible above it.
+
+1. Run `find Guardian Display Test`, note the student's displayed index, then run
+   `edit INDEX gp/92345678` using that index.<br>
+   Expected: The guardian phone updates on the card immediately; the student's phone stays `98765432`.
+   Run `view`. The updated guardian details should still appear with the same student.
+
+1. Edit the guardian address to a long value, for example:
+   `edit INDEX ga/123 Example Road Block 456 Unit 07 89 Singapore Near the Community Centre`.
+   Narrow the window.<br>
+   Expected: Guardian details wrap onto additional lines without overlapping the next card.
+
+1. Load a valid legacy data file containing a student with no `guardian` field.<br>
+   Expected: The student's card shows **No guardian information recorded.**, with no empty guardian field rows.
+   Run `edit INDEX gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`.<br>
+   Expected: The message is replaced by the five guardian fields immediately.
 
 ### Deleting a person
 

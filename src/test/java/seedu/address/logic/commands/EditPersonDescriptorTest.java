@@ -12,6 +12,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
@@ -61,6 +62,10 @@ public class EditPersonDescriptorTest {
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(DESC_AMY.equals(editedAmy));
 
+        // different lessons -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withLessons(VALID_LESSON_MATH).build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+
         // different guardian name -> returns false
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withGuardianName(VALID_GUARDIAN_NAME_BOB).build();
         assertFalse(DESC_AMY.equals(editedAmy));
@@ -88,6 +93,9 @@ public class EditPersonDescriptorTest {
     public void isAnyFieldEdited() {
         assertFalse(new EditPersonDescriptor().isAnyFieldEdited());
         assertTrue(DESC_AMY.isAnyFieldEdited());
+
+        // only lessons edited -> returns true
+        assertTrue(new EditPersonDescriptorBuilder().withLessons().build().isAnyFieldEdited());
 
         // only a guardian field edited -> returns true
         assertTrue(new EditPersonDescriptorBuilder().withGuardianPhone(VALID_GUARDIAN_PHONE_BOB).build()
@@ -127,7 +135,8 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getPhone().orElse(null) + ", email="
                 + editPersonDescriptor.getEmail().orElse(null) + ", address="
                 + editPersonDescriptor.getAddress().orElse(null) + ", tags="
-                + editPersonDescriptor.getTags().orElse(null) + ", guardianName="
+                + editPersonDescriptor.getTags().orElse(null) + ", lessons="
+                + editPersonDescriptor.getLessons().orElse(null) + ", guardianName="
                 + editPersonDescriptor.getGuardianName().orElse(null) + ", guardianPhone="
                 + editPersonDescriptor.getGuardianPhone().orElse(null) + ", guardianEmail="
                 + editPersonDescriptor.getGuardianEmail().orElse(null) + ", guardianRelationship="

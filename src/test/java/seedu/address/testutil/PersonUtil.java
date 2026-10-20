@@ -44,7 +44,7 @@ public class PersonUtil {
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
         person.getLessons().stream().forEach(
-                s -> sb.append(PREFIX_LESSON + s.toString())
+                s -> sb.append(PREFIX_LESSON + s.toString() + " ")
         );
         person.getGuardian().ifPresent(guardian -> sb.append("gn/").append(guardian.getName())
                 .append(" gp/").append(guardian.getPhone())
@@ -73,6 +73,13 @@ public class PersonUtil {
                 .append(relationship.value).append(" "));
         descriptor.getGuardianAddress().ifPresent(address -> sb.append(PREFIX_GUARDIAN_ADDRESS)
                 .append(address.value).append(" "));
+        descriptor.getLessons().ifPresent(lessons -> {
+            if (lessons.isEmpty()) {
+                sb.append(PREFIX_LESSON).append(" ");
+            } else {
+                lessons.forEach(lesson -> sb.append(PREFIX_LESSON).append(lesson).append(" "));
+            }
+        });
         if (descriptor.getTags().isPresent()) {
             Set<Tag> tags = descriptor.getTags().get();
             if (tags.isEmpty()) {

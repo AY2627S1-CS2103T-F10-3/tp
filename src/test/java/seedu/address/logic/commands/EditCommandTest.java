@@ -10,6 +10,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
@@ -107,6 +109,44 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_lessonsSpecified_replacesLessons() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithLesson = new PersonBuilder(firstPerson).withLessons(VALID_LESSON_MATH).build();
+        model.setPerson(firstPerson, personWithLesson);
+
+        Person editedPerson = new PersonBuilder(personWithLesson).withLessons(VALID_LESSON_ENGLISH).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withLessons(VALID_LESSON_ENGLISH).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+        assertTrue(expectedMessage.contains("Lessons: 2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40"));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personWithLesson, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_emptyLessons_clearsLessons() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithLessons = new PersonBuilder(firstPerson)
+                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+        model.setPerson(firstPerson, personWithLessons);
+
+        Person editedPerson = new PersonBuilder(personWithLessons).withLessons().build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withLessons().build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personWithLessons, editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }

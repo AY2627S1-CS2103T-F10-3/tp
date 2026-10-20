@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import seedu.address.model.person.Person;
 
 /**
@@ -42,6 +43,20 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label lessons;
     @FXML
+    private VBox guardianDetails;
+    @FXML
+    private Label guardianName;
+    @FXML
+    private Label guardianPhone;
+    @FXML
+    private Label guardianEmail;
+    @FXML
+    private Label guardianRelationship;
+    @FXML
+    private Label guardianAddress;
+    @FXML
+    private Label guardianMissing;
+    @FXML
     private FlowPane tags;
 
     /**
@@ -55,6 +70,18 @@ public class PersonCard extends UiPart<Region> {
         phone.setText(person.getPhone().value);
         address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);
+        boolean hasGuardian = person.getGuardian().isPresent();
+        guardianDetails.setVisible(hasGuardian);
+        guardianDetails.setManaged(hasGuardian);
+        guardianMissing.setVisible(!hasGuardian);
+        guardianMissing.setManaged(!hasGuardian);
+        person.getGuardian().ifPresent(guardian -> {
+            guardianName.setText("Name: " + guardian.getName().fullName);
+            guardianPhone.setText("Phone: " + guardian.getPhone().value);
+            guardianEmail.setText("Email: " + guardian.getEmail().value);
+            guardianRelationship.setText("Relationship: " + guardian.getRelationship().value);
+            guardianAddress.setText("Address: " + guardian.getAddress().value);
+        });
         lessons.setText(person.getLessons().stream()
                 .map(lesson -> String.format("%s-%s-%s-%s-%s-%d", lesson.getYear(), lesson.getSubject(),
                         lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost()))
