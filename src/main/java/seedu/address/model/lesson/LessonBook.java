@@ -3,14 +3,15 @@ package seedu.address.model.lesson;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /** Repository of lesson definitions, independent of students. */
 public class LessonBook {
-    private final Map<String, Lesson> lessons = new HashMap<>();
+    private final Map<String, Lesson> lessons = new LinkedHashMap<>();
 
     public boolean addLesson(Lesson lesson) {
         requireNonNull(lesson);

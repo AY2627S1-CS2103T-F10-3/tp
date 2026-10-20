@@ -49,6 +49,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         requireNonNull(newData);
 
         setPersons(newData.getPersonList());
+        newData.getLessonList().forEach(lessonBook::addLesson);
     }
 
     /* person-level operations */
@@ -89,6 +90,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         requireNonNull(editedPerson);
 
         persons.setPerson(target, editedPerson);
+        editedPerson.getLessons().forEach(lessonBook::addLesson);
     }
 
     /**
