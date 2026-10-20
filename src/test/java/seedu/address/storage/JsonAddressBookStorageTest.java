@@ -2,6 +2,8 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.HOON;
@@ -9,8 +11,10 @@ import static seedu.address.testutil.TypicalPersons.IDA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -18,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAddressBookStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonAddressBookStorageTest");
@@ -84,6 +89,38 @@ public class JsonAddressBookStorageTest {
         readBack = jsonAddressBookStorage.readAddressBook().get(); // file path not specified
         assertEquals(original, new AddressBook(readBack));
 
+    }
+
+    @Test
+    public void readAndSaveAddressBook_lessonsStoredSeparatelyAndLinkedById_success() throws Exception {
+        Path filePath = testFolder.resolve("LessonsAddressBook.json");
+        AddressBook original = new AddressBook();
+        original.addPerson(new PersonBuilder(ALICE).withLessons(VALID_LESSON_MATH).build());
+
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        storage.saveAddressBook(original, filePath);
+        String json = Files.readString(filePath);
+
+        assertTrue(json.contains("\"lessons\""));
+        assertTrue(json.contains("\"lessonIds\""));
+        assertFalse(json.contains("\"lessons\":[{\"year\""));
+
+        ReadOnlyAddressBook loaded = storage.readAddressBook(filePath).get();
+        assertEquals(1, loaded.getLessonList().size());
+        assertEquals(Set.of(VALID_LESSON_MATH), loaded.getPersonList().get(0).getLessons());
+    }
+
+    @Test
+    public void readAddressBook_duplicateLessonDefinitions_keepsOneDefinition() throws Exception {
+        Path filePath = testFolder.resolve("DuplicateLessonsAddressBook.json");
+        Files.writeString(filePath, "{\"persons\":[],\"lessons\":["
+                + "{\"year\":\"2026\",\"subject\":\"MATH\",\"day\":\"MONDAY\","
+                + "\"startTime\":\"TEN\",\"endTime\":\"ELEVEN\",\"cost\":30},"
+                + "{\"year\":\"2026\",\"subject\":\"MATH\",\"day\":\"MONDAY\","
+                + "\"startTime\":\"TEN\",\"endTime\":\"ELEVEN\",\"cost\":30}]}");
+
+        ReadOnlyAddressBook loaded = new JsonAddressBookStorage(filePath).readAddressBook(filePath).get();
+        assertEquals(1, loaded.getLessonList().size());
     }
 
     @Test
