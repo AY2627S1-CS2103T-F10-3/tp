@@ -18,6 +18,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.lesson.Lesson;
 
 /**
  * Adds a person to the address book.
@@ -73,6 +74,12 @@ public class AddStudentCommand extends Command {
 
         if (model.hasPerson(toAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        }
+
+        // Lesson definitions are shared. Existing definitions are reused while the student still
+        // receives the lesson association; addPerson's LessonBook put-if-absent keeps the store unique.
+        for (Lesson lesson : toAdd.getLessons()) {
+            model.hasLesson(lesson);
         }
 
         model.addPerson(toAdd);

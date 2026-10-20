@@ -6,6 +6,8 @@ import java.util.List;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.UniquePersonList;
 
@@ -16,6 +18,7 @@ import seedu.address.model.person.UniquePersonList;
 public class AddressBook implements ReadOnlyAddressBook {
 
     private final UniquePersonList persons = new UniquePersonList();
+    private final LessonBook lessonBook = new LessonBook();
 
     public AddressBook() {}
 
@@ -27,7 +30,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         resetData(toBeCopied);
     }
 
-    //// list overwrite operations
+    /* list overwrite operations */
 
     /**
      * Replaces the contents of the person list with {@code persons}.
@@ -35,6 +38,8 @@ public class AddressBook implements ReadOnlyAddressBook {
      */
     public void setPersons(List<Person> persons) {
         this.persons.setPersons(persons);
+        lessonBook.clear();
+        persons.stream().flatMap(person -> person.getLessons().stream()).forEach(lessonBook::addLesson);
     }
 
     /**
@@ -46,7 +51,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         setPersons(newData.getPersonList());
     }
 
-    //// person-level operations
+    /* person-level operations */
 
     /**
      * Returns true if a person with the same identity as {@code person} exists in the address book.
@@ -62,6 +67,17 @@ public class AddressBook implements ReadOnlyAddressBook {
      */
     public void addPerson(Person p) {
         persons.add(p);
+        p.getLessons().forEach(lessonBook::addLesson);
+    }
+
+    /** Adds a shared lesson definition if it is not already present. */
+    public boolean addLesson(Lesson lesson) {
+        return lessonBook.addLesson(lesson);
+    }
+
+    @Override
+    public ObservableList<Lesson> getLessonList() {
+        return lessonBook.asUnmodifiableObservableList();
     }
 
     /**

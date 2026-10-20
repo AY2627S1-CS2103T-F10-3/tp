@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.person.Person;
+import seedu.address.model.lesson.Lesson;
 
 /**
  * The API of the Model component.
@@ -40,6 +41,11 @@ public interface Model {
      * Returns true if a person with the same identity as {@code person} exists in the address book.
      */
     boolean hasPerson(Person person);
+
+    /** Returns whether the address book already contains this lesson definition. */
+    default boolean hasLesson(Lesson lesson) {
+        return getAddressBook().getLessonList().contains(lesson);
+    }
 
     /**
      * Deletes the given person.

@@ -115,6 +115,11 @@ public class Lesson {
         return cost;
     }
 
+    /** Returns the stable identifier used to link students to this lesson. */
+    public String getId() {
+        return toString();
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
