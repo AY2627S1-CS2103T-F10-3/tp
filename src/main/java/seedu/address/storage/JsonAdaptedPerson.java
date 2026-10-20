@@ -26,6 +26,7 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
+    public static final String UNKNOWN_LESSON_ID_MESSAGE = "Person references an unknown lesson ID: %s";
 
     private final String name;
     private final String phone;
@@ -98,9 +99,10 @@ class JsonAdaptedPerson {
         if (lessonBook != null && !lessonIds.isEmpty()) {
             for (String lessonId : lessonIds) {
                 Lesson lesson = lessonBook.getLesson(lessonId);
-                if (lesson != null) {
-                    personLessons.add(lesson);
+                if (lesson == null) {
+                    throw new IllegalValueException(String.format(UNKNOWN_LESSON_ID_MESSAGE, lessonId));
                 }
+                personLessons.add(lesson);
             }
         }
 
