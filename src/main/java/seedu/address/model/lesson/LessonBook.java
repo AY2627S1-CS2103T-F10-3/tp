@@ -42,7 +42,15 @@ public class LessonBook {
     }
 
     public Lesson getLesson(String id) {
-        return lessons.get(id);
+        Lesson lesson = lessons.get(id);
+        if (lesson != null) {
+            return lesson;
+        }
+        // Accept IDs written by older versions, which included the lesson cost.
+        return lessons.values().stream()
+                .filter(candidate -> candidate.toString().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     public Map<String, Lesson> getLessons() {

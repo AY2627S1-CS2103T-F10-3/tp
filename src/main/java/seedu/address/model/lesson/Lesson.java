@@ -117,7 +117,7 @@ public class Lesson {
 
     /** Returns the stable identifier used to link students to this lesson. */
     public String getId() {
-        return toString();
+        return String.format("%s-%s-%s-%s-%s", year, subject, day, startTime, endTime);
     }
 
     @Override
