@@ -35,6 +35,8 @@ Class Payment
 Class Amount
 
 Class I #FFFFFF
+
+note "Guardian also has a Name, Phone,\nEmail and Address (not shown)." as GuardianNote
 }
 
 Class HiddenOutside #FFFFFF
@@ -64,10 +66,7 @@ Person --> "*" Lesson
 Person *--> "*" Payment
 
 Guardian *--> Relationship
-note bottom of Guardian
-  Guardian also has a Name, Phone,
-  Email and Address (not shown).
-end note
+Guardian .. GuardianNote
 
 Lesson --> Subject
 Lesson --> Day
