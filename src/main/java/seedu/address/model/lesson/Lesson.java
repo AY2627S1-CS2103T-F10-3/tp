@@ -115,7 +115,8 @@ public class Lesson {
         return cost;
     }
 
-    /** Returns the stable identifier used to link students to this lesson.
+    /**
+     * Returns the stable identifier used to link students to this lesson.
      * ID changes if any of the field changes, but there should be no changes due to
      * the structure of the tuition centre.
      */
