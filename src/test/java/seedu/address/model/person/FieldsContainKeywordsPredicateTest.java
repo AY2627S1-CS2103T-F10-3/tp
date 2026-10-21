@@ -70,6 +70,33 @@ public class FieldsContainKeywordsPredicateTest {
     }
 
     @Test
+    public void test_additionalFields_matchesOnlyRequestedFields() {
+        Person person = new PersonBuilder(student).withEmail("alice@school.com").withAddress("East Avenue")
+                .withTags("Unpaid", "Scholarship").build();
+        assertTrue(matches(Field.EMAIL, "SCHOOL", person));
+        assertTrue(matches(Field.ADDRESS, "aven", person));
+        assertTrue(matches(Field.TAG, "PAID", person));
+        assertTrue(matches(Field.GUARDIAN_EMAIL, "MARY@", person));
+        assertTrue(matches(Field.GUARDIAN_ADDRESS, "MAIN", person));
+        assertTrue(matches(Field.GUARDIAN_RELATIONSHIP, "MOTH", person));
+        assertFalse(matches(Field.EMAIL, "mary", person));
+        assertFalse(matches(Field.ADDRESS, "Main", person));
+        assertFalse(matches(Field.GUARDIAN_EMAIL, "school", person));
+        assertFalse(matches(Field.GUARDIAN_ADDRESS, "East", person));
+        assertFalse(matches(Field.GUARDIAN_RELATIONSHIP, "father", person));
+        assertFalse(matches(Field.TAG, "missing", person));
+        Person withoutOptionalFields = new PersonBuilder().withTags().build();
+        for (Field field : List.of(Field.TAG, Field.GUARDIAN_EMAIL, Field.GUARDIAN_ADDRESS,
+                Field.GUARDIAN_RELATIONSHIP)) {
+            assertFalse(matches(field, "a", withoutOptionalFields));
+        }
+        assertTrue(new FieldsContainKeywordsPredicate(Map.of(Field.EMAIL, List.of("missing", "school"),
+                Field.TAG, List.of("scholar"))).test(person));
+        assertFalse(new FieldsContainKeywordsPredicate(Map.of(Field.EMAIL, List.of("school"),
+                Field.TAG, List.of("missing"))).test(person));
+    }
+
+    @Test
     public void test_missingGuardian_doesNotMatchGuardianFields() {
         Person legacyStudent = new PersonBuilder().build();
         assertFalse(matches(Field.GUARDIAN_NAME, "Mary", legacyStudent));

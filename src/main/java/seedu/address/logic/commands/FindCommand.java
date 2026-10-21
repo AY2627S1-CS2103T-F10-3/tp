@@ -18,16 +18,22 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds students by partial student names, student phone numbers, guardian names, or guardian "
-            + "phone numbers (case-insensitive), and displays them as a list with index numbers.\n"
+            + ": Finds students by partial student or guardian details and tags (case-insensitive), "
+            + "and displays them as a list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]... or [n/KEYWORDS] [p/KEYWORDS] "
-            + "[gn/KEYWORDS] [gp/KEYWORDS]\n"
+            + "[e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] "
+            + "[ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS]\n"
             + "Without a prefix, only student names are searched. All specified fields must match; "
             + "any keyword within each field may match. Supply each prefix once with a non-empty value.\n"
             + "Examples: " + COMMAND_WORD + " alice bob; " + COMMAND_WORD + " n/Alice Bob gp/9876";
 
     private final Predicate<Person> predicate;
 
+    /**
+     * Constructs a command that lists students matching the predicate.
+     *
+     * @param predicate Search criteria for students.
+     */
     public FindCommand(Predicate<Person> predicate) {
         this.predicate = predicate;
     }

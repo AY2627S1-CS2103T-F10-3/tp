@@ -108,6 +108,9 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find n/Mary gp/9876", List.of());
         assertSearchResults(searchModel, "find n/Alice gp/1111", List.of());
         assertSearchResults(searchModel, "find Alice Bob", List.of(alice, bob));
+        assertSearchResults(searchModel, "find ge/MARY@EXAMPLE ga/main gr/MOTH", List.of(alice, bob));
+        assertSearchResults(searchModel, "find ge/mary n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find ga/missing", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
     }
 
@@ -118,7 +121,7 @@ public class FindCommandTest {
         AddressBookParser parser = new AddressBookParser();
 
         for (String input : List.of("find n/", "find n/Alice gp/", "find n/Alice n/Bob",
-                "find n/Alice e/test", "find Alice gp/9876")) {
+                "find n/Alice x/test", "find Alice gp/9876", "find e/", "find t/friend t/other")) {
             assertThrows(ParseException.class, () -> parser.parseCommand(input).execute(model), input);
             assertEquals(List.of(CARL), model.getFilteredPersonList(), input);
             assertEquals(originalBook, model.getAddressBook(), input);
