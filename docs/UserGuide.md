@@ -237,6 +237,49 @@ Example:
 
 * `viewpayments 1` followed by `deletepayment 1 i/2` deletes the 2nd payment of the 1st student.
 
+### Recording attendance: `attendance`
+
+Records whether a student attended one scheduled lesson session.
+
+Format: `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
+
+* `INDEX` is the student's positive integer index in the currently displayed list, including after `find`.
+* The student must be enrolled in the specified lesson. `LESSON_ID` is the lesson's year, subject, weekday,
+  start time and end time, **without the cost**. For a displayed lesson `2026-MATH-MONDAY-TEN-ELEVEN-120`,
+  use `l/2026-MATH-MONDAY-TEN-ELEVEN`. Lesson IDs are case-sensitive.
+* `DATE` is required in `yyyy-MM-dd` form and must match the lesson's year and weekday.
+* `STATUS` is `present` or `absent`, case-insensitive. A session without a record is **not automatically absent**.
+* Only one record is allowed for a student, lesson and date, even if the status differs. To correct a mistake,
+  use `viewattendance` and `deleteattendance`, then record the corrected status.
+* Attendance is saved with the student. Editing student details or changing lesson enrolments preserves the history.
+  Payment commands also preserve attendance records.
+* The alpha version accepts future session dates and only supports the lesson's regular weekday, not rescheduled sessions.
+
+Examples (assuming student 1 is enrolled in the Monday Math lesson above):
+
+* `attendance 1 l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`
+* `attendance 1 l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-26 s/absent`
+
+### Viewing attendance: `viewattendance`
+
+Format: `viewattendance INDEX`
+
+Lists the student's attendance records in recording order, with numbers starting at 1. Each entry shows the
+lesson ID, date and status. If there are no records, EduReg displays `No attendance recorded.`
+The command does not change the student list or any records.
+
+Example: `viewattendance 1`
+
+### Deleting attendance: `deleteattendance`
+
+Format: `deleteattendance INDEX i/ATTENDANCE_INDEX`
+
+Deletes the record numbered `ATTENDANCE_INDEX` in that student's `viewattendance` output. Both indexes must
+be positive integers. Remaining records are renumbered, so view the records again before deleting another one.
+Historical records can still be viewed and deleted after the student leaves the lesson.
+
+Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.
+
 ### Locating students by student or guardian details: `find`
 
 Finds students using partial student names, student phone numbers, guardian names, or guardian phone numbers.
@@ -355,6 +398,9 @@ Action | Format, Examples
 **Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 1 amt/70 m/2026-10 d/2026-10-03`
 **View Payments** | `viewpayments INDEX`<br> e.g., `viewpayments 1`
 **Delete Payment** | `deletepayment INDEX i/PAYMENT_INDEX`<br> e.g., `deletepayment 1 i/2`
+**Attendance** | `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
+**View Attendance** | `viewattendance INDEX`
+**Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`

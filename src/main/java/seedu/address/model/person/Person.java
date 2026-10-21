@@ -1,6 +1,7 @@
 package seedu.address.model.person;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.time.YearMonth;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.payment.Payment;
@@ -23,6 +25,10 @@ import seedu.address.model.tag.Tag;
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Person {
+
+    public static final String MESSAGE_DUPLICATE_ATTENDANCE =
+            "Attendance is already recorded for this lesson and date. "
+            + "Use viewattendance and deleteattendance to remove the existing record before recording a correction.";
 
     // Identity fields
     private final Name name;
@@ -35,6 +41,7 @@ public class Person {
     private final Set<Tag> tags = new HashSet<>();
     private final Set<Lesson> lessons = new HashSet<>();
     private final List<Payment> payments = new ArrayList<>();
+    private final List<Attendance> attendance = new ArrayList<>();
 
     /**
      * Creates a legacy person without guardian information. Other fields must be non-null.
@@ -56,7 +63,22 @@ public class Person {
      */
     public Person(Name name, Phone phone, Email email, Address address,
                 Set<Tag> tags, Set<Lesson> lessons, Optional<Guardian> guardian, List<Payment> payments) {
-        requireAllNonNull(name, phone, email, address, tags, lessons, guardian, payments);
+        this(name, phone, email, address, tags, lessons, guardian, payments, List.of());
+    }
+
+    /**
+     * Creates a person with payment and attendance history, kept in the given order.
+     * Each lesson and date may have at most one attendance record.
+     */
+    public Person(Name name, Phone phone, Email email, Address address,
+                Set<Tag> tags, Set<Lesson> lessons, Optional<Guardian> guardian, List<Payment> payments,
+                List<Attendance> attendance) {
+        requireAllNonNull(name, phone, email, address, tags, lessons, guardian, payments, attendance);
+        for (Attendance record : attendance) {
+            requireNonNull(record);
+            checkArgument(this.attendance.stream().noneMatch(record::isSameSession), MESSAGE_DUPLICATE_ATTENDANCE);
+            this.attendance.add(record);
+        }
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -114,7 +136,21 @@ public class Person {
      * Returns a copy of this person with {@code payments} replacing the recorded payments.
      */
     public Person withPayments(List<Payment> payments) {
-        return new Person(name, phone, email, address, tags, lessons, guardian, payments);
+        return new Person(name, phone, email, address, tags, lessons, guardian, payments, attendance);
+    }
+
+    /**
+     * Returns an immutable attendance list in recording order.
+     */
+    public List<Attendance> getAttendance() {
+        return Collections.unmodifiableList(attendance);
+    }
+
+    /**
+     * Returns a copy of this person with the given attendance history, retaining payments.
+     */
+    public Person withAttendance(List<Attendance> attendance) {
+        return new Person(name, phone, email, address, tags, lessons, guardian, payments, attendance);
     }
 
     /**
@@ -181,13 +217,14 @@ public class Person {
                 && tags.equals(otherPerson.tags)
                 && lessons.equals(otherPerson.lessons)
                 && guardian.equals(otherPerson.guardian)
-                && payments.equals(otherPerson.payments);
+                && payments.equals(otherPerson.payments)
+                && attendance.equals(otherPerson.attendance);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, lessons, guardian, payments);
+        return Objects.hash(name, phone, email, address, tags, lessons, guardian, payments, attendance);
     }
 
     @Override

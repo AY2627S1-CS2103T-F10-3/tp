@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.payment.Payment;
@@ -35,6 +36,7 @@ public class PersonBuilder {
     private Set<Tag> tags;
     private Set<Lesson> lessons;
     private List<Payment> payments;
+    private List<Attendance> attendance;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -47,6 +49,7 @@ public class PersonBuilder {
         tags = new HashSet<>();
         lessons = new HashSet<>();
         payments = new ArrayList<>();
+        attendance = new ArrayList<>();
     }
 
     /**
@@ -61,6 +64,7 @@ public class PersonBuilder {
         tags = new HashSet<>(personToCopy.getTags());
         lessons = new HashSet<>(personToCopy.getLessons());
         payments = new ArrayList<>(personToCopy.getPayments());
+        attendance = new ArrayList<>(personToCopy.getAttendance());
     }
 
     /**
@@ -127,8 +131,16 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the attendance history of the person being built.
+     */
+    public PersonBuilder withAttendance(Attendance... attendance) {
+        this.attendance = List.of(attendance);
+        return this;
+    }
+
     public Person build() {
-        return new Person(name, phone, email, address, tags, lessons, guardian, payments);
+        return new Person(name, phone, email, address, tags, lessons, guardian, payments, attendance);
     }
 
 }
