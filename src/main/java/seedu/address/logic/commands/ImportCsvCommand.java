@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,17 +33,21 @@ public class ImportCsvCommand extends Command {
         try {
             Map<String, Lesson> lessonsById = new LessonCsvImporter().read(LESSONS_PATH);
             List<Person> imported = new StudentCsvImporter().read(IMPORT_PATH, lessonsById);
+            List<Person> studentsToAdd = new ArrayList<>();
+            List<String> duplicateStudents = new ArrayList<>();
             for (Person person : imported) {
-                if (model.hasPerson(person) || imported.stream()
-                        .filter(other -> other != person)
-                        .anyMatch(person::isSamePerson)) {
-                    throw new CommandException("Duplicate student in import: " + person.getName());
+                if (model.hasPerson(person) || studentsToAdd.stream().anyMatch(person::isSamePerson)) {
+                    duplicateStudents.add(person.getName().toString());
+                } else {
+                    studentsToAdd.add(person);
                 }
             }
-            imported.forEach(model::addPerson);
-            return new CommandResult(String.format(MESSAGE_SUCCESS, imported.size()));
-        } catch (CommandException exception) {
-            throw exception;
+            studentsToAdd.forEach(model::addPerson);
+            String result = String.format(MESSAGE_SUCCESS, studentsToAdd.size());
+            if (!duplicateStudents.isEmpty()) {
+                result += " Skipped duplicate student(s): " + String.join(", ", duplicateStudents) + ".";
+            }
+            return new CommandResult(result);
         } catch (NoSuchFileException exception) {
             throw new CommandException(MESSAGE_MISSING_FILES);
         } catch (Exception exception) {
