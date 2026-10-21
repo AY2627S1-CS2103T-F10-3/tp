@@ -45,10 +45,10 @@ public class StudentCsvImporter {
     private static Person createPerson(List<String> headers, List<String> values,
             Map<String, Lesson> lessonsById) throws ParseException {
         CsvRow row = new CsvRow(headers, values);
-        Set<Tag> tags = ParserUtil.parseTags(Arrays.stream(row.get("tags").split("[,;]"))
+        Set<Tag> tags = ParserUtil.parseTags(Arrays.stream(valueOrEmpty(row, "tags").split("[,;]"))
                 .filter(tag -> !tag.isBlank()).map(String::trim).toList());
         Set<Lesson> lessons = new HashSet<>();
-        for (String id : row.get("lessons").split("[,;]")) {
+        for (String id : valueOrEmpty(row, "lessons").split("[,;]")) {
             if (!id.isBlank()) {
                 Lesson lesson = lessonsById.get(id.trim());
                 if (lesson == null) {
@@ -57,13 +57,32 @@ public class StudentCsvImporter {
                 lessons.add(lesson);
             }
         }
-        Guardian guardian = new Guardian(ParserUtil.parseName(row.get("guardian_name")),
-                ParserUtil.parsePhone(row.get("guardian_phone")),
-                ParserUtil.parseEmail(row.get("guardian_email")),
-                ParserUtil.parseRelationship(row.get("guardian_relationship")),
-                ParserUtil.parseAddress(row.get("guardian_address")));
+        Optional<Guardian> guardian = parseGuardian(row);
         return new Person(ParserUtil.parseName(row.get("name")), ParserUtil.parsePhone(row.get("phone")),
                 ParserUtil.parseEmail(row.get("email")), ParserUtil.parseAddress(row.get("address")), tags, lessons,
-                Optional.of(guardian));
+                guardian);
+    }
+
+    private static Optional<Guardian> parseGuardian(CsvRow row) throws ParseException {
+        String[] fields = {"guardian_name", "guardian_phone", "guardian_email", "guardian_relationship",
+            "guardian_address"};
+        boolean hasGuardianData = Arrays.stream(fields).anyMatch(row::hasField);
+        if (!hasGuardianData) {
+            return Optional.empty();
+        }
+        for (String field : fields) {
+            if (!row.hasField(field)) {
+                throw new ParseException("Missing required column: " + field);
+            }
+        }
+        Guardian guardian = new Guardian(ParserUtil.parseName(row.get("guardian_name")),
+                ParserUtil.parsePhone(row.get("guardian_phone")), ParserUtil.parseEmail(row.get("guardian_email")),
+                ParserUtil.parseRelationship(row.get("guardian_relationship")),
+                ParserUtil.parseAddress(row.get("guardian_address")));
+        return Optional.of(guardian);
+    }
+
+    private static String valueOrEmpty(CsvRow row, String field) throws ParseException {
+        return row.hasField(field) ? row.get(field) : "";
     }
 }

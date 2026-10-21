@@ -1,6 +1,7 @@
 package seedu.address.logic.importer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Files;
@@ -42,11 +43,66 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_optionalColumnsMissing_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address\nAlice Tan,91234567,alice@example.com,1 Main Street\n");
+
+        Person student = new StudentCsvImporter().read(file, Map.of()).get(0);
+
+        assertEquals("Alice Tan", student.getName().toString());
+        assertEquals(0, student.getTags().size());
+        assertEquals(0, student.getLessons().size());
+        assertFalse(student.getGuardian().isPresent());
+    }
+
+    @Test
     public void read_unknownLessonId_throwsParseException() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,"
                 + "81234567,mary@example.com,Mother,2 Main Street,unknown-lesson\n");
 
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+    }
+
+    @Test
+    public void read_missingEmailColumn_throwsParseException() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,address\nAlice Tan,91234567,1 Main Street\n");
+
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+    }
+
+    @Test
+    public void read_missingNameOrPhoneColumn_throwsParseException() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "phone,email,address\n91234567,alice@example.com,1 Main Street\n");
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+
+        Files.writeString(file, "name,email,address\nAlice Tan,alice@example.com,1 Main Street\n");
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+    }
+
+    @Test
+    public void read_blankEmailOrAddress_throwsParseException() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,,1 Main Street,,Mary Tan,81234567,"
+                + "mary@example.com,Mother,2 Main Street,\n");
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,,,Mary Tan,81234567,"
+                + "mary@example.com,Mother,,\n");
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+    }
+
+    @Test
+    public void read_blankNameOrPhone_throwsParseException() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + ",91234567,alice@example.com,1 Main Street,,,"
+                + ",,,\n");
+        assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+
+        Files.writeString(file, HEADER + "Alice Tan,,alice@example.com,1 Main Street,,,"
+                + ",,,\n");
         assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
     }
 }

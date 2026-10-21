@@ -23,4 +23,8 @@ public class CsvRow {
         }
         throw new ParseException("Missing required column: " + field);
     }
+
+    public boolean hasField(String field) {
+        return headers.stream().anyMatch(header -> header.trim().toLowerCase(Locale.ROOT).equals(field));
+    }
 }
