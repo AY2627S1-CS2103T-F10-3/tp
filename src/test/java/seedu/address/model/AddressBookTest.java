@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
@@ -79,6 +80,15 @@ public class AddressBookTest {
     @Test
     public void getPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> addressBook.getPersonList().remove(0));
+    }
+
+    @Test
+    public void addPerson_sharedLesson_isStoredOnce() {
+        addressBook.addPerson(new PersonBuilder(ALICE).withLessons(VALID_LESSON_MATH).build());
+        addressBook.addPerson(new PersonBuilder().withName("Bob Choo").withLessons(VALID_LESSON_MATH).build());
+
+        assertEquals(1, addressBook.getLessonList().size());
+        assertTrue(addressBook.getLessonList().contains(VALID_LESSON_MATH));
     }
 
     @Test

@@ -36,4 +36,5 @@ public class LessonTest {
 
         assertEquals("2026-MATH-MONDAY-TEN-ELEVEN-30", lesson.toString());
     }
+
 }
