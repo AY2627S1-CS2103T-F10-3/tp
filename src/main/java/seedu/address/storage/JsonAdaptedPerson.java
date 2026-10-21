@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -36,12 +37,13 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<String> lessonIds = new ArrayList<>();
     private final List<JsonAdaptedLesson> legacyLessons = new ArrayList<>();
+    private final List<JsonAdaptedPayment> payments = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null, null, null);
+        this(name, phone, email, address, tags, null, null, null, null);
     }
 
     /**
@@ -53,7 +55,8 @@ class JsonAdaptedPerson {
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("lessonIds") List<String> lessonIds,
             @JsonProperty("lessons") List<JsonAdaptedLesson> lessons,
-            @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
+            @JsonProperty("guardian") JsonAdaptedGuardian guardian,
+            @JsonProperty("payments") List<JsonAdaptedPayment> payments) {
         this.guardian = guardian;
         this.name = name;
         this.phone = phone;
@@ -67,6 +70,9 @@ class JsonAdaptedPerson {
         }
         if (lessons != null) {
             this.legacyLessons.addAll(lessons);
+        }
+        if (payments != null) {
+            this.payments.addAll(payments);
         }
     }
 
@@ -83,6 +89,9 @@ class JsonAdaptedPerson {
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
         lessonIds.addAll(source.getLessons().stream().map(Lesson::getId).collect(Collectors.toList()));
+        payments.addAll(source.getPayments().stream()
+                .map(JsonAdaptedPayment::new)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -117,6 +126,11 @@ class JsonAdaptedPerson {
                 lessonBook.addLesson(lesson);
                 personLessons.add(lessonBook.getLesson(lesson.getId()));
             }
+        }
+
+        final List<Payment> personPayments = new ArrayList<>();
+        for (JsonAdaptedPayment payment : payments) {
+            personPayments.add(payment.toModelType());
         }
 
         if (name == null) {
@@ -154,7 +168,7 @@ class JsonAdaptedPerson {
         final Set<Tag> modelTags = new HashSet<>(personTags);
         final Set<Lesson> modelLessons = new HashSet<>(personLessons);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelLessons,
-                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()));
+                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), personPayments);
     }
 
 }
