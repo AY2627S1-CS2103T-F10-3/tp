@@ -115,6 +115,14 @@ public class Lesson {
         return cost;
     }
 
+    /** Returns the stable identifier used to link students to this lesson.
+     * ID changes if any of the field changes, but there should be no changes due to
+     * the structure of the tuition centre.
+     */
+    public String getId() {
+        return String.format("%s-%s-%s-%s-%s", year, subject, day, startTime, endTime);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -25,6 +26,7 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
+    public static final String UNKNOWN_LESSON_ID_MESSAGE = "Person references an unknown lesson ID: %s";
 
     private final String name;
     private final String phone;
@@ -32,13 +34,14 @@ class JsonAdaptedPerson {
     private final String address;
     private final JsonAdaptedGuardian guardian;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
-    private final List<JsonAdaptedLesson> lessons = new ArrayList<>();
+    private final List<String> lessonIds = new ArrayList<>();
+    private final List<JsonAdaptedLesson> legacyLessons = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null, null);
+        this(name, phone, email, address, tags, null, null, null);
     }
 
     /**
@@ -48,6 +51,7 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
+            @JsonProperty("lessonIds") List<String> lessonIds,
             @JsonProperty("lessons") List<JsonAdaptedLesson> lessons,
             @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
         this.guardian = guardian;
@@ -58,8 +62,11 @@ class JsonAdaptedPerson {
         if (tags != null) {
             this.tags.addAll(tags);
         }
+        if (lessonIds != null) {
+            this.lessonIds.addAll(lessonIds);
+        }
         if (lessons != null) {
-            this.lessons.addAll(lessons);
+            this.legacyLessons.addAll(lessons);
         }
     }
 
@@ -75,9 +82,7 @@ class JsonAdaptedPerson {
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
-        lessons.addAll(source.getLessons().stream()
-                .map(JsonAdaptedLesson::new)
-                .collect(Collectors.toList()));
+        lessonIds.addAll(source.getLessons().stream().map(Lesson::getId).collect(Collectors.toList()));
     }
 
     /**
@@ -86,14 +91,32 @@ class JsonAdaptedPerson {
      * @throws IllegalValueException if there were any data constraints violated in the adapted person.
      */
     public Person toModelType() throws IllegalValueException {
+        return toModelType(new LessonBook());
+    }
+
+    public Person toModelType(LessonBook lessonBook) throws IllegalValueException {
         final List<Tag> personTags = new ArrayList<>();
         for (JsonAdaptedTag tag : tags) {
             personTags.add(tag.toModelType());
         }
 
         final List<Lesson> personLessons = new ArrayList<>();
-        for (JsonAdaptedLesson lesson : lessons) {
-            personLessons.add(lesson.toModelType());
+        if (lessonBook != null && !lessonIds.isEmpty()) {
+            for (String lessonId : lessonIds) {
+                Lesson lesson = lessonBook.getLesson(lessonId);
+                if (lesson == null) {
+                    throw new IllegalValueException(String.format(UNKNOWN_LESSON_ID_MESSAGE, lessonId));
+                }
+                personLessons.add(lesson);
+            }
+        } else if (lessonBook != null) {
+            // v1.3 stored complete lesson definitions inside each person. Import them
+            // into the shared lesson book so the next save can normalize the format.
+            for (JsonAdaptedLesson legacyLesson : legacyLessons) {
+                Lesson lesson = legacyLesson.toModelType();
+                lessonBook.addLesson(lesson);
+                personLessons.add(lessonBook.getLesson(lesson.getId()));
+            }
         }
 
         if (name == null) {
