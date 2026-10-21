@@ -58,8 +58,7 @@ public class AttendanceCommand extends Command {
         Lesson lesson = student.getLessons().stream()
                 .filter(candidate -> candidate.getId().equals(attendance.getLessonId()))
                 .findFirst().orElseThrow(() -> new CommandException(MESSAGE_NOT_ENROLLED));
-        if (lesson.getYear().getValue() != attendance.getDate().getYear()
-                || !lesson.getDay().name().equals(attendance.getDate().getDayOfWeek().name())) {
+        if (!lesson.isValidSessionDate(attendance.getDate())) {
             throw new CommandException(MESSAGE_INVALID_SESSION_DATE);
         }
         if (student.getAttendance().stream().anyMatch(attendance::isSameSession)) {

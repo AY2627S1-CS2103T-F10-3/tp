@@ -2,6 +2,7 @@ package seedu.address.model.lesson;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -113,6 +114,15 @@ public class Lesson {
     /** Returns the cost of one lesson session. */
     public int getCost() {
         return cost;
+    }
+
+    /**
+     * Returns whether {@code date} is a valid session date for this lesson.
+     * A valid session must fall in the lesson's year and on its scheduled weekday.
+     */
+    public boolean isValidSessionDate(LocalDate date) {
+        requireNonNull(date);
+        return year.getValue() == date.getYear() && day.name().equals(date.getDayOfWeek().name());
     }
 
     /**

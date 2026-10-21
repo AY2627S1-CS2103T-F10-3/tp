@@ -1,7 +1,7 @@
 package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalAttendance.ATTENDANCE_PRESENT;
 import static seedu.address.testutil.TypicalAttendance.MATH_LESSON;
 
@@ -16,6 +16,18 @@ public class JsonAdaptedAttendanceTest {
         assertEquals(ATTENDANCE_PRESENT, new JsonAdaptedAttendance(ATTENDANCE_PRESENT).toModelType());
         assertEquals(ATTENDANCE_PRESENT,
                 new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", "present").toModelType());
+        assertEquals(ATTENDANCE_PRESENT,
+                new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", "present")
+                        .toModelType(MATH_LESSON));
+    }
+
+    @Test
+    public void toModelType_invalidLessonDate_throwsIllegalValueException() {
+        JsonAdaptedAttendance attendance =
+                new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-20", "PRESENT");
+
+        assertThrows(IllegalValueException.class, JsonAdaptedAttendance.MESSAGE_INVALID_SESSION_DATE, () ->
+                attendance.toModelType(MATH_LESSON));
     }
 
     @Test
