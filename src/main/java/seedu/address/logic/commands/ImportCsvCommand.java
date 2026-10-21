@@ -42,6 +42,7 @@ public class ImportCsvCommand extends Command {
         try {
             Map<String, Lesson> lessonsById = new LessonCsvImporter().read(lessonsPath);
             List<Person> imported = new StudentCsvImporter().read(importPath, lessonsById);
+            validateLessonDefinitions(model, lessonsById);
             List<Person> studentsToAdd = new ArrayList<>();
             List<String> duplicateStudents = new ArrayList<>();
             for (Person person : imported) {
@@ -57,10 +58,23 @@ public class ImportCsvCommand extends Command {
                 result += " Skipped duplicate student(s): " + String.join(", ", duplicateStudents) + ".";
             }
             return new CommandResult(result);
+        } catch (CommandException exception) {
+            throw exception;
         } catch (NoSuchFileException exception) {
             throw new CommandException(MESSAGE_MISSING_FILES);
         } catch (Exception exception) {
             throw new CommandException("Unable to import data/importstudents.csv: " + exception.getMessage());
+        }
+    }
+
+    private static void validateLessonDefinitions(Model model, Map<String, Lesson> importedLessons)
+            throws CommandException {
+        for (Lesson existingLesson : model.getAddressBook().getLessonList()) {
+            Lesson importedLesson = importedLessons.get(existingLesson.getId());
+            if (importedLesson != null && !existingLesson.equals(importedLesson)) {
+                throw new CommandException("Lesson ID conflict for " + existingLesson.getId()
+                        + ": the app already stores a different lesson definition or cost.");
+            }
         }
     }
 
