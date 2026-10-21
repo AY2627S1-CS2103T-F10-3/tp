@@ -19,6 +19,19 @@ public class FindCommandParserTest {
     private FindCommandParser parser = new FindCommandParser();
 
     @Test
+    public void parse_lessonFields_returnsFindCommand() {
+        assertParseSuccess(parser, "l/math 2026-MATH-MONDAY-TEN-ELEVEN",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(Field.LESSON,
+                        List.of("math", "2026-MATH-MONDAY-TEN-ELEVEN")))));
+        assertParseSuccess(parser, "n/Alice\tl/monday",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.NAME, List.of("Alice"), Field.LESSON, List.of("monday")))));
+        assertParseFailure(parser, "l/   ", String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, "l/math l/science",
+                seedu.address.logic.Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_LESSON));
+    }
+
+    @Test
     public void parse_prefixedFields_returnsFindCommand() {
         assertParseSuccess(parser, "n/Alice p/9123 gn/Mary gp/9876",
                 new FindCommand(new FieldsContainKeywordsPredicate(Map.of(

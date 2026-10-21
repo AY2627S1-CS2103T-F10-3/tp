@@ -182,7 +182,18 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [l/KEYWORDS]`
+
+Use `l/` to find students by enrolled lesson ID, including a class roster:
+
+* `find l/math` matches students enrolled in any lesson whose ID contains `math`.
+* `find l/2026-MATH-MONDAY` matches students in the corresponding year, subject and day.
+* `find l/2026-MATH-MONDAY-TEN-ELEVEN` shows that lesson's roster.
+* `find l/math science` matches either subject; `find n/Alice l/math` requires both fields to match.
+
+Lesson searches are case-insensitive and exclude cost. An ID with five hyphen-separated components
+(`YEAR-SUBJECT-DAY-START-END`) must match the whole ID exactly; fewer components are matched as substrings.
+Students without lessons do not match. Each student appears only once even if several enrolled lessons match.
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
@@ -291,6 +302,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [l/KEYWORDS]`<br> e.g., `find l/math`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`

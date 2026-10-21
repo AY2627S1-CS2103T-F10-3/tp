@@ -7,31 +7,58 @@ import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
 
-/** Matches every requested field, with any keyword sufficient within a field. */
+/**
+ * Matches every requested field, with any keyword sufficient within a field.
+ */
 public class FieldsContainKeywordsPredicate implements Predicate<Person> {
-    /** Fields supported by a prefixed find command. */
+    /**
+     * Defines fields supported by a prefixed find command.
+     */
     public enum Field {
-        NAME, PHONE, GUARDIAN_NAME, GUARDIAN_PHONE
+        NAME, PHONE, GUARDIAN_NAME, GUARDIAN_PHONE, LESSON
     }
 
     private final Map<Field, List<String>> keywords;
 
+    /**
+     * Constructs a predicate for the requested fields.
+     *
+     * @param keywords Keywords to match within each field.
+     */
     public FieldsContainKeywordsPredicate(Map<Field, List<String>> keywords) {
         this.keywords = Map.copyOf(keywords);
     }
 
+    /**
+     * Returns whether the student matches every requested field.
+     */
     @Override
     public boolean test(Person person) {
         return keywords.entrySet().stream().allMatch(entry -> {
+            if (entry.getKey() == Field.LESSON) {
+                return person.getLessons().stream().anyMatch(lesson -> entry.getValue().stream()
+                        .anyMatch(keyword -> matchesLessonId(lesson.getId(), keyword)));
+            }
             String value = switch (entry.getKey()) {
                 case NAME -> person.getName().fullName;
                 case PHONE -> person.getPhone().value;
                 case GUARDIAN_NAME -> person.getGuardian().map(guardian -> guardian.getName().fullName).orElse("");
                 case GUARDIAN_PHONE -> person.getGuardian().map(guardian -> guardian.getPhone().value).orElse("");
+                case LESSON -> throw new IllegalStateException("Lesson matching is handled separately");
             };
             return entry.getValue().stream().anyMatch(keyword ->
                     value.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT)));
         });
+    }
+
+    private boolean matchesLessonId(String lessonId, String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        String normalizedId = lessonId.toLowerCase(Locale.ROOT);
+        // Complete IDs have five components; do not match truncated years or time names.
+        if (keyword.split("-", -1).length == 5) {
+            return normalizedId.equals(normalizedKeyword);
+        }
+        return normalizedId.contains(normalizedKeyword);
     }
 
     @Override
