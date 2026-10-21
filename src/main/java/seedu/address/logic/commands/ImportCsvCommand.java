@@ -18,21 +18,30 @@ import seedu.address.model.person.Person;
 /** Imports students from {@code data/importstudents.csv}. */
 public class ImportCsvCommand extends Command {
     public static final String COMMAND_WORD = "importcsv";
-    private static final Path IMPORT_PATH = Path.of("data", "importstudents.csv");
-    private static final Path LESSONS_PATH = Path.of("data", "importlessons.csv");
     private static final String MESSAGE_MISSING_FILES = "Both data/importstudents.csv and data/importlessons.csv "
             + "are required.\n"
             + "importstudents.csv fields: name, phone, email, address, tags, guardian_name, guardian_phone, "
             + "guardian_email, guardian_relationship, guardian_address, lessons.\n"
             + "importlessons.csv fields: id, year, subject, day, start_time, end_time, cost.";
     private static final String MESSAGE_SUCCESS = "Imported %d student(s) from data/importstudents.csv.";
+    private final Path importPath;
+    private final Path lessonsPath;
+
+    public ImportCsvCommand() {
+        this(Path.of("data", "importstudents.csv"), Path.of("data", "importlessons.csv"));
+    }
+
+    ImportCsvCommand(Path importPath, Path lessonsPath) {
+        this.importPath = importPath;
+        this.lessonsPath = lessonsPath;
+    }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         try {
-            Map<String, Lesson> lessonsById = new LessonCsvImporter().read(LESSONS_PATH);
-            List<Person> imported = new StudentCsvImporter().read(IMPORT_PATH, lessonsById);
+            Map<String, Lesson> lessonsById = new LessonCsvImporter().read(lessonsPath);
+            List<Person> imported = new StudentCsvImporter().read(importPath, lessonsById);
             List<Person> studentsToAdd = new ArrayList<>();
             List<String> duplicateStudents = new ArrayList<>();
             for (Person person : imported) {
