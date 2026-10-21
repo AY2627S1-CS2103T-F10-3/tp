@@ -124,6 +124,26 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAndSaveAddressBook_legacyPersonLessons_areMigrated() throws Exception {
+        Path filePath = testFolder.resolve("LegacyLessonsAddressBook.json");
+        Files.writeString(filePath, "{\"persons\":[{\"name\":\"Alice Pauline\","
+                + "\"phone\":\"94351253\",\"email\":\"alice@example.com\","
+                + "\"address\":\"123, Jurong West Ave 6, #08-111\",\"tags\":[],"
+                + "\"lessons\":[{\"year\":\"2026\",\"subject\":\"MATH\","
+                + "\"day\":\"MONDAY\",\"startTime\":\"TEN\","
+                + "\"endTime\":\"ELEVEN\",\"cost\":30}]}]}");
+
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        ReadOnlyAddressBook loaded = storage.readAddressBook(filePath).get();
+        assertEquals(Set.of(VALID_LESSON_MATH), loaded.getPersonList().get(0).getLessons());
+
+        storage.saveAddressBook(loaded, filePath);
+        ReadOnlyAddressBook reloaded = storage.readAddressBook(filePath).get();
+        assertEquals(Set.of(VALID_LESSON_MATH), reloaded.getPersonList().get(0).getLessons());
+        assertEquals(1, reloaded.getLessonList().size());
+    }
+
+    @Test
     public void saveAddressBook_nullAddressBook_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveAddressBook(null, "SomeFile.json"));
     }

@@ -35,12 +35,13 @@ class JsonAdaptedPerson {
     private final JsonAdaptedGuardian guardian;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<String> lessonIds = new ArrayList<>();
+    private final List<JsonAdaptedLesson> legacyLessons = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null, null);
+        this(name, phone, email, address, tags, null, null, null);
     }
 
     /**
@@ -51,6 +52,7 @@ class JsonAdaptedPerson {
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("lessonIds") List<String> lessonIds,
+            @JsonProperty("lessons") List<JsonAdaptedLesson> lessons,
             @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
         this.guardian = guardian;
         this.name = name;
@@ -62,6 +64,9 @@ class JsonAdaptedPerson {
         }
         if (lessonIds != null) {
             this.lessonIds.addAll(lessonIds);
+        }
+        if (lessons != null) {
+            this.legacyLessons.addAll(lessons);
         }
     }
 
@@ -103,6 +108,14 @@ class JsonAdaptedPerson {
                     throw new IllegalValueException(String.format(UNKNOWN_LESSON_ID_MESSAGE, lessonId));
                 }
                 personLessons.add(lesson);
+            }
+        } else if (lessonBook != null) {
+            // v1.3 stored complete lesson definitions inside each person. Import them
+            // into the shared lesson book so the next save can normalize the format.
+            for (JsonAdaptedLesson legacyLesson : legacyLessons) {
+                Lesson lesson = legacyLesson.toModelType();
+                lessonBook.addLesson(lesson);
+                personLessons.add(lessonBook.getLesson(lesson.getId()));
             }
         }
 
