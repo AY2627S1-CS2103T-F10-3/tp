@@ -11,7 +11,9 @@ import static seedu.address.testutil.TypicalPersons.ELLE;
 import static seedu.address.testutil.TypicalPersons.FIONA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
+import seedu.address.model.payment.Amount;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -145,13 +149,50 @@ public class FindCommandTest {
     }
 
     @Test
+    public void execute_unpaidSearch_filtersByBillingMonthAndOtherFields() throws Exception {
+        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 100);
+        YearMonth month = YearMonth.of(2026, 10);
+        LocalDate date = LocalDate.of(2026, 10, 1);
+        Person unpaid = new PersonBuilder().withName("Alice Unpaid").withLessons(lesson).build();
+        Person partial = new PersonBuilder().withName("Bob Partial").withLessons(lesson)
+                .withPayments(new Payment(new Amount("30"), month, date)).build();
+        Person paid = new PersonBuilder().withName("Carol Paid").withLessons(lesson)
+                .withPayments(new Payment(new Amount("40"), month, date),
+                        new Payment(new Amount("60"), month, date)).build();
+        Person overpaid = new PersonBuilder().withName("Dan Overpaid").withLessons(lesson)
+                .withPayments(new Payment(new Amount("120"), month, date)).build();
+        Person otherMonth = new PersonBuilder().withName("Eve Other").withLessons(lesson)
+                .withPayments(new Payment(new Amount("100"), month.minusMonths(1), date)).build();
+        Person noFees = new PersonBuilder().withName("Frank No Fees").withLessons().withTags("unpaid").build();
+        AddressBook book = new AddressBook();
+        book.setPersons(List.of(unpaid, partial, paid, overpaid, otherMonth, noFees));
+        Model searchModel = new ModelManager(book, new UserPrefs());
+        AddressBook originalBook = new AddressBook(searchModel.getAddressBook());
+
+        assertSearchResults(searchModel, "find unpaid/2026-10", List.of(unpaid, partial, otherMonth));
+        assertSearchResults(searchModel, "find n/ALICE unpaid/2026-10", List.of(unpaid));
+        assertSearchResults(searchModel, "find unpaid/2026-10 l/math n/bob", List.of(partial));
+        assertSearchResults(searchModel, "find l/science unpaid/2026-10", List.of());
+        assertSearchResults(searchModel, "find t/unpaid unpaid/2026-10", List.of());
+        assertSearchResults(searchModel, "find unpaid/2027-10", List.of());
+        assertSearchResults(searchModel, "find unpaid/2026-10", List.of(unpaid, partial, otherMonth));
+        for (String input : List.of("find unpaid/", "find unpaid/2026-13",
+                "find unpaid/2026-10 unpaid/2026-11")) {
+            assertThrows(ParseException.class, () -> new AddressBookParser().parseCommand(input).execute(searchModel));
+            assertEquals(List.of(unpaid, partial, otherMonth), searchModel.getFilteredPersonList());
+        }
+        assertEquals(originalBook, searchModel.getAddressBook());
+    }
+
+    @Test
     public void execute_invalidSearch_preservesPreviousResultsAndSavedData() throws Exception {
         assertSearchResults(model, "find Kurz", List.of(CARL));
         AddressBook originalBook = new AddressBook(model.getAddressBook());
         AddressBookParser parser = new AddressBookParser();
 
         for (String input : List.of("find n/", "find n/Alice gp/", "find n/Alice n/Bob",
-                "find n/Alice x/test", "find Alice gp/9876", "find l/", "find l/math l/science", "find e/", "find t/friend t/other")) {
+                "find n/Alice x/test", "find Alice gp/9876", "find l/", "find l/math l/science",
+                "find e/", "find t/friend t/other")) {
             assertThrows(ParseException.class, () -> parser.parseCommand(input).execute(model), input);
             assertEquals(List.of(CARL), model.getFilteredPersonList(), input);
             assertEquals(originalBook, model.getAddressBook(), input);
