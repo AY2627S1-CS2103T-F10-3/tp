@@ -65,8 +65,8 @@ public class ImportCsvCommandTest {
                 new Email("existing@example.com"), new Address("2 Main Street"), Set.of(), Set.of(existingLesson),
                 Optional.empty()));
 
-        CommandException exception = assertThrows(CommandException.class,
-                () -> new ImportCsvCommand(students, lessons).execute(model));
+        CommandException exception = assertThrows(CommandException.class, () ->
+                new ImportCsvCommand(students, lessons).execute(model));
 
         assertTrue(exception.getMessage().contains("Lesson ID conflict"));
         assertEquals(1, model.getAddressBook().getPersonList().size());

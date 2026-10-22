@@ -9,6 +9,13 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public final class CsvParser {
     private CsvParser() {}
 
+    /**
+     * Parses a CSV row into its individual cell values.
+     *
+     * @param line CSV row to parse
+     * @return parsed cell values, or {@code null} if {@code line} is null
+     * @throws ParseException if the row contains an unclosed quoted value
+     */
     public static List<String> parseLine(String line) throws ParseException {
         if (line == null) {
             return null;

@@ -16,6 +16,14 @@ import seedu.address.model.lesson.Lesson;
 
 /** Reads and validates lesson definitions from a CSV file. */
 public class LessonCsvImporter {
+    /**
+     * Reads and validates lesson definitions from the specified CSV file.
+     *
+     * @param path path to the lesson CSV file
+     * @return lessons indexed by their identifiers
+     * @throws IOException if the file cannot be read
+     * @throws ParseException if the CSV data is invalid
+     */
     public Map<String, Lesson> read(Path path) throws IOException, ParseException {
         if (!Files.exists(path)) {
             throw new NoSuchFileException(path.toString());

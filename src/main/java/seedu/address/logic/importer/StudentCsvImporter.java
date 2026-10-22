@@ -21,6 +21,15 @@ import seedu.address.model.tag.Tag;
 
 /** Reads students and their lesson references from a CSV file. */
 public class StudentCsvImporter {
+    /**
+     * Reads and validates students and their lesson references from a CSV file.
+     *
+     * @param path path to the student CSV file
+     * @param lessonsById lessons indexed by their identifiers
+     * @return parsed students
+     * @throws IOException if the file cannot be read
+     * @throws ParseException if the CSV data is invalid
+     */
     public List<Person> read(Path path, Map<String, Lesson> lessonsById) throws IOException, ParseException {
         List<Person> students = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(path)) {

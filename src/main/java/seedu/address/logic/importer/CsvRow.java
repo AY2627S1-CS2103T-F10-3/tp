@@ -10,6 +10,12 @@ public class CsvRow {
     private final List<String> headers;
     private final List<String> values;
 
+    /**
+     * Creates a CSV row from its headers and values.
+     *
+     * @param headers column headers
+     * @param values cell values
+     */
     public CsvRow(List<String> headers, List<String> values) {
         this.headers = headers;
         this.values = values;
