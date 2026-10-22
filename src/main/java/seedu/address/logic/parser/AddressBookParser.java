@@ -9,14 +9,21 @@ import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.AddStudentCommand;
+import seedu.address.logic.commands.AttendanceCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
+import seedu.address.logic.commands.DeleteAttendanceCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeletePaymentCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ImportCsvCommand;
+import seedu.address.logic.commands.PayCommand;
+import seedu.address.logic.commands.ViewAttendanceCommand;
 import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewPaymentsCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -58,8 +65,15 @@ public class AddressBookParser {
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ViewCommand.COMMAND_WORD -> new ViewCommandParser().parse(arguments);
+            case AttendanceCommand.COMMAND_WORD -> new AttendanceCommandParser().parse(arguments);
+            case ViewAttendanceCommand.COMMAND_WORD -> new ViewAttendanceCommandParser().parse(arguments);
+            case DeleteAttendanceCommand.COMMAND_WORD -> new DeleteAttendanceCommandParser().parse(arguments);
+            case PayCommand.COMMAND_WORD -> new PayCommandParser().parse(arguments);
+            case DeletePaymentCommand.COMMAND_WORD -> new DeletePaymentCommandParser().parse(arguments);
+            case ViewPaymentsCommand.COMMAND_WORD -> new ViewPaymentsCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case ImportCsvCommand.COMMAND_WORD -> new ImportCsvCommand();
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);

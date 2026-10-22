@@ -162,6 +162,51 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Attendance tracking
+
+Attendance follows the existing payment command and storage structure. Each `Person` owns a `List<Attendance>`
+in recording order. An immutable `Attendance` contains a lesson ID, a `LocalDate` and an `AttendanceStatus`
+(`PRESENT` or `ABSENT`). The lesson ID and date identify one session within that student's history.
+
+The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
+[recording sequence diagram](diagrams/AttendanceSequenceDiagram.puml) describe the model and command flow.
+
+1. `AddressBookParser` dispatches `attendance` to `AttendanceCommandParser`, which validates the displayed
+   student index, required `l/`, `d/` and `s/` values, duplicate prefixes, calendar date and status.
+2. `AttendanceCommand` resolves the student from `Model#getFilteredPersonList()`. It checks enrolment by lesson ID,
+   verifies the session's year and weekday, and rejects a duplicate lesson/date pair regardless of status.
+3. The command creates a new list and calls `Person#withAttendance`, then `Model#setPerson`. Validation failures
+   occur before any model change. `Person` also enforces session uniqueness when constructed directly.
+4. The existing logic/storage pipeline saves the updated address book. `JsonAdaptedPerson` stores an optional
+   `attendance` array using `JsonAdaptedAttendance`. Older files without it load with empty attendance history.
+   Invalid records, null entries and duplicate sessions produce a data-loading error.
+
+`viewattendance` displays numbered records without changing the model. `deleteattendance` removes a record by
+its displayed attendance number. Both use the currently filtered student list, as payment commands do.
+`withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
+Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
+
+Design decisions:
+
+* Store the lesson's existing ID instead of copying a whole lesson or using its position in an unordered set.
+  Historical IDs remain in attendance after unenrolment; loading does not require current enrolment.
+* Reject duplicate sessions instead of silently overwriting them. Corrections require deleting the old record
+  and recording the replacement, with both operations visible to the admin.
+* Use an explicit date instead of defaulting to today to avoid accidentally recording the wrong session.
+* Keep the alpha scope to present/absent on the lesson's regular weekday. Future dates are accepted;
+  rescheduled sessions, bulk marking and attendance filtering are not implemented here.
+
+Manual verification (use a disposable address book):
+
+1. Enrol a student in `2026-MATH-MONDAY-TEN-ELEVEN-120`. Note their currently displayed index.
+2. Run `attendance INDEX l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`, then `viewattendance INDEX`.
+   Expect one numbered `PRESENT` record.
+3. Repeat with `s/absent` for the same date. Expect a duplicate warning and the original record unchanged.
+4. Try `d/2026-10-20` (Tuesday), an invalid calendar date, or a lesson the student has not joined.
+   Expect an error and no new record.
+5. Record a payment and edit the student's phone. Restart the app. Both payment and attendance should remain.
+6. Run `deleteattendance INDEX i/1`, restart, and verify that attendance is empty and payments remain.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation

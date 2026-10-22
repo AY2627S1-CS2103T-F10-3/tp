@@ -1,0 +1,40 @@
+@startuml
+!include style.puml
+skinparam classAttributeIconSize 0
+
+class Person {
+  -attendance: List<Attendance>
+  +getAttendance(): List<Attendance>
+  +withAttendance(records): Person
+  +withPayments(payments): Person
+}
+class Attendance {
+  -lessonId: String
+  -date: LocalDate
+  -status: AttendanceStatus
+  +isSameSession(other): boolean
+}
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+class Lesson {
+  +getId(): String
+}
+class Payment
+class JsonAdaptedPerson
+class JsonAdaptedAttendance
+
+Person "1" *--> "0..*" Attendance : recording order
+Person "1" *--> "0..*" Payment
+Person "0..*" --> "0..*" Lesson : enrolled in
+Attendance --> AttendanceStatus
+Attendance ..> Lesson : identifies by lessonId
+JsonAdaptedPerson *--> "0..*" JsonAdaptedAttendance
+JsonAdaptedAttendance ..> Attendance : converts
+
+note bottom of Attendance
+  Unique (lessonId, date) per student.
+  History survives unenrolment.
+end note
+@enduml
