@@ -1,0 +1,41 @@
+@startuml
+!include style.puml
+actor Admin
+participant ":LogicManager" as Logic
+participant ":AddressBookParser" as Dispatcher
+participant ":AttendanceCommandParser" as Parser
+participant ":AttendanceCommand" as Command
+participant ":ModelManager" as Model
+participant "student:Person" as Student
+participant ":StorageManager" as Storage
+
+Admin -> Logic : execute("attendance 1 l/... d/... s/present")
+activate Logic
+Logic -> Dispatcher : parseCommand(input)
+Dispatcher -> Parser : parse(arguments)
+Parser -> Parser : validate index, prefixes, date and status
+Parser --> Dispatcher : AttendanceCommand
+Dispatcher --> Logic : command
+Logic -> Command : execute(model)
+activate Command
+Command -> Model : getFilteredPersonList()
+Model --> Command : displayed students
+Command -> Student : getLessons(), getAttendance()
+Student --> Command : enrolled lessons, attendance history
+Command -> Command : validate enrolment, session date and uniqueness
+Command -> Student : withAttendance(updatedRecords)
+Student --> Command : updatedStudent
+Command -> Model : setPerson(student, updatedStudent)
+Command --> Logic : CommandResult
+deactivate Command
+Logic -> Model : getAddressBook()
+Model --> Logic : updated address book
+Logic -> Storage : saveAddressBook(addressBook)
+Logic --> Admin : attendance recorded
+deactivate Logic
+
+note over Parser, Command
+  Validation failures return an error before model mutation.
+  This diagram shows the successful path.
+end note
+@enduml
