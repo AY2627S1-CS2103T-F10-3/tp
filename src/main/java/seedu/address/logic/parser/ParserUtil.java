@@ -2,7 +2,10 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +18,7 @@ import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
+import seedu.address.model.payment.Amount;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -27,6 +31,8 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+    public static final String MESSAGE_INVALID_MONTH = "Month must be in the form yyyy-MM, eg. 2026-10";
+    public static final String MESSAGE_INVALID_DATE = "Date must be in the form yyyy-MM-dd, eg. 2026-10-03";
 
     /**
      * Parses a relationship, trimming surrounding whitespace.
@@ -245,6 +251,51 @@ public class ParserUtil {
             lessonSet.add(parseLesson(lesson));
         }
         return lessonSet;
+    }
+
+    /**
+     * Parses a {@code String amount} into an {@code Amount}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code amount} is invalid.
+     */
+    public static Amount parseAmount(String amount) throws ParseException {
+        requireNonNull(amount);
+        String trimmedAmount = amount.trim();
+        if (!Amount.isValidAmount(trimmedAmount)) {
+            throw new ParseException(Amount.MESSAGE_CONSTRAINTS);
+        }
+        return new Amount(trimmedAmount);
+    }
+
+    /**
+     * Parses a {@code String month} in yyyy-MM form into a {@code YearMonth}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code month} is invalid.
+     */
+    public static YearMonth parseMonth(String month) throws ParseException {
+        requireNonNull(month);
+        try {
+            return YearMonth.parse(month.trim());
+        } catch (DateTimeParseException exception) {
+            throw new ParseException(MESSAGE_INVALID_MONTH, exception);
+        }
+    }
+
+    /**
+     * Parses a {@code String date} in yyyy-MM-dd form into a {@code LocalDate}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code date} is invalid.
+     */
+    public static LocalDate parseDate(String date) throws ParseException {
+        requireNonNull(date);
+        try {
+            return LocalDate.parse(date.trim());
+        } catch (DateTimeParseException exception) {
+            throw new ParseException(MESSAGE_INVALID_DATE, exception);
+        }
     }
 
 }
