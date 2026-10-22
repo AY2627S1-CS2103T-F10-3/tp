@@ -1,7 +1,10 @@
 package seedu.address.model.util;
 
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,6 +15,8 @@ import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
+import seedu.address.model.payment.Amount;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -28,7 +33,8 @@ public class SampleDataUtil {
             new Person(new Name("Alex Yeoh"), new Phone("87438807"), new Email("alexyeoh@example.com"),
                 new Address("Blk 30 Geylang Street 29, #06-40"),
                 getTagSet("friends"), getLessonSet(2026, Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30),
-                Optional.empty()),
+                Optional.empty(), List.of(new Payment(new Amount("30"), YearMonth.of(2026, 10),
+                        LocalDate.of(2026, 10, 3)))),
             new Person(new Name("Bernice Yu"), new Phone("99272758"), new Email("berniceyu@example.com"),
                 new Address("Blk 30 Lorong 3 Serangoon Gardens, #07-18"),
                 getTagSet("colleagues", "friends"), getLessonSet(2026, Subject.MATH, Day.TUESDAY,

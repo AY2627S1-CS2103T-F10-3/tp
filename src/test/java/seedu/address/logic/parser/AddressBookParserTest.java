@@ -7,6 +7,8 @@ import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalGuardians.MARY;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalPayments.PAYMENT_NOVEMBER;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,12 +18,15 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.AddStudentCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeletePaymentCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.PayCommand;
 import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewPaymentsCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
@@ -86,6 +91,27 @@ public class AddressBookParserTest {
     public void parseCommand_view() throws Exception {
         assertTrue(parser.parseCommand(ViewCommand.COMMAND_WORD) instanceof ViewCommand);
         assertThrows(ParseException.class, () -> parser.parseCommand(ViewCommand.COMMAND_WORD + " 3"));
+    }
+
+    @Test
+    public void parseCommand_pay() throws Exception {
+        PayCommand command = (PayCommand) parser.parseCommand(
+                PayCommand.COMMAND_WORD + " 1 amt/100 m/2026-11 d/2026-11-02");
+        assertEquals(new PayCommand(INDEX_FIRST_PERSON, PAYMENT_NOVEMBER), command);
+    }
+
+    @Test
+    public void parseCommand_deletePayment() throws Exception {
+        DeletePaymentCommand command = (DeletePaymentCommand) parser.parseCommand(
+                DeletePaymentCommand.COMMAND_WORD + " 1 i/2");
+        assertEquals(new DeletePaymentCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_viewPayments() throws Exception {
+        ViewPaymentsCommand command = (ViewPaymentsCommand) parser.parseCommand(
+                ViewPaymentsCommand.COMMAND_WORD + " 1");
+        assertEquals(new ViewPaymentsCommand(INDEX_FIRST_PERSON), command);
     }
 
     @Test

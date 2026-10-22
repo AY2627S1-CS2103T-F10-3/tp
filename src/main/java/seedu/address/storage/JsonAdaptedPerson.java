@@ -11,8 +11,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -36,16 +38,27 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<String> lessonIds = new ArrayList<>();
     private final List<JsonAdaptedLesson> legacyLessons = new ArrayList<>();
+    private final List<JsonAdaptedPayment> payments = new ArrayList<>();
+    private final List<JsonAdaptedAttendance> attendance = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, tags, null, null, null);
+        this(name, phone, email, address, tags, null, null, null, null);
     }
 
     /**
-     * Reads guardian information when present, while accepting legacy records.
+     * Accepts records created before attendance was introduced.
+     */
+    public JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags,
+            List<String> lessonIds, List<JsonAdaptedLesson> lessons, JsonAdaptedGuardian guardian,
+            List<JsonAdaptedPayment> payments) {
+        this(name, phone, email, address, tags, lessonIds, lessons, guardian, payments, null);
+    }
+
+    /**
+     * Reads guardian, payment and attendance information when present, while accepting legacy records.
      */
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
@@ -53,7 +66,9 @@ class JsonAdaptedPerson {
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("lessonIds") List<String> lessonIds,
             @JsonProperty("lessons") List<JsonAdaptedLesson> lessons,
-            @JsonProperty("guardian") JsonAdaptedGuardian guardian) {
+            @JsonProperty("guardian") JsonAdaptedGuardian guardian,
+            @JsonProperty("payments") List<JsonAdaptedPayment> payments,
+            @JsonProperty("attendance") List<JsonAdaptedAttendance> attendance) {
         this.guardian = guardian;
         this.name = name;
         this.phone = phone;
@@ -67,6 +82,12 @@ class JsonAdaptedPerson {
         }
         if (lessons != null) {
             this.legacyLessons.addAll(lessons);
+        }
+        if (payments != null) {
+            this.payments.addAll(payments);
+        }
+        if (attendance != null) {
+            this.attendance.addAll(attendance);
         }
     }
 
@@ -83,6 +104,12 @@ class JsonAdaptedPerson {
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
         lessonIds.addAll(source.getLessons().stream().map(Lesson::getId).collect(Collectors.toList()));
+        payments.addAll(source.getPayments().stream()
+                .map(JsonAdaptedPayment::new)
+                .collect(Collectors.toList()));
+        attendance.addAll(source.getAttendance().stream()
+                .map(JsonAdaptedAttendance::new)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -117,6 +144,24 @@ class JsonAdaptedPerson {
                 lessonBook.addLesson(lesson);
                 personLessons.add(lessonBook.getLesson(lesson.getId()));
             }
+        }
+
+        final List<Payment> personPayments = new ArrayList<>();
+        for (JsonAdaptedPayment payment : payments) {
+            personPayments.add(payment.toModelType());
+        }
+
+        final List<Attendance> personAttendance = new ArrayList<>();
+        for (JsonAdaptedAttendance record : attendance) {
+            if (record == null) {
+                throw new IllegalValueException("Attendance records must not be null.");
+            }
+            Lesson lesson = lessonBook == null ? null : lessonBook.getLesson(record.getLessonId());
+            Attendance modelAttendance = record.toModelType(lesson);
+            if (personAttendance.stream().anyMatch(modelAttendance::isSameSession)) {
+                throw new IllegalValueException(Person.MESSAGE_DUPLICATE_ATTENDANCE);
+            }
+            personAttendance.add(modelAttendance);
         }
 
         if (name == null) {
@@ -154,7 +199,8 @@ class JsonAdaptedPerson {
         final Set<Tag> modelTags = new HashSet<>(personTags);
         final Set<Lesson> modelLessons = new HashSet<>(personLessons);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelLessons,
-                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()));
+                guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), personPayments,
+                personAttendance);
     }
 
 }

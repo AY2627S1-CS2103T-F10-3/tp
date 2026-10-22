@@ -5,12 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalPayments.NOVEMBER_2026;
+import static seedu.address.testutil.TypicalPayments.OCTOBER_2026;
+import static seedu.address.testutil.TypicalPayments.PAYMENT_NOVEMBER;
+import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_PARTIAL;
+import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_REST;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
+
+import java.time.YearMonth;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -88,6 +98,43 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different payments -> returns false
+        editedAlice = new PersonBuilder(ALICE).withPayments(PAYMENT_NOVEMBER).build();
+        assertFalse(ALICE.equals(editedAlice));
+    }
+
+    @Test
+    public void getPayments_modifyList_throwsUnsupportedOperationException() {
+        Person person = new PersonBuilder().withPayments(PAYMENT_NOVEMBER).build();
+        assertThrows(UnsupportedOperationException.class, () -> person.getPayments().remove(0));
+    }
+
+    @Test
+    public void withPayments_replacesPaymentsOnly() {
+        Person person = new PersonBuilder(ALICE).withLessons(VALID_LESSON_MATH).build();
+        Person paid = person.withPayments(List.of(PAYMENT_OCTOBER_PARTIAL, PAYMENT_NOVEMBER));
+
+        assertEquals(new PersonBuilder(person).withPayments(PAYMENT_OCTOBER_PARTIAL, PAYMENT_NOVEMBER).build(), paid);
+        assertTrue(person.getPayments().isEmpty());
+    }
+
+    @Test
+    public void fees_sumLessonsAndPaymentsForMonth() {
+        Person person = new PersonBuilder().withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH)
+                .withPayments(PAYMENT_OCTOBER_PARTIAL, PAYMENT_OCTOBER_REST, PAYMENT_NOVEMBER).build();
+        int monthlyFee = VALID_LESSON_MATH.getCost() + VALID_LESSON_ENGLISH.getCost();
+
+        assertEquals(monthlyFee, person.getFeesDue(OCTOBER_2026));
+        assertEquals(30, person.getAmountPaid(OCTOBER_2026));
+        assertEquals(monthlyFee - 30, person.getOutstandingFees(OCTOBER_2026));
+
+        // overpayment is never reported as negative outstanding fees
+        assertEquals(100, person.getAmountPaid(NOVEMBER_2026));
+        assertEquals(0, person.getOutstandingFees(NOVEMBER_2026));
+
+        // lessons in another year are not billed
+        assertEquals(0, person.getFeesDue(YearMonth.of(2027, 1)));
     }
 
     @Test

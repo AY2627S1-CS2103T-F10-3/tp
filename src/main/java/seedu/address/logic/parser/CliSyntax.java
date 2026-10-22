@@ -19,4 +19,11 @@ public class CliSyntax {
     public static final Prefix PREFIX_TAG = new Prefix("t/");
     public static final Prefix PREFIX_LESSON = new Prefix("l/");
 
+    public static final Prefix PREFIX_AMOUNT = new Prefix("amt/");
+    public static final Prefix PREFIX_MONTH = new Prefix("m/");
+    public static final Prefix PREFIX_DATE = new Prefix("d/");
+    public static final Prefix PREFIX_PAYMENT_INDEX = new Prefix("i/");
+    public static final Prefix PREFIX_ATTENDANCE_INDEX = new Prefix("i/");
+    public static final Prefix PREFIX_STATUS = new Prefix("s/");
+
 }

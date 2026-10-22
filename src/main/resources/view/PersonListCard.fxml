@@ -32,6 +32,7 @@
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
       <Label fx:id="lessons" styleClass="cell_small_label" text="\$lessons" wrapText="true" />
+      <Label fx:id="fees" styleClass="cell_small_label" text="\$fees" />
       <VBox spacing="2" minWidth="0">
         <padding>
           <Insets top="8" />
