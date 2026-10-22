@@ -11,6 +11,7 @@ import static seedu.address.testutil.TypicalPersons.ELLE;
 import static seedu.address.testutil.TypicalPersons.FIONA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.time.Year;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,10 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -115,13 +120,38 @@ public class FindCommandTest {
     }
 
     @Test
+    public void execute_lessonSearches_returnsMatchingRosterWithoutChangingData() throws Exception {
+        Lesson mondayMath = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+        Lesson tuesdayMath = new Lesson(Year.of(2026), Subject.MATH, Day.TUESDAY, Time.TEN, Time.ELEVEN, 40);
+        Person alice = new PersonBuilder().withName("Alice Tan").withLessons(mondayMath, tuesdayMath).build();
+        Person bob = new PersonBuilder().withName("Bob Tan").withLessons(tuesdayMath).build();
+        Person carol = new PersonBuilder().withName("Carol Tan").withLessons().build();
+        AddressBook book = new AddressBook();
+        book.setPersons(List.of(alice, bob, carol));
+        Model searchModel = new ModelManager(book, new UserPrefs());
+        AddressBook originalBook = new AddressBook(searchModel.getAddressBook());
+
+        assertSearchResults(searchModel, "find l/MaTh", List.of(alice, bob));
+        assertSearchResults(searchModel, "find l/2026-math-monday-ten-eleven", List.of(alice));
+        assertSearchResults(searchModel, "find l/2026-MATH-TUESDAY-TEN-ELEVEN", List.of(alice, bob));
+        assertSearchResults(searchModel, "find l/science monday", List.of(alice));
+        assertSearchResults(searchModel, "find l/math n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find l/math n/Carol", List.of());
+        assertSearchResults(searchModel, "find l/science", List.of());
+        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVE", List.of());
+        assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of());
+        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVEN-30", List.of());
+        assertEquals(originalBook, searchModel.getAddressBook());
+    }
+
+    @Test
     public void execute_invalidSearch_preservesPreviousResultsAndSavedData() throws Exception {
         assertSearchResults(model, "find Kurz", List.of(CARL));
         AddressBook originalBook = new AddressBook(model.getAddressBook());
         AddressBookParser parser = new AddressBookParser();
 
         for (String input : List.of("find n/", "find n/Alice gp/", "find n/Alice n/Bob",
-                "find n/Alice x/test", "find Alice gp/9876", "find e/", "find t/friend t/other")) {
+                "find n/Alice x/test", "find Alice gp/9876", "find l/", "find l/math l/science", "find e/", "find t/friend t/other")) {
             assertThrows(ParseException.class, () -> parser.parseCommand(input).execute(model), input);
             assertEquals(List.of(CARL), model.getFilteredPersonList(), input);
             assertEquals(originalBook, model.getAddressBook(), input);

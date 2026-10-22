@@ -16,7 +16,7 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
      */
     public enum Field {
         NAME, PHONE, GUARDIAN_NAME, GUARDIAN_PHONE, EMAIL, ADDRESS, TAG,
-        GUARDIAN_EMAIL, GUARDIAN_ADDRESS, GUARDIAN_RELATIONSHIP
+        GUARDIAN_EMAIL, GUARDIAN_ADDRESS, GUARDIAN_RELATIONSHIP, LESSON
     }
 
     private final Map<Field, List<String>> keywords;
@@ -36,6 +36,10 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     @Override
     public boolean test(Person person) {
         return keywords.entrySet().stream().allMatch(entry -> {
+            if (entry.getKey() == Field.LESSON) {
+                return person.getLessons().stream().anyMatch(lesson -> entry.getValue().stream()
+                        .anyMatch(keyword -> matchesLessonId(lesson.getId(), keyword)));
+            }
             if (entry.getKey() == Field.TAG) {
                 return person.getTags().stream().anyMatch(tag -> entry.getValue().stream()
                         .anyMatch(keyword -> tag.tagName.toLowerCase(Locale.ROOT)
@@ -53,10 +57,21 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
                 case TAG -> throw new IllegalStateException("Tag matching is handled separately");
                 case GUARDIAN_NAME -> person.getGuardian().map(guardian -> guardian.getName().fullName).orElse("");
                 case GUARDIAN_PHONE -> person.getGuardian().map(guardian -> guardian.getPhone().value).orElse("");
+                case LESSON -> throw new IllegalStateException("Lesson matching is handled separately");
             };
             return entry.getValue().stream().anyMatch(keyword ->
                     value.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT)));
         });
+    }
+
+    private boolean matchesLessonId(String lessonId, String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        String normalizedId = lessonId.toLowerCase(Locale.ROOT);
+        // Complete IDs have five components; do not match truncated years or time names.
+        if (keyword.split("-", -1).length == 5) {
+            return normalizedId.equals(normalizedKeyword);
+        }
+        return normalizedId.contains(normalizedKeyword);
     }
 
     @Override

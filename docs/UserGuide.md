@@ -286,7 +286,18 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS]`
+
+Use `l/` to find students by enrolled lesson ID, including a class roster:
+
+* `find l/math` matches students enrolled in any lesson whose ID contains `math`.
+* `find l/2026-MATH-MONDAY` matches students in the corresponding year, subject and day.
+* `find l/2026-MATH-MONDAY-TEN-ELEVEN` shows that lesson's roster.
+* `find l/math science` matches either subject; `find n/Alice l/math` requires both fields to match.
+
+Lesson searches are case-insensitive and exclude cost. An ID with five hyphen-separated components
+(`YEAR-SUBJECT-DAY-START-END`) must match the whole ID exactly; fewer components are matched as substrings.
+Students without lessons do not match. Each student appears only once even if several enrolled lessons match.
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS] [l/KEYWORDS]`
 
 Additional fields support the same case-insensitive partial matching:
 
