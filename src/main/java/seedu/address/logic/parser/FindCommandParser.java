@@ -10,17 +10,22 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_LESSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PAID;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_UNPAID;
 
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.payment.PaidInMonthPredicate;
+import seedu.address.model.payment.UnpaidInMonthPredicate;
 import seedu.address.model.person.FieldsContainKeywordsPredicate;
 import seedu.address.model.person.FieldsContainKeywordsPredicate.Field;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
@@ -58,18 +63,23 @@ public class FindCommandParser implements Parser<FindCommand> {
         boolean hasPrefixes = false;
         while (prefixMatcher.find()) {
             hasPrefixes = true;
-            if (!fields.containsKey(new Prefix(prefixMatcher.group(1)))) {
+            Prefix prefix = new Prefix(prefixMatcher.group(1));
+            if (!fields.containsKey(prefix) && !PREFIX_UNPAID.equals(prefix) && !PREFIX_PAID.equals(prefix)) {
                 throw invalidFormat();
             }
         }
         if (hasPrefixes) {
-            Prefix[] supportedPrefixes = fields.keySet().toArray(Prefix[]::new);
+            Prefix[] supportedPrefixes = Stream.concat(fields.keySet().stream(), Stream.of(PREFIX_UNPAID, PREFIX_PAID))
+                    .toArray(Prefix[]::new);
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(" " + trimmedArgs.replaceAll("\\s+", " "),
                     supportedPrefixes);
             if (!arguments.getPreamble().isEmpty()) {
                 throw invalidFormat();
             }
             arguments.verifyNoDuplicatePrefixesFor(supportedPrefixes);
+            if (arguments.getValue(PREFIX_PAID).isPresent() && arguments.getValue(PREFIX_UNPAID).isPresent()) {
+                throw invalidFormat();
+            }
             Map<Field, List<String>> keywords = new EnumMap<>(Field.class);
             for (Map.Entry<Prefix, Field> entry : fields.entrySet()) {
                 if (arguments.getValue(entry.getKey()).isPresent()) {
@@ -80,7 +90,18 @@ public class FindCommandParser implements Parser<FindCommand> {
                     keywords.put(entry.getValue(), List.of(value.split("\\s+")));
                 }
             }
-            return new FindCommand(new FieldsContainKeywordsPredicate(keywords));
+            FieldsContainKeywordsPredicate fieldPredicate = new FieldsContainKeywordsPredicate(keywords);
+            if (arguments.getValue(PREFIX_PAID).isPresent()) {
+                PaidInMonthPredicate paidPredicate = new PaidInMonthPredicate(
+                        ParserUtil.parseMonth(arguments.getValue(PREFIX_PAID).orElseThrow()));
+                return new FindCommand(keywords.isEmpty() ? paidPredicate : fieldPredicate.and(paidPredicate));
+            }
+            if (arguments.getValue(PREFIX_UNPAID).isPresent()) {
+                UnpaidInMonthPredicate unpaidPredicate = new UnpaidInMonthPredicate(
+                        ParserUtil.parseMonth(arguments.getValue(PREFIX_UNPAID).orElseThrow()));
+                return new FindCommand(keywords.isEmpty() ? unpaidPredicate : fieldPredicate.and(unpaidPredicate));
+            }
+            return new FindCommand(fieldPredicate);
         }
         String[] nameKeywords = trimmedArgs.split("\\s+");
 

@@ -286,6 +286,23 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
+To find students with outstanding fees for a billing month, use `find unpaid/YYYY-MM`.
+
+Use `find paid/YYYY-MM` for students with positive fees fully covered by payments, including overpayments.
+Students with no fees due are excluded from both payment-status searches.
+For example, `find l/math paid/2026-10` shows Maths students who have fully paid their total October fees.
+Choose either `paid/` or `unpaid/` in one command; supplying both is rejected.
+
+* `find unpaid/2026-10` includes students with no payment or only partial payment for October 2026.
+* `find n/Alice unpaid/2026-10` requires both the name and outstanding-fee condition to match.
+* `find l/math unpaid/2026-10` shows Maths students with outstanding total monthly fees,
+  not necessarily unpaid fees for the Maths lesson alone.
+
+Fully paid students, overpaid students and students with no fees due are excluded. Payments for other billing
+months do not count. The calculation uses the existing payment feature and current enrolled lessons for that year.
+This is independent of tags such as `unpaid`. Supply one complete month, for example `2026-10`;
+empty values, invalid months and repeated `unpaid/` prefixes are rejected.
+
 
 Use `l/` to find students by enrolled lesson ID, including a class roster:
 
