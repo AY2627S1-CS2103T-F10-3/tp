@@ -2,6 +2,7 @@ package seedu.address.model.lesson;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -115,7 +116,17 @@ public class Lesson {
         return cost;
     }
 
-    /** Returns the stable identifier used to link students to this lesson.
+    /**
+     * Returns whether {@code date} is a valid session date for this lesson.
+     * A valid session must fall in the lesson's year and on its scheduled weekday.
+     */
+    public boolean isValidSessionDate(LocalDate date) {
+        requireNonNull(date);
+        return year.getValue() == date.getYear() && day.name().equals(date.getDayOfWeek().name());
+    }
+
+    /**
+     * Returns the stable identifier used to link students to this lesson.
      * ID changes if any of the field changes, but there should be no changes due to
      * the structure of the tuition centre.
      */

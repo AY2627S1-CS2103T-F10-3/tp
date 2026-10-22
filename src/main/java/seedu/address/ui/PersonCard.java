@@ -1,5 +1,7 @@
 package seedu.address.ui;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,7 @@ import seedu.address.model.person.Person;
 public class PersonCard extends UiPart<Region> {
 
     private static final String FXML = "PersonListCard.fxml";
+    private static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("MMM yyyy");
 
     /**
      * Note: Certain keywords such as "location" and "resources" are reserved keywords in JavaFX.
@@ -42,6 +45,8 @@ public class PersonCard extends UiPart<Region> {
     private Label email;
     @FXML
     private Label lessons;
+    @FXML
+    private Label fees;
     @FXML
     private VBox guardianDetails;
     @FXML
@@ -87,6 +92,13 @@ public class PersonCard extends UiPart<Region> {
                         lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost()))
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
+        YearMonth currentMonth = YearMonth.now();
+        int feesDue = person.getFeesDue(currentMonth);
+        int outstanding = person.getOutstandingFees(currentMonth);
+        fees.setText(String.format("Fees (%s): %s", currentMonth.format(MONTH_FORMAT),
+                outstanding == 0 ? "Paid" : "$" + outstanding + " outstanding"));
+        fees.setVisible(feesDue > 0);
+        fees.setManaged(feesDue > 0);
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
