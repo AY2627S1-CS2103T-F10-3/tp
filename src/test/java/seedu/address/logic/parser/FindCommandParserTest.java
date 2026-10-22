@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.model.payment.PaidInMonthPredicate;
 import seedu.address.model.payment.UnpaidInMonthPredicate;
 import seedu.address.model.person.FieldsContainKeywordsPredicate;
 import seedu.address.model.person.FieldsContainKeywordsPredicate.Field;
@@ -19,6 +20,19 @@ import seedu.address.model.person.NameContainsKeywordsPredicate;
 public class FindCommandParserTest {
 
     private FindCommandParser parser = new FindCommandParser();
+
+    @Test
+    public void parse_paidMonth_returnsFindCommand() {
+        assertParseSuccess(parser, " paid/2026-10 ",
+                new FindCommand(new PaidInMonthPredicate(YearMonth.of(2026, 10))));
+        for (String value : List.of("", "2026", "2026-13", "2026-00", "2026-1", "2026-10 2026-11")) {
+            assertParseFailure(parser, "paid/" + value, ParserUtil.MESSAGE_INVALID_MONTH);
+        }
+        assertParseFailure(parser, "paid/2026-10 paid/2026-11",
+                seedu.address.logic.Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_PAID));
+        assertParseFailure(parser, "paid/2026-10 unpaid/2026-11",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
+    }
 
     @Test
     public void parse_unpaidMonth_returnsFindCommand() {

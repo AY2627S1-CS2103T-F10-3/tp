@@ -175,9 +175,14 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find l/science unpaid/2026-10", List.of());
         assertSearchResults(searchModel, "find t/unpaid unpaid/2026-10", List.of());
         assertSearchResults(searchModel, "find unpaid/2027-10", List.of());
+        assertSearchResults(searchModel, "find paid/2026-10", List.of(paid, overpaid));
+        assertSearchResults(searchModel, "find paid/2026-09", List.of(otherMonth));
+        assertSearchResults(searchModel, "find l/MATH paid/2026-10 n/CAROL", List.of(paid));
+        assertSearchResults(searchModel, "find paid/2027-10", List.of());
         assertSearchResults(searchModel, "find unpaid/2026-10", List.of(unpaid, partial, otherMonth));
         for (String input : List.of("find unpaid/", "find unpaid/2026-13",
-                "find unpaid/2026-10 unpaid/2026-11")) {
+                "find unpaid/2026-10 unpaid/2026-11", "find paid/", "find paid/2026-13",
+                "find paid/2026-10 paid/2026-11", "find paid/2026-10 unpaid/2026-10")) {
             assertThrows(ParseException.class, () -> new AddressBookParser().parseCommand(input).execute(searchModel));
             assertEquals(List.of(unpaid, partial, otherMonth), searchModel.getFilteredPersonList());
         }
