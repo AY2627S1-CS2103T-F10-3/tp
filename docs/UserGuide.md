@@ -286,7 +286,6 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [l/KEYWORDS]`
 
 Use `l/` to find students by enrolled lesson ID, including a class roster:
 
@@ -298,11 +297,23 @@ Use `l/` to find students by enrolled lesson ID, including a class roster:
 Lesson searches are case-insensitive and exclude cost. An ID with five hyphen-separated components
 (`YEAR-SUBJECT-DAY-START-END`) must match the whole ID exactly; fewer components are matched as substrings.
 Students without lessons do not match. Each student appears only once even if several enrolled lessons match.
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS] [l/KEYWORDS]`
+
+Additional fields support the same case-insensitive partial matching:
+
+* `e/`: student email; `a/`: student address; `t/`: individual tag names.
+* `ge/`: guardian email; `ga/`: guardian address; `gr/`: guardian relationship.
+* `find e/school.com a/Tampines` requires both email and address to match.
+* `find ge/example.com gr/mother` searches guardian details but returns students.
+* `find t/friend scholarship` matches either tag fragment. Students without tags do not match.
+
+`find t/unpaid` searches an explicitly assigned tag only, not calculated payment status.
+Tag searches are substring searches, so `find t/paid` also matches the tag `unpaid`.
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
-  `gn/` guardian names, and `gp/` guardian phone numbers.
+  `gn/` guardian names, and `gp/` guardian phone numbers. The additional prefixes above search their named fields.
 * Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
 * With multiple prefixes, every specified field must match (`AND`). For example, `find n/Alice gp/9876` returns
   only students whose name contains `Alice` and whose guardian phone number contains `9876`.
@@ -412,6 +423,6 @@ Action | Format, Examples
 **Attendance** | `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
 **View Attendance** | `viewattendance INDEX`
 **Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [l/KEYWORDS]`<br> e.g., `find l/math`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find e/example.com gr/mother`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`

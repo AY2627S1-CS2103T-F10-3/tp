@@ -32,6 +32,23 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_additionalFields_returnsFindCommand() {
+        Map<String, Field> fields = Map.of("e/", Field.EMAIL, "a/", Field.ADDRESS, "t/", Field.TAG,
+                "ge/", Field.GUARDIAN_EMAIL, "ga/", Field.GUARDIAN_ADDRESS, "gr/", Field.GUARDIAN_RELATIONSHIP);
+        fields.forEach((prefix, field) -> {
+            assertParseSuccess(parser, prefix + "First Second",
+                    new FindCommand(new FieldsContainKeywordsPredicate(Map.of(field, List.of("First", "Second")))));
+            assertParseFailure(parser, prefix,
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
+            assertParseFailure(parser, prefix + "First " + prefix + "Second",
+                    seedu.address.logic.Messages.getErrorMessageForDuplicatePrefixes(new Prefix(prefix)));
+        });
+        assertParseSuccess(parser, "n/Alice e/example ge/parent",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(Field.NAME, List.of("Alice"),
+                        Field.EMAIL, List.of("example"), Field.GUARDIAN_EMAIL, List.of("parent")))));
+    }
+
+    @Test
     public void parse_prefixedFields_returnsFindCommand() {
         assertParseSuccess(parser, "n/Alice p/9123 gn/Mary gp/9876",
                 new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
@@ -48,7 +65,7 @@ public class FindCommandParserTest {
     @Test
     public void parse_invalidFields_throwsParseException() {
         String message = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE);
-        for (String input : List.of("n/", "p/", "gn/", "gp/", "n/Alice gp/", "e/test", "Alice n/Bob")) {
+        for (String input : List.of("n/", "p/", "gn/", "gp/", "n/Alice gp/", "x/test", "Alice n/Bob")) {
             assertParseFailure(parser, input, message);
         }
         assertParseFailure(parser, "n/Alice n/Bob",
