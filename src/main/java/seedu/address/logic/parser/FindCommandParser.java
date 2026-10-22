@@ -1,10 +1,16 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIAN_RELATIONSHIP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -36,23 +42,26 @@ public class FindCommandParser implements Parser<FindCommand> {
         }
 
         Map<Prefix, Field> fields = Map.of(PREFIX_NAME, Field.NAME, PREFIX_PHONE, Field.PHONE,
-                PREFIX_GUARDIAN_NAME, Field.GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, Field.GUARDIAN_PHONE);
+                PREFIX_GUARDIAN_NAME, Field.GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, Field.GUARDIAN_PHONE,
+                PREFIX_EMAIL, Field.EMAIL, PREFIX_ADDRESS, Field.ADDRESS, PREFIX_TAG, Field.TAG,
+                PREFIX_GUARDIAN_EMAIL, Field.GUARDIAN_EMAIL, PREFIX_GUARDIAN_ADDRESS, Field.GUARDIAN_ADDRESS,
+                PREFIX_GUARDIAN_RELATIONSHIP, Field.GUARDIAN_RELATIONSHIP);
         Matcher prefixMatcher = Pattern.compile("(?:^|\\s)([^\\s/]+/)").matcher(trimmedArgs);
-        boolean prefixed = false;
+        boolean hasPrefixes = false;
         while (prefixMatcher.find()) {
-            prefixed = true;
+            hasPrefixes = true;
             if (!fields.containsKey(new Prefix(prefixMatcher.group(1)))) {
                 throw invalidFormat();
             }
         }
-        if (prefixed) {
+        if (hasPrefixes) {
+            Prefix[] supportedPrefixes = fields.keySet().toArray(Prefix[]::new);
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(" " + trimmedArgs.replaceAll("\\s+", " "),
-                    PREFIX_NAME, PREFIX_PHONE, PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE);
+                    supportedPrefixes);
             if (!arguments.getPreamble().isEmpty()) {
                 throw invalidFormat();
             }
-            arguments.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE,
-                    PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE);
+            arguments.verifyNoDuplicatePrefixesFor(supportedPrefixes);
             Map<Field, List<String>> keywords = new EnumMap<>(Field.class);
             for (Map.Entry<Prefix, Field> entry : fields.entrySet()) {
                 if (arguments.getValue(entry.getKey()).isPresent()) {
