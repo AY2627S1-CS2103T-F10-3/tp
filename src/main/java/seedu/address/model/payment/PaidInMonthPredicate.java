@@ -31,17 +31,26 @@ public class PaidInMonthPredicate implements Predicate<Person> {
         return person.getFeesDue(month) > 0 && person.getOutstandingFees(month) == 0;
     }
 
+    /**
+     * Returns whether the other predicate checks the same billing month.
+     */
     @Override
     public boolean equals(Object other) {
         return other == this || other instanceof PaidInMonthPredicate otherPredicate
                 && month.equals(otherPredicate.month);
     }
 
+    /**
+     * Returns the hash code of the billing month.
+     */
     @Override
     public int hashCode() {
         return month.hashCode();
     }
 
+    /**
+     * Returns a description containing the billing month.
+     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).add("month", month).toString();

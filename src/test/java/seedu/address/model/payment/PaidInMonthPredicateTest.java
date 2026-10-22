@@ -16,12 +16,21 @@ import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.testutil.PersonBuilder;
 
+/**
+ * Tests monthly paid-status matching and predicate equality.
+ */
 public class PaidInMonthPredicateTest {
+    /**
+     * Verifies a billing month is required.
+     */
     @Test
     public void constructor_nullMonth_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new PaidInMonthPredicate(null));
     }
 
+    /**
+     * Verifies equality and hash codes depend on the billing month and predicate type.
+     */
     @Test
     public void equals_sameMonth_returnsTrue() {
         PaidInMonthPredicate predicate = new PaidInMonthPredicate(YearMonth.of(2026, 10));
@@ -34,6 +43,9 @@ public class PaidInMonthPredicateTest {
         assertFalse(predicate.equals(new UnpaidInMonthPredicate(YearMonth.of(2026, 10))));
     }
 
+    /**
+     * Verifies payments without positive fees do not qualify as paid fees.
+     */
     @Test
     public void test_zeroFeesWithPayment_returnsFalse() {
         YearMonth month = YearMonth.of(2026, 10);

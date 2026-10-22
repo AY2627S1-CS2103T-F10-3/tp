@@ -21,6 +21,9 @@ public class FindCommandParserTest {
 
     private FindCommandParser parser = new FindCommandParser();
 
+    /**
+     * Verifies valid paid searches parse and invalid payment-status arguments are rejected.
+     */
     @Test
     public void parse_paidMonth_returnsFindCommand() {
         assertParseSuccess(parser, " paid/2026-10 ",
@@ -34,6 +37,9 @@ public class FindCommandParserTest {
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
     }
 
+    /**
+     * Verifies valid unpaid searches parse and invalid billing months are rejected.
+     */
     @Test
     public void parse_unpaidMonth_returnsFindCommand() {
         assertParseSuccess(parser, " unpaid/2026-10 ",

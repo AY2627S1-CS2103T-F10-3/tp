@@ -93,8 +93,8 @@ public class PersonCard extends UiPart<Region> {
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
         YearMonth currentMonth = YearMonth.now();
-        int feesDue = person.getFeesDue(currentMonth);
-        int outstanding = person.getOutstandingFees(currentMonth);
+        long feesDue = person.getFeesDue(currentMonth);
+        long outstanding = person.getOutstandingFees(currentMonth);
         fees.setText(String.format("Fees (%s): %s", currentMonth.format(MONTH_FORMAT),
                 outstanding == 0 ? "Paid" : "$" + outstanding + " outstanding"));
         fees.setVisible(feesDue > 0);

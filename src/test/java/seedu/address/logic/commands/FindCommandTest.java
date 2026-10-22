@@ -148,8 +148,11 @@ public class FindCommandTest {
         assertEquals(originalBook, searchModel.getAddressBook());
     }
 
+    /**
+     * Verifies payment searches combine billing-month balances with other field filters.
+     */
     @Test
-    public void execute_unpaidSearch_filtersByBillingMonthAndOtherFields() throws Exception {
+    public void execute_paymentSearch_filtersByBillingMonthAndOtherFields() throws Exception {
         Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 100);
         YearMonth month = YearMonth.of(2026, 10);
         LocalDate date = LocalDate.of(2026, 10, 1);
@@ -187,6 +190,34 @@ public class FindCommandTest {
             assertEquals(List.of(unpaid, partial, otherMonth), searchModel.getFilteredPersonList());
         }
         assertEquals(originalBook, searchModel.getAddressBook());
+    }
+
+    /**
+     * Verifies large valid payments and lesson fees do not overflow monthly totals.
+     */
+    @Test
+    public void execute_paymentSearch_largeTotals() throws Exception {
+        YearMonth month = YearMonth.of(2026, 10);
+        Payment payment = new Payment(new Amount("999999999"), month, LocalDate.of(2026, 10, 1));
+        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 100);
+        Person paid = new PersonBuilder().withName("Paid Student").withLessons(lesson)
+                .withPayments(payment, payment, payment).build();
+        Lesson expensiveLesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, Integer.MAX_VALUE);
+        Lesson otherLesson = new Lesson(Year.of(2026), Subject.MATH, Day.TUESDAY,
+                Time.TEN, Time.ELEVEN, Integer.MAX_VALUE);
+        Person unpaid = new PersonBuilder().withName("Unpaid Student").withLessons(expensiveLesson, otherLesson)
+                .withPayments(payment, payment, payment).build();
+        AddressBook book = new AddressBook();
+        book.setPersons(List.of(paid, unpaid));
+        Model searchModel = new ModelManager(book, new UserPrefs());
+
+        assertEquals(2999999997L, paid.getAmountPaid(month));
+        assertEquals(0L, paid.getOutstandingFees(month));
+        assertEquals(4294967294L, unpaid.getFeesDue(month));
+        assertEquals(1294967297L, unpaid.getOutstandingFees(month));
+        assertSearchResults(searchModel, "find paid/2026-10", List.of(paid));
+        assertSearchResults(searchModel, "find unpaid/2026-10", List.of(unpaid));
     }
 
     @Test
