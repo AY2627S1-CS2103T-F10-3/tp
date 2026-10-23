@@ -194,6 +194,13 @@ its displayed attendance number. Both use the currently filtered student list, a
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
 
+### Viewing student data
+
+The [View command sequence diagram](diagrams/view-command-sequence.puml) gives a high-level overview of how the
+UI, Logic, Model and Storage components handle `view`. With no field selector, the command updates the visible
+student list to show all students. With a selector such as `/email`, it reads the students' values, counts distinct
+values and returns the summary for display. The command pipeline then saves the address book.
+
 Design decisions:
 
 * Store the lesson's existing ID instead of copying a whole lesson or using its position in an unordered set.
