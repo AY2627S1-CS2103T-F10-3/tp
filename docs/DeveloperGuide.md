@@ -171,6 +171,10 @@ in recording order. An immutable `Attendance` contains a lesson ID, a `LocalDate
 The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
 [recording sequence diagram](diagrams/AttendanceSequenceDiagram.puml) describe the model and command flow.
 
+<img src="images/AttendanceClassDiagram.png" width="700" />
+
+<img src="images/AttendanceSequenceDiagram.png" width="1000" />
+
 1. `AddressBookParser` dispatches `attendance` to `AttendanceCommandParser`, which validates the displayed
    student index, required `l/`, `d/` and `s/` values, duplicate prefixes, calendar date and status.
 2. `AttendanceCommand` resolves the student from `Model#getFilteredPersonList()`. It checks enrolment by lesson ID,
