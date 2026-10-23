@@ -1,0 +1,76 @@
+@startuml
+!pragma layout smetana
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+skinparam classAttributeIconSize 0
+skinparam classAttributeFontColor #FFFFFF
+show members
+
+package "Logic" {
+    class "{abstract}\nCommand" as Command
+    class FindCommand {
+        +execute(model: Model): CommandResult
+    }
+    class FindCommandParser {
+        +parse(args: String): FindCommand
+    }
+    class ParserUtil {
+        {static} +parseMonth(value: String): YearMonth
+    }
+
+    FindCommand -up-|> Command
+    FindCommandParser ..> FindCommand : <<create>>
+    FindCommandParser ..> ParserUtil : <<use>>
+}
+
+interface Predicate MODEL_COLOR {
+    +test(person: Person): boolean
+}
+interface Model MODEL_COLOR {
+    +updateFilteredPersonList(predicate): void
+    +getFilteredPersonList(): ObservableList<Person>
+}
+
+package "Model predicates" {
+    class NameContainsKeywordsPredicate MODEL_COLOR {
+        -keywords: List<String>
+        +test(person: Person): boolean
+    }
+    class FieldsContainKeywordsPredicate MODEL_COLOR {
+        -keywords: Map<Field, List<String>>
+        +test(person: Person): boolean
+    }
+    class PaidInMonthPredicate MODEL_COLOR {
+        -month: YearMonth
+        +test(person: Person): boolean
+    }
+    class UnpaidInMonthPredicate MODEL_COLOR {
+        -month: YearMonth
+        +test(person: Person): boolean
+    }
+    NameContainsKeywordsPredicate -[hidden]down-> FieldsContainKeywordsPredicate
+    FieldsContainKeywordsPredicate -[hidden]down-> PaidInMonthPredicate
+    PaidInMonthPredicate -[hidden]down-> UnpaidInMonthPredicate
+}
+
+FindCommand --> "1" Predicate : predicate
+FindCommand ..> Model : <<use>>
+NameContainsKeywordsPredicate ..|> Predicate
+FieldsContainKeywordsPredicate ..|> Predicate
+PaidInMonthPredicate ..|> Predicate
+UnpaidInMonthPredicate ..|> Predicate
+
+FindCommandParser ..> FieldsContainKeywordsPredicate : <<create>>
+FindCommandParser ..> NameContainsKeywordsPredicate : <<create>>
+FindCommandParser ..> PaidInMonthPredicate : <<create>>
+FindCommandParser ..> UnpaidInMonthPredicate : <<create>>
+
+note bottom of Predicate
+    java.util.function.Predicate
+    Used with type argument Person.
+    Field and payment predicates can be
+    combined using and().
+end note
+@enduml
