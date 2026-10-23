@@ -121,6 +121,12 @@ How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddStudentCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddStudentCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddStudentCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
+The importer classes used by the `importcsv` command are shown below:
+
+<img src="images/ImporterClassDiagram.png" width="500"/>
+
+The `ImportCsvCommand` coordinates the import by using `LessonCsvImporter` to read lesson definitions and `StudentCsvImporter` to read student records. Both importers use `CsvParser` and `CsvRow` to parse and access CSV data, and use `ParserUtil` to validate values before creating model objects of Person, Guardian and Lesson.
+
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
