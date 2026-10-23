@@ -3,6 +3,8 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor MODEL_COLOR
 skinparam classBackgroundColor MODEL_COLOR
+skinparam nodesep 40
+skinparam ranksep 60
 
 Package Model as ModelPackage <<Rectangle>>{
 Class "<<interface>>\nReadOnlyAddressBook" as ReadOnlyAddressBook
@@ -20,7 +22,21 @@ Class Name
 Class Phone
 Class Tag
 
+Class Guardian
+Class Relationship
+
+Class LessonBook
+Class Lesson
+Class "<<enumeration>>\nSubject" as Subject
+Class "<<enumeration>>\nDay" as Day
+Class "<<enumeration>>\nTime" as Time
+
+Class Payment
+Class Amount
+
 Class I #FFFFFF
+
+note "Guardian also has a Name, Phone,\nEmail and Address (not shown)." as GuardianNote
 }
 
 Class HiddenOutside #FFFFFF
@@ -36,12 +52,27 @@ ModelManager -right-> "1" UserPrefs
 UserPrefs .up.|> ReadOnlyUserPrefs
 
 AddressBook *--> "1" UniquePersonList
-UniquePersonList --> "~* all" Person
+AddressBook *--> "1" LessonBook
+UniquePersonList --> "*" Person : all >
+LessonBook --> "*" Lesson
+
 Person *--> Name
 Person *--> Phone
 Person *--> Email
 Person *--> Address
 Person *--> "*" Tag
+Person *--> "0..1" Guardian
+Person --> "*" Lesson
+Person *--> "*" Payment
+
+Guardian *--> Relationship
+Guardian .. GuardianNote
+
+Lesson --> Subject
+Lesson --> Day
+Lesson --> "2" Time
+
+Payment *--> Amount
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
@@ -50,5 +81,5 @@ Name -[hidden]right-> Phone
 Phone -[hidden]right-> Address
 Address -[hidden]right-> Email
 
-ModelManager --> "~* filtered" Person
+ModelManager --> "*" Person : filtered >
 @enduml
