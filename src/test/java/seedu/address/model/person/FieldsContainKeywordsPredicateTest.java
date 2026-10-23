@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Year;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 import seedu.address.model.person.FieldsContainKeywordsPredicate.Field;
 import seedu.address.testutil.PersonBuilder;
 
@@ -67,6 +72,50 @@ public class FieldsContainKeywordsPredicateTest {
         assertFalse(matches(Field.PHONE, "9876", student));
         assertFalse(matches(Field.GUARDIAN_NAME, "Alice", student));
         assertFalse(matches(Field.GUARDIAN_PHONE, "9123", student));
+    }
+
+    @Test
+    public void test_lessonIds_matchesPartialAndCompleteIdsWithoutCost() {
+        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+        Person enrolledStudent = new PersonBuilder(student).withLessons(lesson).build();
+        assertTrue(matches(Field.LESSON, "MaTh", enrolledStudent));
+        assertTrue(matches(Field.LESSON, "monday-ten", enrolledStudent));
+        assertTrue(matches(Field.LESSON, "2026-math-monday-ten-eleven", enrolledStudent));
+        assertFalse(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVE", enrolledStudent));
+        assertFalse(matches(Field.LESSON, lesson.getId() + "-30", enrolledStudent));
+        assertFalse(matches(Field.LESSON, "30", enrolledStudent));
+        assertFalse(matches(Field.LESSON, "math", new PersonBuilder().withLessons().build()));
+        assertTrue(new FieldsContainKeywordsPredicate(Map.of(Field.LESSON, List.of("science", "math"),
+                Field.GUARDIAN_NAME, List.of("Mary"))).test(enrolledStudent));
+        assertFalse(new FieldsContainKeywordsPredicate(Map.of(Field.LESSON, List.of("math"),
+                Field.GUARDIAN_NAME, List.of("John"))).test(enrolledStudent));
+    }
+
+    @Test
+    public void test_additionalFields_matchesOnlyRequestedFields() {
+        Person person = new PersonBuilder(student).withEmail("alice@school.com").withAddress("East Avenue")
+                .withTags("Unpaid", "Scholarship").build();
+        assertTrue(matches(Field.EMAIL, "SCHOOL", person));
+        assertTrue(matches(Field.ADDRESS, "aven", person));
+        assertTrue(matches(Field.TAG, "PAID", person));
+        assertTrue(matches(Field.GUARDIAN_EMAIL, "MARY@", person));
+        assertTrue(matches(Field.GUARDIAN_ADDRESS, "MAIN", person));
+        assertTrue(matches(Field.GUARDIAN_RELATIONSHIP, "MOTH", person));
+        assertFalse(matches(Field.EMAIL, "mary", person));
+        assertFalse(matches(Field.ADDRESS, "Main", person));
+        assertFalse(matches(Field.GUARDIAN_EMAIL, "school", person));
+        assertFalse(matches(Field.GUARDIAN_ADDRESS, "East", person));
+        assertFalse(matches(Field.GUARDIAN_RELATIONSHIP, "father", person));
+        assertFalse(matches(Field.TAG, "missing", person));
+        Person withoutOptionalFields = new PersonBuilder().withTags().build();
+        for (Field field : List.of(Field.TAG, Field.GUARDIAN_EMAIL, Field.GUARDIAN_ADDRESS,
+                Field.GUARDIAN_RELATIONSHIP)) {
+            assertFalse(matches(field, "a", withoutOptionalFields));
+        }
+        assertTrue(new FieldsContainKeywordsPredicate(Map.of(Field.EMAIL, List.of("missing", "school"),
+                Field.TAG, List.of("scholar"))).test(person));
+        assertFalse(new FieldsContainKeywordsPredicate(Map.of(Field.EMAIL, List.of("school"),
+                Field.TAG, List.of("missing"))).test(person));
     }
 
     @Test

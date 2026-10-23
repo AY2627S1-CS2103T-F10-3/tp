@@ -286,12 +286,51 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`
+To find students with outstanding fees for a billing month, use `find unpaid/YYYY-MM`.
+
+Use `find paid/YYYY-MM` for students with positive fees fully covered by payments, including overpayments.
+Students with no fees due are excluded from both payment-status searches.
+For example, `find l/math paid/2026-10` shows Maths students who have fully paid their total October fees.
+Choose either `paid/` or `unpaid/` in one command; supplying both is rejected.
+
+* `find unpaid/2026-10` includes students with no payment or only partial payment for October 2026.
+* `find n/Alice unpaid/2026-10` requires both the name and outstanding-fee condition to match.
+* `find l/math unpaid/2026-10` shows Maths students with outstanding total monthly fees,
+  not necessarily unpaid fees for the Maths lesson alone.
+
+Fully paid students, overpaid students and students with no fees due are excluded. Payments for other billing
+months do not count. The calculation uses the existing payment feature and current enrolled lessons for that year.
+This is independent of tags such as `unpaid`. Supply one complete month, for example `2026-10`;
+empty values, invalid months and repeated `unpaid/` prefixes are rejected.
+
+
+Use `l/` to find students by enrolled lesson ID, including a class roster:
+
+* `find l/math` matches students enrolled in any lesson whose ID contains `math`.
+* `find l/2026-MATH-MONDAY` matches students in the corresponding year, subject and day.
+* `find l/2026-MATH-MONDAY-TEN-ELEVEN` shows that lesson's roster.
+* `find l/math science` matches either subject; `find n/Alice l/math` requires both fields to match.
+
+Lesson searches are case-insensitive and exclude cost. An ID with five hyphen-separated components
+(`YEAR-SUBJECT-DAY-START-END`) must match the whole ID exactly; fewer components are matched as substrings.
+Students without lessons do not match. Each student appears only once even if several enrolled lessons match.
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS] [l/KEYWORDS]`
+
+Additional fields support the same case-insensitive partial matching:
+
+* `e/`: student email; `a/`: student address; `t/`: individual tag names.
+* `ge/`: guardian email; `ga/`: guardian address; `gr/`: guardian relationship.
+* `find e/school.com a/Tampines` requires both email and address to match.
+* `find ge/example.com gr/mother` searches guardian details but returns students.
+* `find t/friend scholarship` matches either tag fragment. Students without tags do not match.
+
+`find t/unpaid` searches an explicitly assigned tag only, not calculated payment status.
+Tag searches are substring searches, so `find t/paid` also matches the tag `unpaid`.
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
-  `gn/` guardian names, and `gp/` guardian phone numbers.
+  `gn/` guardian names, and `gp/` guardian phone numbers. The additional prefixes above search their named fields.
 * Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
 * With multiple prefixes, every specified field must match (`AND`). For example, `find n/Alice gp/9876` returns
   only students whose name contains `Alice` and whose guardian phone number contains `9876`.
@@ -401,6 +440,6 @@ Action | Format, Examples
 **Attendance** | `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
 **View Attendance** | `viewattendance INDEX`
 **Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find e/example.com gr/mother`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`
