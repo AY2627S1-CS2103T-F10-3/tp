@@ -71,7 +71,7 @@ public class ViewCommandSummaryTest {
     @Test
     public void execute_newFieldSummaries_countsGuardiansPaymentsAndAttendance() {
         AddressBook book = new AddressBook();
-        book.addPerson(new PersonBuilder().withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
+        book.addPerson(new PersonBuilder().withName("Bob").withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
                 .withAttendance(ATTENDANCE_PRESENT).build());
         book.addPerson(new PersonBuilder().withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
                 .withAttendance(ATTENDANCE_PRESENT).build());
