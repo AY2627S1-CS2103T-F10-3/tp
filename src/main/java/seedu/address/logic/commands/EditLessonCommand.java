@@ -9,6 +9,7 @@ import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import java.time.Year;
+import java.util.Objects;
 
 /** Edits all fields of an existing lesson definition. */
 public class EditLessonCommand extends Command {
@@ -60,6 +61,28 @@ public class EditLessonCommand extends Command {
             throw new CommandException(MESSAGE_DUPLICATE);
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, editedLesson));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof EditLessonCommand otherCommand)) {
+            return false;
+        }
+        return currentId.equals(otherCommand.currentId)
+                && Objects.equals(year, otherCommand.year)
+                && Objects.equals(subject, otherCommand.subject)
+                && Objects.equals(day, otherCommand.day)
+                && Objects.equals(startTime, otherCommand.startTime)
+                && Objects.equals(endTime, otherCommand.endTime)
+                && Objects.equals(cost, otherCommand.cost);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentId, year, subject, day, startTime, endTime, cost);
     }
 
 }
