@@ -47,6 +47,9 @@ public class ViewCommand extends Command {
             return new CommandResult(MESSAGE_SUCCESS);
         }
         Map<String, Integer> frequencies = new TreeMap<>();
+        if (field.equals("lesson")) {
+            model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(lesson.toString(), 0));
+        }
         for (Person person : model.getAddressBook().getPersonList()) {
             valuesOf(person).forEach(value -> frequencies.merge(value, 1, Integer::sum));
         }
