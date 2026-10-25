@@ -2,7 +2,9 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
@@ -74,6 +76,22 @@ public class AddressBook implements ReadOnlyAddressBook {
     /** Adds a shared lesson definition if it is not already present. */
     public boolean addLesson(Lesson lesson) {
         return lessonBook.addLesson(lesson);
+    }
+
+    /** Removes a lesson definition and unenrols it from every student. */
+    public boolean removeLesson(String lessonId) {
+        Lesson lesson = lessonBook.getLesson(lessonId);
+        if (lesson == null) {
+            return false;
+        }
+        List<Person> updatedPersons = persons.asUnmodifiableObservableList().stream()
+                .map(person -> {
+                    Set<Lesson> updatedLessons = new HashSet<>(person.getLessons());
+                    updatedLessons.remove(lesson);
+                    return person.withLessons(updatedLessons);
+                }).toList();
+        setPersons(updatedPersons);
+        return true;
     }
 
     @Override

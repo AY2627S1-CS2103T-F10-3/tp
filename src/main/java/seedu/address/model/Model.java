@@ -50,6 +50,9 @@ public interface Model {
     /** Adds a shared lesson definition. */
     void addLesson(Lesson lesson);
 
+    /** Removes a lesson definition and unenrols it from all students. */
+    boolean removeLesson(String lessonId);
+
     /**
      * Deletes the given person.
      * The person must exist in the address book.

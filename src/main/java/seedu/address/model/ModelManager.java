@@ -89,6 +89,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public boolean removeLesson(String lessonId) {
+        requireNonNull(lessonId);
+        return addressBook.removeLesson(lessonId);
+    }
+
+    @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
     }
