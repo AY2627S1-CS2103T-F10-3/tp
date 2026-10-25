@@ -179,6 +179,10 @@ in recording order. An immutable `Attendance` contains a lesson ID, a `LocalDate
 The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
 [recording sequence diagram](diagrams/AttendanceSequenceDiagram.puml) describe the model and command flow.
 
+<img src="images/AttendanceClassDiagram.png" width="700" />
+
+<img src="images/AttendanceSequenceDiagram.png" width="1000" />
+
 1. `AddressBookParser` dispatches `attendance` to `AttendanceCommandParser`, which validates the displayed
    student index, required `l/`, `d/` and `s/` values, duplicate prefixes, calendar date and status.
 2. `AttendanceCommand` resolves the student from `Model#getFilteredPersonList()`. It checks enrolment by lesson ID,
@@ -193,6 +197,55 @@ The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
 its displayed attendance number. Both use the currently filtered student list, as payment commands do.
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
+
+### Finding students
+
+The class diagram below shows the main classes used by `find`. It uses the shared Logic (blue)
+and Model (red) styling; `Predicate<Person>` is a Java library interface, not an EduReg class.
+
+![Classes used by the find command](images/FindClassDiagram.png)
+
+Source: [Find class diagram](diagrams/FindClassDiagram.puml).
+
+`FindCommand` extends `Command` and holds one `Predicate<Person>`. `FindCommandParser` creates
+the appropriate predicates and command, using `ParserUtil` to validate billing months.
+The four concrete predicate classes implement the same interface, so the command does not need
+to know which search type it executes. Combined field/payment searches use `Predicate#and`.
+The diagram omits tokenizer helpers, the generic parser interface, and predicate implementation
+details to focus on these relationships. Dashed arrows show dependencies or interface realization;
+the solid triangle-headed arrow shows inheritance, and the solid arrow to the predicate shows
+the stored reference.
+
+The sequence diagram below follows parsing, command execution, filtering and saving for
+`find l/math unpaid/2026-10`. UI forwarding and predicate-construction details are omitted
+to focus on the main method calls.
+
+![Sequence of calls for the find command](images/find-command-sequence.png)
+
+Source: [Find command sequence diagram](diagrams/find-command-sequence.puml).
+
+1. `FindCommandParser` validates the arguments and builds a `Predicate<Person>`. Without prefixes,
+   it searches student names. With prefixes, it combines the selected fields and optional monthly
+   payment status. Invalid arguments produce a parse error before the displayed filter changes.
+2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList` and returns the
+   number of matching students. The UI observes the filtered list; no matching students gives an
+   empty list and a count of zero, not an error. Each search filters the full student list.
+3. After command execution, `LogicManager` saves the address book through the shared command
+   pipeline. Searching changes the displayed filter, not the stored student records. The diagram
+   assumes saving succeeds; a storage failure is reported as a command error after filtering.
+
+Field matching is case-insensitive, with OR across keywords within a field and AND across fields.
+Complete five-component lesson IDs match exactly; shorter lesson fragments match partially.
+`unpaid/` matches positive outstanding fees. `paid/` requires positive fees with no outstanding
+balance, including overpayments. Payment status covers all lessons in the billing year, not just
+the lesson matched by `l/`; the two payment-status prefixes cannot be combined.
+
+### Viewing student data
+
+The [View command sequence diagram](diagrams/view-command-sequence.puml) gives a high-level overview of how the
+UI, Logic, Model and Storage components handle `view`. With no field selector, the command updates the visible
+student list to show all students. With a selector such as `/email`, it reads the students' values, counts distinct
+values and returns the summary for display. The command pipeline then saves the address book.
 
 Design decisions:
 
