@@ -101,6 +101,30 @@ records without guardian information remain readable.
 A student can have any number of tags or lessons, including zero.
 </div>
 
+Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
+match lessons already in the lesson catalog; `addstudent` does not create new lessons.
+
+### Adding a lesson: `addlesson`
+
+Creates a reusable lesson definition in the lesson catalog.
+
+Format: `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`
+
+Example: `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
+
+Use the resulting lesson ID when enrolling students with `addstudent` or `edit`.
+
+### Deleting a lesson: `deletelesson`
+
+Removes a lesson from the lesson catalog and unenrols it from all students.
+
+Format: `deletelesson LESSON_ID`
+
+Example: `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
+
+The student's recorded attendance and payments are retained, but the deleted lesson no longer
+contributes to enrolled-class fee summaries.
+
 **Lessons** \
 Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
 where:
@@ -162,7 +186,7 @@ Format:
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 * When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
-  cumulative. Lessons use the same format as in [`addstudent`](#adding-a-student-addstudent).
+  cumulative. Each lesson must already exist in the catalog; use `addlesson` first.
 * To remove all of a person's lessons, enter `l/` without a lesson after it.
 
 Examples:
@@ -429,11 +453,13 @@ previous EduReg home folder.
 
 Action | Format, Examples
 --------|------------------
-**Add Student** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ ,[l/LESSON]…​`
+**Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
+**Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
+**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON_ID]…​`
 \<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 1 amt/70 m/2026-10 d/2026-10-03`
 **View Payments** | `viewpayments INDEX`<br> e.g., `viewpayments 1`
 **Delete Payment** | `deletepayment INDEX i/PAYMENT_INDEX`<br> e.g., `deletepayment 1 i/2`
