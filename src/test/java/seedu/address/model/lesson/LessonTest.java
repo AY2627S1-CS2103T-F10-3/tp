@@ -18,6 +18,13 @@ public class LessonTest {
     }
 
     @Test
+    public void isValidTimeRange_requiresStartBeforeEnd() {
+        assertTrue(Lesson.isValidTimeRange(Time.TEN, Time.ELEVEN));
+        assertFalse(Lesson.isValidTimeRange(Time.ELEVEN, Time.TEN));
+        assertFalse(Lesson.isValidTimeRange(Time.TEN, Time.TEN));
+    }
+
+    @Test
     public void getters_returnLessonDetails() {
         Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
                 Time.TEN, Time.ELEVEN, 30);

@@ -233,6 +233,9 @@ public class ParserUtil {
         Day day = parseDay(lessonParts[2]);
         Time startTime = parseTime(lessonParts[3]);
         Time endTime = parseTime(lessonParts[4]);
+        if (!Lesson.isValidTimeRange(startTime, endTime)) {
+            throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
+        }
         int cost = parseCost(lessonParts[5]);
         return new Lesson(year, subject, day, startTime, endTime, cost);
     }

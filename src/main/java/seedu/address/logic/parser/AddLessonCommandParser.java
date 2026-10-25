@@ -11,6 +11,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_YEAR;
 import seedu.address.logic.commands.AddLessonCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Time;
 
 /** Parses arguments for {@link AddLessonCommand}. */
 public class AddLessonCommandParser implements Parser<AddLessonCommand> {
@@ -24,12 +25,17 @@ public class AddLessonCommandParser implements Parser<AddLessonCommand> {
         }
         map.verifyNoDuplicatePrefixesFor(PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY, PREFIX_START_TIME,
                 PREFIX_END_TIME, PREFIX_COST);
+        Time startTime = ParserUtil.parseTime(map.getValue(PREFIX_START_TIME).get());
+        Time endTime = ParserUtil.parseTime(map.getValue(PREFIX_END_TIME).get());
+        if (!Lesson.isValidTimeRange(startTime, endTime)) {
+            throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
+        }
         Lesson lesson = new Lesson(
                 ParserUtil.parseYear(map.getValue(PREFIX_YEAR).get()),
                 ParserUtil.parseSubject(map.getValue(PREFIX_SUBJECT).get()),
                 ParserUtil.parseDay(map.getValue(PREFIX_DAY).get()),
-                ParserUtil.parseTime(map.getValue(PREFIX_START_TIME).get()),
-                ParserUtil.parseTime(map.getValue(PREFIX_END_TIME).get()),
+                startTime,
+                endTime,
                 ParserUtil.parseCost(map.getValue(PREFIX_COST).get()));
         return new AddLessonCommand(lesson);
     }

@@ -24,6 +24,7 @@ public class Lesson {
     public static final String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
     public static final String DAY_CONSTRAINT = "Day is any day of the week eg. MONDAY";
     public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to nineteen";
+    public static final String TIME_ORDER_CONSTRAINT = "Start time must be before end time";
     public static final String COST_CONSTRAINT = "Cost must be a non negative integer";
 
     // Fields
@@ -51,6 +52,9 @@ public class Lesson {
         requireNonNull(startTime);
         requireNonNull(endTime);
         requireNonNull(cost);
+        if (!isValidTimeRange(startTime, endTime)) {
+            throw new LessonException(TIME_ORDER_CONSTRAINT);
+        }
         this.year = year;
         this.subject = subject;
         this.day = day;
@@ -71,6 +75,13 @@ public class Lesson {
      */
     public static boolean isValidCost(int cost) {
         return (cost >= 0);
+    }
+
+    /** Checks whether a lesson starts before it ends. */
+    public static boolean isValidTimeRange(Time startTime, Time endTime) {
+        requireNonNull(startTime);
+        requireNonNull(endTime);
+        return startTime.ordinal() < endTime.ordinal();
     }
 
     /** Checks if the given string represents a valid lesson year. */
