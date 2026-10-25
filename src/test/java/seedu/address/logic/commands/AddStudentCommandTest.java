@@ -19,6 +19,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.lesson.Lesson;
@@ -52,6 +53,14 @@ public class AddStudentCommandTest {
 
         assertThrows(CommandException.class, AddStudentCommand.MESSAGE_DUPLICATE_PERSON, ()
                 -> addStudentCommand.execute(modelStub));
+    }
+
+    @Test
+    public void execute_unknownLesson_throwsCommandException() {
+        Person person = new PersonBuilder().withLessons(CommandTestUtil.VALID_LESSON_MATH).build();
+
+        assertThrows(CommandException.class, AddStudentCommand.MESSAGE_LESSON_NOT_FOUND,
+                () -> new AddStudentCommand(person).execute(new ModelManager()));
     }
 
     @Test
