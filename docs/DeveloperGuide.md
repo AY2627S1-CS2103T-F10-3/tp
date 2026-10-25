@@ -140,7 +140,9 @@ The `Model` component,
 * creates and deletes lesson definitions through `AddLessonCommand` and `DeleteLessonCommand`. Student creation and
   editing may only reference lessons already present in the `LessonBook`; they cannot create lesson definitions.
 * edits lesson definitions through `EditLessonCommand`, replacing lesson references in every `Person` and migrating
-  matching attendance lesson IDs. Payment records remain student-owned; fee calculations consequently use the edited cost.
+  matching attendance lesson IDs. `EditLessonCommandParser` accepts any non-empty subset of lesson fields and the
+  command preserves omitted fields from the current definition. Payment records remain student-owned; fee calculations
+  consequently use the edited cost.
 * reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
 * represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
