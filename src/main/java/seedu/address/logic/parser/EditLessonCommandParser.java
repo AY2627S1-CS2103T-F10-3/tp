@@ -11,6 +11,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_YEAR;
 import seedu.address.logic.commands.EditLessonCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
+/** Parses arguments for {@link EditLessonCommand}. */
 public class EditLessonCommandParser implements Parser<EditLessonCommand> {
     @Override
     public EditLessonCommand parse(String args) throws ParseException {

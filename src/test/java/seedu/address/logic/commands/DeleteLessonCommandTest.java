@@ -26,8 +26,8 @@ public class DeleteLessonCommandTest {
     public void execute_missingLesson_throwsCommandException() {
         ModelManager model = new ModelManager();
 
-        assertThrows(CommandException.class, DeleteLessonCommand.MESSAGE_LESSON_NOT_FOUND,
-                () -> new DeleteLessonCommand(VALID_LESSON_MATH.getId()).execute(model));
+        assertThrows(CommandException.class, DeleteLessonCommand.MESSAGE_LESSON_NOT_FOUND, () ->
+                new DeleteLessonCommand(VALID_LESSON_MATH.getId()).execute(model));
     }
 
     @Test

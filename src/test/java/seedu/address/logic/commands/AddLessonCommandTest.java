@@ -1,8 +1,8 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.testutil.Assert.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +25,8 @@ public class AddLessonCommandTest {
         ModelManager model = new ModelManager();
         new AddLessonCommand(VALID_LESSON_MATH).execute(model);
 
-        assertThrows(CommandException.class, AddLessonCommand.MESSAGE_DUPLICATE_LESSON,
-                () -> new AddLessonCommand(VALID_LESSON_MATH).execute(model));
+        assertThrows(CommandException.class, AddLessonCommand.MESSAGE_DUPLICATE_LESSON, () ->
+                new AddLessonCommand(VALID_LESSON_MATH).execute(model));
     }
 
     @Test

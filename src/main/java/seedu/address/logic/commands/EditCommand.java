@@ -68,7 +68,8 @@ public class EditCommand extends Command {
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
-    public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. Add them with addlesson first.";
+    public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. "
+            + "Add them with addlesson first.";
     public static final String MESSAGE_INCOMPLETE_GUARDIAN = "This student has no guardian. "
             + "To add one, provide all of: "
             + PREFIX_GUARDIAN_NAME + " " + PREFIX_GUARDIAN_PHONE + " " + PREFIX_GUARDIAN_EMAIL + " "

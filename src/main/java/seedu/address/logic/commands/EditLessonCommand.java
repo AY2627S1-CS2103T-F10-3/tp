@@ -2,16 +2,18 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
-import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.model.Model;
-import seedu.address.model.lesson.Lesson;
-import seedu.address.model.lesson.Day;
-import seedu.address.model.lesson.Subject;
-import seedu.address.model.lesson.Time;
 import java.time.Year;
 import java.util.Objects;
 
-/** Edits all fields of an existing lesson definition. */
+import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
+
+
+/** Represents a command that edits selected fields of an existing lesson definition. */
 public class EditLessonCommand extends Command {
     public static final String COMMAND_WORD = "editlesson";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits supplied lesson fields. Parameters: CURRENT_ID "
@@ -32,6 +34,17 @@ public class EditLessonCommand extends Command {
     private final Time endTime;
     private final Integer cost;
 
+    /**
+     * Creates an {@code EditLessonCommand} with the specified lesson identifier and updated fields.
+     *
+     * @param currentId identifier of the lesson to edit
+     * @param year updated year, or {@code null} to retain the existing value
+     * @param subject updated subject, or {@code null} to retain the existing value
+     * @param day updated day, or {@code null} to retain the existing value
+     * @param startTime updated start time, or {@code null} to retain the existing value
+     * @param endTime updated end time, or {@code null} to retain the existing value
+     * @param cost updated cost, or {@code null} to retain the existing value
+     */
     public EditLessonCommand(String currentId, Year year, Subject subject, Day day, Time startTime,
             Time endTime, Integer cost) {
         this.currentId = requireNonNull(currentId);

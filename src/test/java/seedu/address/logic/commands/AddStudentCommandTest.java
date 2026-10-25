@@ -59,8 +59,8 @@ public class AddStudentCommandTest {
     public void execute_unknownLesson_throwsCommandException() {
         Person person = new PersonBuilder().withLessons(CommandTestUtil.VALID_LESSON_MATH).build();
 
-        assertThrows(CommandException.class, AddStudentCommand.MESSAGE_LESSON_NOT_FOUND,
-                () -> new AddStudentCommand(person).execute(new ModelManager()));
+        assertThrows(CommandException.class, AddStudentCommand.MESSAGE_LESSON_NOT_FOUND, ()
+                -> new AddStudentCommand(person).execute(new ModelManager()));
     }
 
     @Test

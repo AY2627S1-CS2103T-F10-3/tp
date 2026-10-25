@@ -1,9 +1,9 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_COST;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_COST;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.model.lesson.Lesson.SUBJECT_CONSTRAINT;
 
 import org.junit.jupiter.api.Test;
