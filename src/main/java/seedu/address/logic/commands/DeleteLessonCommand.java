@@ -22,7 +22,7 @@ public class DeleteLessonCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        if (!model.removeLesson(lessonId)) {
+        if (!model.deleteLesson(lessonId)) {
             throw new CommandException(MESSAGE_LESSON_NOT_FOUND);
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, lessonId));

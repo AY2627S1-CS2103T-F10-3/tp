@@ -51,7 +51,7 @@ public interface Model {
     void addLesson(Lesson lesson);
 
     /** Removes a lesson definition and unenrols it from all students. */
-    boolean removeLesson(String lessonId);
+    boolean deleteLesson(String lessonId);
 
     /**
      * Deletes the given person.

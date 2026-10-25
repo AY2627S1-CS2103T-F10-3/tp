@@ -79,7 +79,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /** Removes a lesson definition and unenrols it from every student. */
-    public boolean removeLesson(String lessonId) {
+    public boolean deleteLesson(String lessonId) {
         Lesson lesson = lessonBook.getLesson(lessonId);
         if (lesson == null) {
             return false;
