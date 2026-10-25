@@ -68,6 +68,7 @@ public class EditCommand extends Command {
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. Add them with addlesson first.";
     public static final String MESSAGE_INCOMPLETE_GUARDIAN = "This student has no guardian. "
             + "To add one, provide all of: "
             + PREFIX_GUARDIAN_NAME + " " + PREFIX_GUARDIAN_PHONE + " " + PREFIX_GUARDIAN_EMAIL + " "
@@ -99,6 +100,10 @@ public class EditCommand extends Command {
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
+
+        if (editedPerson.getLessons().stream().anyMatch(lesson -> !model.hasLesson(lesson))) {
+            throw new CommandException(MESSAGE_LESSON_NOT_FOUND);
+        }
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
