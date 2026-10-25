@@ -47,6 +47,9 @@ public interface Model {
         return getAddressBook().getLessonList().contains(lesson);
     }
 
+    /** Adds a shared lesson definition. */
+    void addLesson(Lesson lesson);
+
     /**
      * Deletes the given person.
      * The person must exist in the address book.

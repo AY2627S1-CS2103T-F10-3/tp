@@ -79,7 +79,13 @@ public class ModelManager implements Model {
     @Override
     public boolean hasLesson(Lesson lesson) {
         requireNonNull(lesson);
-        return addressBook.getLessonList().contains(lesson);
+        return addressBook.getLessonList().stream().anyMatch(existing -> existing.getId().equals(lesson.getId()));
+    }
+
+    @Override
+    public void addLesson(Lesson lesson) {
+        requireNonNull(lesson);
+        addressBook.addLesson(lesson);
     }
 
     @Override
