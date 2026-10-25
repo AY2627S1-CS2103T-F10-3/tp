@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Person;
@@ -76,6 +77,30 @@ public class AddressBook implements ReadOnlyAddressBook {
     /** Adds a shared lesson definition if it is not already present. */
     public boolean addLesson(Lesson lesson) {
         return lessonBook.addLesson(lesson);
+    }
+
+    /** Replaces a lesson and updates student enrolments and attendance references. */
+    public boolean editLesson(String lessonId, Lesson editedLesson) {
+        Lesson existing = lessonBook.getLesson(lessonId);
+        if (existing == null || (!existing.getId().equals(editedLesson.getId())
+                && lessonBook.getLesson(editedLesson.getId()) != null)) {
+            return false;
+        }
+        List<Person> updatedPersons = persons.asUnmodifiableObservableList().stream().map(person -> {
+            Set<Lesson> lessons = new HashSet<>(person.getLessons());
+            if (lessons.remove(existing)) {
+                lessons.add(editedLesson);
+            }
+            List<Attendance> attendance = person.getAttendance().stream()
+                    .map(record -> record.getLessonId().equals(existing.getId())
+                            ? new Attendance(editedLesson.getId(), record.getDate(), record.getStatus()) : record)
+                    .toList();
+            return person.withLessons(lessons).withAttendance(attendance);
+        }).toList();
+        lessonBook.removeLesson(existing.getId());
+        setPersons(updatedPersons);
+        lessonBook.addLesson(editedLesson);
+        return true;
     }
 
     /** Removes a lesson definition and unenrols it from every student. */

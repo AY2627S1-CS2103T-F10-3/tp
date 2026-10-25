@@ -125,6 +125,22 @@ Example: `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
 The student's recorded attendance and payments are retained, but the deleted lesson no longer
 contributes to enrolled-class fee summaries.
 
+### Editing a lesson: `editlesson`
+
+Updates every field of an existing lesson and propagates the change to all enrolled students.
+
+Format: `editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`
+
+At least one field must be supplied. Fields not supplied retain their current values.
+
+`CURRENT_ID` uses the format `YEAR-SUBJECT-DAY-START_TIME-END_TIME`, without the cost,
+for example `2026-MATH-MONDAY-TEN-ELEVEN`.
+
+Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/40`
+
+Student enrolments and attendance references are updated to the new lesson ID. Recorded payments
+remain attached to their students, while fee summaries use the edited lesson cost.
+
 **Lessons** \
 Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
 where:

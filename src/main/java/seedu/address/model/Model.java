@@ -50,6 +50,9 @@ public interface Model {
     /** Adds a shared lesson definition. */
     void addLesson(Lesson lesson);
 
+    /** Replaces an existing lesson definition and all references to it. */
+    boolean editLesson(String lessonId, Lesson editedLesson);
+
     /** Removes a lesson definition and unenrols it from all students. */
     boolean deleteLesson(String lessonId);
 
