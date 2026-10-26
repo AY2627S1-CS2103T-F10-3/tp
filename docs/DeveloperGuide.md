@@ -393,7 +393,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 1.
 
-* 2b. EduReg detects a duplicate student entry (a student with the same name and phone number already exists).
+* 2b. EduReg detects a duplicate student entry (a student with the same name already exists).
 
     * 2b1. EduReg displays an error message rejecting the duplicate entry.
 
@@ -473,16 +473,16 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-**Use case: UC05 - Add parent contact to a student record**
+**Use case: UC05 - Add or edit guardian details**
 
 **MSS**
 
 1. User requests to list students.
 2. EduReg shows a list of students.
-3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
+3. User requests to add or edit the guardian details of a student at a specific index by providing one or more guardian fields.
 4. EduReg validates the index and guardian details.
-5. EduReg attaches the parent contact to the specified student record.
-6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
+5. EduReg attaches the guardian details to the specified student record, preserving any guardian fields that were not edited.
+6. EduReg refreshes the display panel and shows a success message confirming the updated guardian details.
 
    Use case ends.
 
@@ -506,15 +506,9 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-* 4c. The parent contact is a duplicate for that student (matching phone or email).
+* 4c. The student has no guardian and only some guardian fields are provided.
 
-    * 4c1. EduReg displays an error message indicating that this parent contact already exists for the student.
-
-      Use case resumes at step 2.
-
-* 4d. The student already has the maximum allowable number of guardian contacts (1).
-
-    * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
+    * 4c1. EduReg displays an error message requiring all five guardian fields to add a guardian.
 
       Use case resumes at step 2.
 
