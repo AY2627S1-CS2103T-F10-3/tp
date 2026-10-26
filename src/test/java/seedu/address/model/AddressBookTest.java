@@ -10,6 +10,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.time.Year;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.Test;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.testutil.PersonBuilder;
@@ -75,6 +80,22 @@ public class AddressBookTest {
         Person editedAlice = new PersonBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND)
                 .build();
         assertTrue(addressBook.hasPerson(editedAlice));
+    }
+
+    @Test
+    public void editLesson_preservesUnrelatedUnenrolledCatalogueEntry() {
+        Lesson unrelatedLesson = new Lesson(Year.of(2026), Subject.ENGLISH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30);
+        addressBook.addLesson(VALID_LESSON_MATH);
+        addressBook.addLesson(unrelatedLesson);
+
+        Lesson editedLesson = new Lesson(VALID_LESSON_MATH.getYear(), VALID_LESSON_MATH.getSubject(),
+                Day.TUESDAY, VALID_LESSON_MATH.getStartTime(), VALID_LESSON_MATH.getEndTime(),
+                VALID_LESSON_MATH.getCost());
+        addressBook.editLesson(VALID_LESSON_MATH.getId(), editedLesson);
+
+        assertTrue(addressBook.getLessonList().contains(unrelatedLesson));
+        assertTrue(addressBook.getLessonList().contains(editedLesson));
     }
 
     @Test

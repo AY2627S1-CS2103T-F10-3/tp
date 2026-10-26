@@ -19,8 +19,10 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -51,6 +53,14 @@ public class AddStudentCommandTest {
 
         assertThrows(CommandException.class, AddStudentCommand.MESSAGE_DUPLICATE_PERSON, ()
                 -> addStudentCommand.execute(modelStub));
+    }
+
+    @Test
+    public void execute_unknownLesson_throwsCommandException() {
+        Person person = new PersonBuilder().withLessons(CommandTestUtil.VALID_LESSON_MATH).build();
+
+        assertThrows(CommandException.class, AddStudentCommand.MESSAGE_LESSON_NOT_FOUND, ()
+                -> new AddStudentCommand(person).execute(new ModelManager()));
     }
 
     @Test
@@ -100,6 +110,21 @@ public class AddStudentCommandTest {
 
         @Override
         public void setGuiSettings(GuiSettings guiSettings) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void addLesson(Lesson lesson) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean deleteLesson(String lessonId) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean editLesson(String lessonId, Lesson editedLesson) {
             throw new AssertionError("This method should not be called.");
         }
 
