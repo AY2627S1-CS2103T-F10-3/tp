@@ -35,8 +35,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH_REFERENCE;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH_REFERENCE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
@@ -265,7 +265,7 @@ public class EditCommandParserTest {
         String userInput = targetIndex.getOneBased() + LESSON_DESC_MATH + LESSON_DESC_ENGLISH;
 
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
-                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+                .withLessons(VALID_LESSON_MATH_REFERENCE, VALID_LESSON_ENGLISH_REFERENCE).build();
 
         assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
     }
@@ -291,8 +291,8 @@ public class EditCommandParserTest {
     @Test
     public void parse_emptyLessonWithValidLesson_failure() {
         // l/ only clears lessons when it is the only l/ given
-        assertParseFailure(parser, "1" + LESSON_EMPTY + LESSON_DESC_MATH, Lesson.CONSTRAINTS);
-        assertParseFailure(parser, "1" + LESSON_DESC_MATH + LESSON_EMPTY, Lesson.CONSTRAINTS);
+        assertParseFailure(parser, "1" + LESSON_EMPTY + LESSON_DESC_MATH, Lesson.STUDENT_REFERENCE_CONSTRAINT);
+        assertParseFailure(parser, "1" + LESSON_DESC_MATH + LESSON_EMPTY, Lesson.STUDENT_REFERENCE_CONSTRAINT);
     }
 
     @Test

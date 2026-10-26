@@ -102,7 +102,10 @@ A student can have any number of tags or lessons, including zero.
 </div>
 
 Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
-match lessons already in the lesson catalog; `addstudent` does not create new lessons.
+match lessons already in the lesson catalog; `addstudent` does not create new lessons. Student lesson
+references must use the five-part lesson ID without the cost:
+`l/YEAR-SUBJECT-DAY-START_TIME-END_TIME`. A cost-bearing value such as
+`l/2026-MATH-MONDAY-TEN-ELEVEN-30` is invalid; the cost is always taken from the lesson catalog.
 
 ### Adding a lesson: `addlesson`
 
@@ -153,7 +156,7 @@ where:
 
 Examples:
 
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN-30`
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN`
 * `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 ### Viewing persons and contact values: `view`
@@ -202,7 +205,8 @@ Format:
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 * When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
-  cumulative. Each lesson must already exist in the catalog; use `addlesson` first.
+  cumulative. Each lesson must already exist in the catalog; use `addlesson` first. Lesson values must be five-part
+  IDs without a cost; the catalog supplies the lesson cost.
 * To remove all of a person's lessons, enter `l/` without a lesson after it.
 
 Examples:
@@ -212,7 +216,7 @@ Examples:
 * `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 * `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
   `Father` respectively. (Note: this example requires the student to already have guardian information stored)
-* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN-30 l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` Replaces the lessons of the
+* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN` Replaces the lessons of the
   1st person with the two given lessons.
 * `edit 2 l/` Removes all lessons of the 2nd person.
 

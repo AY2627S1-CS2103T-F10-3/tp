@@ -18,6 +18,9 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.lesson.Lesson;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Adds a person to the address book.
@@ -51,8 +54,8 @@ public class AddStudentCommand extends Command {
             + PREFIX_GUARDIAN_ADDRESS + "311, Clementi Ave 2, #02-25 "
             + PREFIX_TAG + "friends "
             + PREFIX_TAG + "owesMoney "
-            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN-1 "
-            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN-1";
+            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN "
+            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
@@ -76,12 +79,17 @@ public class AddStudentCommand extends Command {
         if (model.hasPerson(toAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
-        if (toAdd.getLessons().stream().anyMatch(lesson -> !model.hasLesson(lesson))) {
+        Set<Lesson> canonicalLessons = toAdd.getLessons().stream()
+                .map(lesson -> model.getLesson(lesson.getId()).orElse(null))
+                .collect(Collectors.toSet());
+        if (canonicalLessons.contains(null) || canonicalLessons.size() != toAdd.getLessons().size()) {
             throw new CommandException(MESSAGE_LESSON_NOT_FOUND);
         }
 
-        model.addPerson(toAdd);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)));
+        Person canonicalPerson = new Person(toAdd.getName(), toAdd.getPhone(), toAdd.getEmail(), toAdd.getAddress(),
+                toAdd.getTags(), canonicalLessons, toAdd.getGuardian(), toAdd.getPayments(), toAdd.getAttendance());
+        model.addPerson(canonicalPerson);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(canonicalPerson)));
     }
 
     @Override

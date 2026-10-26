@@ -1,6 +1,7 @@
 package seedu.address.model;
 
 import java.util.function.Predicate;
+import java.util.Optional;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
@@ -45,6 +46,13 @@ public interface Model {
     /** Returns whether the address book already contains this lesson definition. */
     default boolean hasLesson(Lesson lesson) {
         return getAddressBook().getLessonList().contains(lesson);
+    }
+
+    /** Returns the shared lesson with the given identifier, if it exists. */
+    default Optional<Lesson> getLesson(String lessonId) {
+        return getAddressBook().getLessonList().stream()
+                .filter(lesson -> lesson.getId().equals(lessonId))
+                .findFirst();
     }
 
     /** Adds a shared lesson definition. */
