@@ -79,7 +79,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         return lessonBook.addLesson(lesson);
     }
 
-    /** Replaces a lesson and updates student enrolments and attendance references. */
+    /** Replaces a lesson and updates student enrolments, preserving historical attendance references. */
     public boolean editLesson(String lessonId, Lesson editedLesson) {
         Lesson existing = lessonBook.getLesson(lessonId);
         if (existing == null || (!existing.getId().equals(editedLesson.getId())
@@ -91,10 +91,7 @@ public class AddressBook implements ReadOnlyAddressBook {
             if (lessons.remove(existing)) {
                 lessons.add(editedLesson);
             }
-            List<Attendance> attendance = person.getAttendance().stream()
-                    .map(record -> record.getLessonId().equals(existing.getId())
-                            ? new Attendance(editedLesson.getId(), record.getDate(), record.getStatus()) : record)
-                    .toList();
+            List<Attendance> attendance = person.getAttendance();
             return person.withLessons(lessons).withAttendance(attendance);
         }).toList();
         lessonBook.removeLesson(existing.getId());

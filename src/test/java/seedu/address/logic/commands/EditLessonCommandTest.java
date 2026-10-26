@@ -4,12 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.ModelManager;
+import seedu.address.model.attendance.Attendance;
+import seedu.address.model.attendance.AttendanceStatus;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
@@ -65,5 +68,22 @@ public class EditLessonCommandTest {
         assertThrows(CommandException.class, EditLessonCommand.MESSAGE_INVALID_TIME_RANGE,
                 () -> command.execute(model));
         assertEquals(VALID_LESSON_MATH, model.getAddressBook().getLessonList().get(0));
+    }
+
+    @Test
+    public void execute_editLesson_preservesHistoricalAttendanceLessonId() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+        Attendance historicalAttendance = new Attendance(VALID_LESSON_MATH.getId(),
+                LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
+        model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH)
+                .withAttendance(historicalAttendance).build());
+
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
+                Day.TUESDAY, null, null, null);
+        command.execute(model);
+
+        assertEquals(VALID_LESSON_MATH.getId(), model.getFilteredPersonList().getFirst()
+                .getAttendance().getFirst().getLessonId());
     }
 }

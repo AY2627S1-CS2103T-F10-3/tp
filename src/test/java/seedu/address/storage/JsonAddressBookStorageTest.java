@@ -11,6 +11,7 @@ import static seedu.address.testutil.TypicalPersons.IDA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +23,10 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.attendance.Attendance;
+import seedu.address.model.attendance.AttendanceStatus;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.testutil.PersonBuilder;
 
 public class JsonAddressBookStorageTest {
@@ -118,6 +123,29 @@ public class JsonAddressBookStorageTest {
         ReadOnlyAddressBook loaded = storage.readAddressBook(filePath).get();
         assertEquals(1, loaded.getLessonList().size());
         assertEquals(Set.of(VALID_LESSON_MATH), loaded.getPersonList().get(0).getLessons());
+    }
+
+    @Test
+    public void readAndSaveAddressBook_historicalAttendanceKeepsOriginalLessonId_success() throws Exception {
+        Path filePath = testFolder.resolve("HistoricalAttendanceAddressBook.json");
+        AddressBook original = new AddressBook();
+        Attendance attendance = new Attendance(VALID_LESSON_MATH.getId(),
+                LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
+        original.addPerson(new PersonBuilder(ALICE).withLessons(VALID_LESSON_MATH)
+                .withAttendance(attendance).build());
+        Lesson editedLesson = new Lesson(VALID_LESSON_MATH.getYear(), VALID_LESSON_MATH.getSubject(),
+                Day.TUESDAY, VALID_LESSON_MATH.getStartTime(), VALID_LESSON_MATH.getEndTime(),
+                VALID_LESSON_MATH.getCost());
+
+        original.editLesson(VALID_LESSON_MATH.getId(), editedLesson);
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        storage.saveAddressBook(original, filePath);
+        ReadOnlyAddressBook loaded = storage.readAddressBook(filePath).get();
+
+        assertEquals(VALID_LESSON_MATH.getId(), loaded.getPersonList().get(0)
+                .getAttendance().get(0).getLessonId());
+        assertEquals(LocalDate.of(2026, 10, 19), loaded.getPersonList().get(0)
+                .getAttendance().get(0).getDate());
     }
 
     @Test
