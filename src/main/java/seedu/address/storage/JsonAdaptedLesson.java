@@ -10,6 +10,7 @@ import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
+import seedu.address.model.lesson.exceptions.LessonException;
 
 /** Jackson-friendly version of {@link Lesson}. */
 class JsonAdaptedLesson {
@@ -60,7 +61,7 @@ class JsonAdaptedLesson {
                 throw new IllegalArgumentException(Lesson.COST_CONSTRAINT);
             }
             return new Lesson(modelYear, modelSubject, modelDay, modelStartTime, modelEndTime, cost);
-        } catch (IllegalArgumentException | NullPointerException exception) {
+        } catch (IllegalArgumentException | NullPointerException | LessonException exception) {
             throw new IllegalValueException(Lesson.CONSTRAINTS, exception);
         }
     }

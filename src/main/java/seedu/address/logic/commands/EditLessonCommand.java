@@ -26,6 +26,7 @@ public class EditLessonCommand extends Command {
             + "Command format: editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] "
             + "[et/END_TIME] [c/COST] (at least one field required).";
     public static final String MESSAGE_DUPLICATE = "A lesson with the edited ID already exists.";
+    public static final String MESSAGE_INVALID_TIME_RANGE = "Start time must be before end time.";
     private final String currentId;
     private final Year year;
     private final Subject subject;
@@ -64,11 +65,16 @@ public class EditLessonCommand extends Command {
         }
         Lesson currentLesson = model.getAddressBook().getLessonList().stream()
                 .filter(lesson -> lesson.getId().equals(currentId)).findFirst().get();
+        Time editedStartTime = startTime == null ? currentLesson.getStartTime() : startTime;
+        Time editedEndTime = endTime == null ? currentLesson.getEndTime() : endTime;
+        if (!Lesson.isValidTimeRange(editedStartTime, editedEndTime)) {
+            throw new CommandException(MESSAGE_INVALID_TIME_RANGE);
+        }
         Lesson editedLesson = new Lesson(year == null ? currentLesson.getYear() : year,
                 subject == null ? currentLesson.getSubject() : subject,
                 day == null ? currentLesson.getDay() : day,
-                startTime == null ? currentLesson.getStartTime() : startTime,
-                endTime == null ? currentLesson.getEndTime() : endTime,
+                editedStartTime,
+                editedEndTime,
                 cost == null ? currentLesson.getCost() : cost);
         if (!model.editLesson(currentId, editedLesson)) {
             throw new CommandException(MESSAGE_DUPLICATE);

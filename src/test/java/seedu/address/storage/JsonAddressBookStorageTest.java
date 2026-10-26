@@ -66,6 +66,16 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_invalidLessonTimeRange_throwDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("invalidLessonTimeRange.json");
+        Files.writeString(filePath, "{\"lessons\":[{\"year\":\"2026\",\"subject\":\"MATH\","
+                + "\"day\":\"MONDAY\",\"startTime\":\"TWELVE\",\"endTime\":\"ELEVEN\","
+                + "\"cost\":30}],\"persons\":[]}");
+
+        assertThrows(DataLoadingException.class, () -> readAddressBook(filePath.toString()));
+    }
+
+    @Test
     public void readAndSaveAddressBook_allInOrder_success() throws Exception {
         Path filePath = testFolder.resolve("TempAddressBook.json");
         AddressBook original = getTypicalAddressBook();

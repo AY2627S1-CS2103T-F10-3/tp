@@ -53,4 +53,17 @@ public class EditLessonCommandTest {
 
         assertThrows(CommandException.class, () -> command.execute(model));
     }
+
+    @Test
+    public void execute_invalidFinalTimeRange_throwsCommandException() {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
+                null, Time.TWELVE, null, null);
+
+        assertThrows(CommandException.class, EditLessonCommand.MESSAGE_INVALID_TIME_RANGE,
+                () -> command.execute(model));
+        assertEquals(VALID_LESSON_MATH, model.getAddressBook().getLessonList().get(0));
+    }
 }
