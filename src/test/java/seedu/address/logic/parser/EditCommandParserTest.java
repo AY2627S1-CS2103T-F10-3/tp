@@ -35,8 +35,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_EMAIL_
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_GUARDIAN_RELATIONSHIP_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH_REFERENCE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH_REFERENCE;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH_REFERENCE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
