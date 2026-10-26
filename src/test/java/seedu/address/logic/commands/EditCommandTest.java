@@ -51,6 +51,18 @@ public class EditCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_unknownLesson_throwsCommandException() {
+        Model emptyModel = new ModelManager();
+        emptyModel.addPerson(new PersonBuilder().build());
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withLessons(VALID_LESSON_MATH)
+                .build();
+
+        assertCommandFailure(new EditCommand(INDEX_FIRST_PERSON, descriptor), emptyModel,
+                EditCommand.MESSAGE_LESSON_NOT_FOUND);
+    }
+
+    @Test
     public void execute_studentWithPayments_keepsPayments() {
         Person student = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person studentWithPayment = new PersonBuilder(student).withPayments(PAYMENT_NOVEMBER).build();
@@ -141,6 +153,7 @@ public class EditCommandTest {
         Person editedPerson = new PersonBuilder(personWithLesson).withLessons(VALID_LESSON_ENGLISH).build();
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withLessons(VALID_LESSON_ENGLISH).build();
         EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        model.addLesson(VALID_LESSON_ENGLISH);
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
         assertTrue(expectedMessage.contains("Lessons: 2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40"));

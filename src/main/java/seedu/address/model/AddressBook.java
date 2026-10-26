@@ -2,10 +2,13 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Person;
@@ -74,6 +77,44 @@ public class AddressBook implements ReadOnlyAddressBook {
     /** Adds a shared lesson definition if it is not already present. */
     public boolean addLesson(Lesson lesson) {
         return lessonBook.addLesson(lesson);
+    }
+
+    /** Replaces a lesson and updates student enrolments, preserving historical attendance references. */
+    public boolean editLesson(String lessonId, Lesson editedLesson) {
+        Lesson existing = lessonBook.getLesson(lessonId);
+        if (existing == null || (!existing.getId().equals(editedLesson.getId())
+                && lessonBook.getLesson(editedLesson.getId()) != null)) {
+            return false;
+        }
+        List<Person> updatedPersons = persons.asUnmodifiableObservableList().stream().map(person -> {
+            Set<Lesson> lessons = new HashSet<>(person.getLessons());
+            if (lessons.remove(existing)) {
+                lessons.add(editedLesson);
+            }
+            List<Attendance> attendance = person.getAttendance();
+            return person.withLessons(lessons).withAttendance(attendance);
+        }).toList();
+        lessonBook.removeLesson(existing.getId());
+        persons.setPersons(updatedPersons);
+        lessonBook.addLesson(editedLesson);
+        return true;
+    }
+
+    /** Removes a lesson definition and unenrols it from every student. */
+    public boolean deleteLesson(String lessonId) {
+        Lesson lesson = lessonBook.getLesson(lessonId);
+        if (lesson == null) {
+            return false;
+        }
+        List<Person> updatedPersons = persons.asUnmodifiableObservableList().stream()
+                .map(person -> {
+                    Set<Lesson> updatedLessons = new HashSet<>(person.getLessons());
+                    updatedLessons.remove(lesson);
+                    return person.withLessons(updatedLessons);
+                }).toList();
+        persons.setPersons(updatedPersons);
+        lessonBook.removeLesson(lesson.getId());
+        return true;
     }
 
     @Override

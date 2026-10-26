@@ -55,6 +55,10 @@ public class CommandTestUtil {
             Time.TEN, Time.ELEVEN, 30);
     public static final Lesson VALID_LESSON_ENGLISH = new Lesson(Year.of(2026), Subject.ENGLISH, Day.WEDNESDAY,
             Time.THIRTEEN, Time.FOURTEEN, 40);
+    public static final Lesson VALID_LESSON_MATH_REFERENCE = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
+            Time.TEN, Time.ELEVEN, 0);
+    public static final Lesson VALID_LESSON_ENGLISH_REFERENCE = new Lesson(Year.of(2026), Subject.ENGLISH,
+            Day.WEDNESDAY, Time.THIRTEEN, Time.FOURTEEN, 0);
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;
@@ -73,9 +77,9 @@ public class CommandTestUtil {
             " " + PREFIX_GUARDIAN_RELATIONSHIP + VALID_GUARDIAN_RELATIONSHIP_BOB;
     public static final String GUARDIAN_ADDRESS_DESC_BOB =
             " " + PREFIX_GUARDIAN_ADDRESS + VALID_GUARDIAN_ADDRESS_BOB;
-    public static final String LESSON_DESC_MATH = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-30";
+    public static final String LESSON_DESC_MATH = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN";
     public static final String LESSON_DESC_ENGLISH = " " + PREFIX_LESSON
-                                                    + "2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40";
+                                                    + "2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN";
 
     public static final String INVALID_NAME_DESC = " " + PREFIX_NAME + "James&"; // '&' not allowed in names
     public static final String INVALID_PHONE_DESC = " " + PREFIX_PHONE + "911a"; // 'a' not allowed in phones
@@ -87,10 +91,10 @@ public class CommandTestUtil {
     public static final String INVALID_GUARDIAN_EMAIL_DESC = " " + PREFIX_GUARDIAN_EMAIL + "mary!yahoo";
     public static final String INVALID_GUARDIAN_RELATIONSHIP_DESC = " " + PREFIX_GUARDIAN_RELATIONSHIP + " ";
     public static final String INVALID_GUARDIAN_ADDRESS_DESC = " " + PREFIX_GUARDIAN_ADDRESS;
-    public static final String INVALID_LESSON_YEAR_DESC = " " + PREFIX_LESSON + "20x6-MATH-MONDAY-TEN-ELEVEN-30";
-    public static final String INVALID_LESSON_SUBJECT_DESC = " " + PREFIX_LESSON + "2026-HISTORY-MONDAY-TEN-ELEVEN-30";
-    public static final String INVALID_LESSON_DAY_DESC = " " + PREFIX_LESSON + "2026-MATH-FUNDAY-TEN-ELEVEN-30";
-    public static final String INVALID_LESSON_TIME_DESC = " " + PREFIX_LESSON + "2026-MATH-MONDAY-NINE-ELEVEN-30";
+    public static final String INVALID_LESSON_YEAR_DESC = " " + PREFIX_LESSON + "20x6-MATH-MONDAY-TEN-ELEVEN";
+    public static final String INVALID_LESSON_SUBJECT_DESC = " " + PREFIX_LESSON + "2026-HISTORY-MONDAY-TEN-ELEVEN";
+    public static final String INVALID_LESSON_DAY_DESC = " " + PREFIX_LESSON + "2026-MATH-FUNDAY-TEN-ELEVEN";
+    public static final String INVALID_LESSON_TIME_DESC = " " + PREFIX_LESSON + "2026-MATH-MONDAY-NINE-ELEVEN";
     public static final String INVALID_LESSON_COST_DESC = " " + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-abc";
 
     public static final String PREAMBLE_WHITESPACE = "\t  \r  \n";

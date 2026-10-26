@@ -125,6 +125,11 @@ public class Person {
         return Collections.unmodifiableSet(lessons);
     }
 
+    /** Returns a copy of this person with {@code lessons} replacing the enrolled lessons. */
+    public Person withLessons(Set<Lesson> lessons) {
+        return new Person(name, phone, email, address, tags, lessons, guardian, payments, attendance);
+    }
+
     /**
      * Returns an immutable payment list, in the order the payments were recorded.
      */

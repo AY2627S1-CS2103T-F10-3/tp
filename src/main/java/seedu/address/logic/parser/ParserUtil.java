@@ -233,8 +233,29 @@ public class ParserUtil {
         Day day = parseDay(lessonParts[2]);
         Time startTime = parseTime(lessonParts[3]);
         Time endTime = parseTime(lessonParts[4]);
+        if (!Lesson.isValidTimeRange(startTime, endTime)) {
+            throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
+        }
         int cost = parseCost(lessonParts[5]);
         return new Lesson(year, subject, day, startTime, endTime, cost);
+    }
+
+    /** Parses a student lesson reference, which must not contain a cost. */
+    public static Lesson parseLessonReference(String lesson) throws ParseException {
+        requireNonNull(lesson);
+        String[] lessonParts = lesson.trim().split("-", -1);
+        if (lessonParts.length != 5) {
+            throw new ParseException(Lesson.STUDENT_REFERENCE_CONSTRAINT);
+        }
+        Year year = parseYear(lessonParts[0]);
+        Subject subject = parseSubject(lessonParts[1]);
+        Day day = parseDay(lessonParts[2]);
+        Time startTime = parseTime(lessonParts[3]);
+        Time endTime = parseTime(lessonParts[4]);
+        if (!Lesson.isValidTimeRange(startTime, endTime)) {
+            throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
+        }
+        return new Lesson(year, subject, day, startTime, endTime, 0);
     }
 
     /**
@@ -249,6 +270,16 @@ public class ParserUtil {
         final Set<Lesson> lessonSet = new HashSet<>();
         for (String lesson : lessons) {
             lessonSet.add(parseLesson(lesson));
+        }
+        return lessonSet;
+    }
+
+    /** Parses student lesson references without accepting costs. */
+    public static Set<Lesson> parseLessonReferences(Collection<String> lessons) throws ParseException {
+        requireNonNull(lessons);
+        Set<Lesson> lessonSet = new HashSet<>();
+        for (String lesson : lessons) {
+            lessonSet.add(parseLessonReference(lesson));
         }
         return lessonSet;
     }

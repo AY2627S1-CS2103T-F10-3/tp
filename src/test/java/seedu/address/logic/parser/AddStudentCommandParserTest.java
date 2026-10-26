@@ -27,8 +27,8 @@ import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH_REFERENCE;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH_REFERENCE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
@@ -39,7 +39,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.model.lesson.Lesson.COST_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.DAY_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.SUBJECT_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.TIME_CONSTRAINT;
@@ -53,6 +52,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddStudentCommand;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -86,7 +86,7 @@ public class AddStudentCommandParserTest {
     @Test
     public void parse_validLesson_success() {
         Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags(VALID_TAG_FRIEND)
-                .withLessons(VALID_LESSON_MATH).build();
+                .withLessons(VALID_LESSON_MATH_REFERENCE).build();
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + TAG_DESC_FRIEND + LESSON_DESC_MATH + GUARDIAN_DETAILS, new AddStudentCommand(expectedPerson));
     }
@@ -94,7 +94,7 @@ public class AddStudentCommandParserTest {
     @Test
     public void parse_multipleLessons_success() {
         Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags()
-                .withLessons(VALID_LESSON_MATH, VALID_LESSON_ENGLISH).build();
+                .withLessons(VALID_LESSON_MATH_REFERENCE, VALID_LESSON_ENGLISH_REFERENCE).build();
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + LESSON_DESC_MATH + LESSON_DESC_ENGLISH + GUARDIAN_DETAILS, new AddStudentCommand(expectedPerson));
     }
@@ -238,7 +238,7 @@ public class AddStudentCommandParserTest {
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + INVALID_LESSON_TIME_DESC + GUARDIAN_DETAILS, TIME_CONSTRAINT);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_LESSON_COST_DESC + GUARDIAN_DETAILS, COST_CONSTRAINT);
+                + INVALID_LESSON_COST_DESC + GUARDIAN_DETAILS, Lesson.STUDENT_REFERENCE_CONSTRAINT);
 
         // non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB

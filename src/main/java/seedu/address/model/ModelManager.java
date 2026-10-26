@@ -79,7 +79,26 @@ public class ModelManager implements Model {
     @Override
     public boolean hasLesson(Lesson lesson) {
         requireNonNull(lesson);
-        return addressBook.getLessonList().contains(lesson);
+        return addressBook.getLessonList().stream().anyMatch(existing -> existing.getId().equals(lesson.getId()));
+    }
+
+    @Override
+    public void addLesson(Lesson lesson) {
+        requireNonNull(lesson);
+        addressBook.addLesson(lesson);
+    }
+
+    @Override
+    public boolean editLesson(String lessonId, Lesson editedLesson) {
+        requireNonNull(lessonId);
+        requireNonNull(editedLesson);
+        return addressBook.editLesson(lessonId, editedLesson);
+    }
+
+    @Override
+    public boolean deleteLesson(String lessonId) {
+        requireNonNull(lessonId);
+        return addressBook.deleteLesson(lessonId);
     }
 
     @Override

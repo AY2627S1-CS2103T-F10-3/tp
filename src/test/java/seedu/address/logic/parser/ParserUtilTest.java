@@ -203,6 +203,12 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseLesson_startTimeNotBeforeEndTime_throwsParseException() {
+        assertThrows(ParseException.class, () ->
+                ParserUtil.parseLesson("2026-MATH-MONDAY-ELEVEN-TEN-30"));
+    }
+
+    @Test
     public void parseTags_emptyCollection_returnsEmptySet() throws Exception {
         assertTrue(ParserUtil.parseTags(List.of()).isEmpty());
     }
