@@ -95,7 +95,7 @@ public class AddressBook implements ReadOnlyAddressBook {
             return person.withLessons(lessons).withAttendance(attendance);
         }).toList();
         lessonBook.removeLesson(existing.getId());
-        setPersons(updatedPersons);
+        persons.setPersons(updatedPersons);
         lessonBook.addLesson(editedLesson);
         return true;
     }
@@ -112,7 +112,8 @@ public class AddressBook implements ReadOnlyAddressBook {
                     updatedLessons.remove(lesson);
                     return person.withLessons(updatedLessons);
                 }).toList();
-        setPersons(updatedPersons);
+        persons.setPersons(updatedPersons);
+        lessonBook.removeLesson(lesson.getId());
         return true;
     }
 
