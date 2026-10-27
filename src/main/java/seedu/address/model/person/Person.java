@@ -125,6 +125,11 @@ public class Person {
         return Collections.unmodifiableSet(lessons);
     }
 
+    /** Returns a copy of this person with {@code lessons} replacing the enrolled lessons. */
+    public Person withLessons(Set<Lesson> lessons) {
+        return new Person(name, phone, email, address, tags, lessons, guardian, payments, attendance);
+    }
+
     /**
      * Returns an immutable payment list, in the order the payments were recorded.
      */
@@ -156,29 +161,29 @@ public class Person {
     /**
      * Returns the fees due for {@code month}: the monthly cost of each lesson held in that month's year.
      */
-    public int getFeesDue(YearMonth month) {
+    public long getFeesDue(YearMonth month) {
         requireNonNull(month);
         return lessons.stream()
                 .filter(lesson -> lesson.getYear().getValue() == month.getYear())
-                .mapToInt(Lesson::getCost)
+                .mapToLong(Lesson::getCost)
                 .sum();
     }
 
     /**
      * Returns the total amount paid for {@code month}.
      */
-    public int getAmountPaid(YearMonth month) {
+    public long getAmountPaid(YearMonth month) {
         requireNonNull(month);
         return payments.stream()
                 .filter(payment -> payment.getMonth().equals(month))
-                .mapToInt(payment -> payment.getAmount().value)
+                .mapToLong(payment -> payment.getAmount().value)
                 .sum();
     }
 
     /**
      * Returns the fees still owed for {@code month}, or zero if the month is fully paid.
      */
-    public int getOutstandingFees(YearMonth month) {
+    public long getOutstandingFees(YearMonth month) {
         return Math.max(0, getFeesDue(month) - getAmountPaid(month));
     }
 

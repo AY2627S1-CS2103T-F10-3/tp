@@ -1,0 +1,58 @@
+@startuml
+!include style.puml
+skinparam participantFontColor #000000
+actor Admin
+participant ":LogicManager" as Logic
+participant ":AddressBookParser" as Dispatcher
+participant ":FindCommandParser" as Parser
+participant ":FindCommand" as Command
+participant ":ModelManager" as Model
+participant ":StorageManager" as Storage
+
+Admin -> Logic : execute("find l/math unpaid/2026-10")
+activate Logic
+Logic -> Dispatcher : parseCommand(commandText)
+activate Dispatcher
+create Parser
+Dispatcher -> Parser : new FindCommandParser()
+Dispatcher -> Parser : parse(arguments)
+activate Parser
+Parser -> Parser : validate arguments and build predicate
+note over Parser
+    FieldsContainKeywordsPredicate AND UnpaidInMonthPredicate.
+    Predicate construction and helper calls are omitted.
+end note
+create Command
+Parser -> Command : new FindCommand(predicate)
+Parser --> Dispatcher : command
+deactivate Parser
+Dispatcher --> Logic : command
+deactivate Dispatcher
+Logic -> Command : execute(model)
+activate Command
+Command -> Model : updateFilteredPersonList(predicate)
+activate Model
+Model --> Command
+deactivate Model
+note over Command, Model
+    The UI observes the filtered list.
+    Stored student records are unchanged.
+end note
+Command -> Model : getFilteredPersonList()
+Model --> Command : matching students
+Command --> Logic : CommandResult containing match count
+deactivate Command
+Logic -> Model : getAddressBook()
+Model --> Logic : address book
+Logic -> Storage : saveAddressBook(addressBook)
+activate Storage
+Storage --> Logic
+deactivate Storage
+Logic --> Admin : CommandResult (via UI)
+deactivate Logic
+
+note over Dispatcher, Storage
+    Successful path shown. Invalid arguments fail before filtering.
+    Saving follows the shared command pipeline; failures are reported after filtering.
+end note
+@enduml

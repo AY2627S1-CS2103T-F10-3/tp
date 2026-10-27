@@ -3,6 +3,9 @@ package seedu.address.logic.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_ENGLISH;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
+import static seedu.address.testutil.TypicalAttendance.ATTENDANCE_PRESENT;
+import static seedu.address.testutil.TypicalGuardians.MARY;
+import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_PARTIAL;
 
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +66,20 @@ public class ViewCommandSummaryTest {
         model.addPerson(new PersonBuilder().withName("Charlie").build());
 
         assertSummary(model, "lesson", "No values found.");
+    }
+
+    @Test
+    public void execute_newFieldSummaries_countsGuardiansPaymentsAndAttendance() {
+        AddressBook book = new AddressBook();
+        book.addPerson(new PersonBuilder().withName("Bob").withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
+                .withAttendance(ATTENDANCE_PRESENT).build());
+        book.addPerson(new PersonBuilder().withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
+                .withAttendance(ATTENDANCE_PRESENT).build());
+        Model model = new ModelManager(book, new UserPrefs());
+
+        assertSummary(model, "guardian", MARY.toString() + " : 2");
+        assertSummary(model, "payment", PAYMENT_OCTOBER_PARTIAL + " : 2");
+        assertSummary(model, "attendance", ATTENDANCE_PRESENT + " : 2");
     }
 
     @Test

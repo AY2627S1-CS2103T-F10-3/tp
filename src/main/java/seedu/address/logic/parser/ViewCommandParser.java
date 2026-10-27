@@ -15,7 +15,8 @@ public class ViewCommandParser implements Parser<ViewCommand> {
         String trimmedArgs = args.trim();
         return switch (trimmedArgs) {
             case "" -> new ViewCommand("");
-            case "/name", "/phone", "/email", "/address", "/tag", "/lesson" ->
+            case "/name", "/phone", "/email", "/address", "/tag", "/lesson",
+                    "/guardian", "/payment", "/attendance" ->
                 new ViewCommand(trimmedArgs.substring(1));
             default -> throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE));

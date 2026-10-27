@@ -121,6 +121,12 @@ How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddStudentCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddStudentCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddStudentCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
+The importer classes used by the `importcsv` command are shown below:
+
+<img src="images/ImporterClassDiagram.png" width="500"/>
+
+The `ImportCsvCommand` coordinates the import by using `LessonCsvImporter` to read lesson definitions and `StudentCsvImporter` to read student records. Both importers use `CsvParser` and `CsvRow` to parse and access CSV data, and use `ParserUtil` to validate values before creating model objects of Person, Guardian and Lesson.
+
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
@@ -130,6 +136,15 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
+* stores each distinct `Lesson` once in a `LessonBook`. Students who take the same lesson refer to the same `Lesson` definition.
+* creates and deletes lesson definitions through `AddLessonCommand` and `DeleteLessonCommand`. Student creation and
+  editing may only reference lessons already present in the `LessonBook`; they cannot create lesson definitions.
+* edits lesson definitions through `EditLessonCommand`, replacing lesson references in every `Person` and migrating
+  matching attendance lesson IDs. `EditLessonCommandParser` accepts any non-empty subset of lesson fields and the
+  command preserves omitted fields from the current definition. Payment records remain student-owned; fee calculations
+  consequently use the edited cost.
+* reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
+* represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
@@ -189,6 +204,55 @@ The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
 its displayed attendance number. Both use the currently filtered student list, as payment commands do.
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
+
+### Finding students
+
+The class diagram below shows the main classes used by `find`. It uses the shared Logic (blue)
+and Model (red) styling; `Predicate<Person>` is a Java library interface, not an EduReg class.
+
+![Classes used by the find command](images/FindClassDiagram.png)
+
+Source: [Find class diagram](diagrams/FindClassDiagram.puml).
+
+`FindCommand` extends `Command` and holds one `Predicate<Person>`. `FindCommandParser` creates
+the appropriate predicates and command, using `ParserUtil` to validate billing months.
+The four concrete predicate classes implement the same interface, so the command does not need
+to know which search type it executes. Combined field/payment searches use `Predicate#and`.
+The diagram omits tokenizer helpers, the generic parser interface, and predicate implementation
+details to focus on these relationships. Dashed arrows show dependencies or interface realization;
+the solid triangle-headed arrow shows inheritance, and the solid arrow to the predicate shows
+the stored reference.
+
+The sequence diagram below follows parsing, command execution, filtering and saving for
+`find l/math unpaid/2026-10`. UI forwarding and predicate-construction details are omitted
+to focus on the main method calls.
+
+![Sequence of calls for the find command](images/find-command-sequence.png)
+
+Source: [Find command sequence diagram](diagrams/find-command-sequence.puml).
+
+1. `FindCommandParser` validates the arguments and builds a `Predicate<Person>`. Without prefixes,
+   it searches student names. With prefixes, it combines the selected fields and optional monthly
+   payment status. Invalid arguments produce a parse error before the displayed filter changes.
+2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList` and returns the
+   number of matching students. The UI observes the filtered list; no matching students gives an
+   empty list and a count of zero, not an error. Each search filters the full student list.
+3. After command execution, `LogicManager` saves the address book through the shared command
+   pipeline. Searching changes the displayed filter, not the stored student records. The diagram
+   assumes saving succeeds; a storage failure is reported as a command error after filtering.
+
+Field matching is case-insensitive, with OR across keywords within a field and AND across fields.
+Complete five-component lesson IDs match exactly; shorter lesson fragments match partially.
+`unpaid/` matches positive outstanding fees. `paid/` requires positive fees with no outstanding
+balance, including overpayments. Payment status covers all lessons in the billing year, not just
+the lesson matched by `l/`; the two payment-status prefixes cannot be combined.
+
+### Viewing student data
+
+The [View command sequence diagram](diagrams/view-command-sequence.puml) gives a high-level overview of how the
+UI, Logic, Model and Storage components handle `view`. With no field selector, the command updates the visible
+student list to show all students. With a selector such as `/email`, it reads the students' values, counts distinct
+values and returns the summary for display. The command pipeline then saves the address book.
 
 Design decisions:
 

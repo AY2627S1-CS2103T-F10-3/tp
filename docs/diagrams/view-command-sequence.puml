@@ -1,0 +1,41 @@
+@startuml
+title View command — high-level component interaction
+hide footbox
+autonumber
+
+actor User
+participant UI
+participant Logic
+participant Model
+participant Storage
+
+User -> UI: Enter `view` command
+activate UI
+UI -> Logic: Execute command
+activate Logic
+Logic -> Model: Read student data
+activate Model
+Model --> Logic: Student data
+deactivate Model
+alt No field specified
+    Logic -> Model: Update visible student list
+    activate Model
+    Model --> Logic: List updated
+    deactivate Model
+else Field specified
+    Logic -> Model: Get values for selected field
+    activate Model
+    Model --> Logic: Student data
+    deactivate Model
+    Logic -> Logic: Count distinct values
+end
+Logic -> Storage: Save address book
+activate Storage
+Storage --> Logic: Save complete
+deactivate Storage
+Logic --> UI: Return command result
+deactivate Logic
+UI --> User: Display result
+deactivate UI
+
+@enduml

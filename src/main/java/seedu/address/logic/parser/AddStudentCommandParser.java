@@ -60,7 +60,7 @@ public class AddStudentCommandParser implements Parser<AddStudentCommand> {
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get());
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get());
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
-        Set<Lesson> lessonList = ParserUtil.parseLessons(argMultimap.getAllValues(PREFIX_LESSON));
+        Set<Lesson> lessonList = ParserUtil.parseLessonReferences(argMultimap.getAllValues(PREFIX_LESSON));
 
         Guardian guardian = new Guardian(
                 ParserUtil.parseName(argMultimap.getValue(PREFIX_GUARDIAN_NAME).get()),

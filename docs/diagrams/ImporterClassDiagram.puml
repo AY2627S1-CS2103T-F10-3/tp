@@ -1,0 +1,33 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+
+package "Logic" {
+    class ImportCsvCommand
+
+    package "Importer" {
+        class CsvParser
+        class CsvRow
+        class StudentCsvImporter
+        class LessonCsvImporter
+    }
+}
+
+class Model
+class ParserUtil
+Class "{abstract}\nCommand" as Command
+
+ImportCsvCommand -up-|> Command
+ImportCsvCommand ..> LessonCsvImporter : <<use>>
+ImportCsvCommand ..> StudentCsvImporter : <<use>>
+ImportCsvCommand ..> Model : <<update>>
+
+StudentCsvImporter ..> CsvParser : <<use>>
+StudentCsvImporter ..> ParserUtil : <<use>>
+
+LessonCsvImporter ..> CsvParser : <<use>>
+LessonCsvImporter ..> CsvRow : <<use>>
+LessonCsvImporter ..> ParserUtil : <<use>>
+@enduml

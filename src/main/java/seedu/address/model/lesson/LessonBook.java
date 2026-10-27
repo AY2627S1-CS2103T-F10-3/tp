@@ -53,6 +53,10 @@ public class LessonBook {
                 .orElse(null);
     }
 
+    public boolean removeLesson(String id) {
+        return lessons.remove(id) != null;
+    }
+
     public Map<String, Lesson> getLessons() {
         return Collections.unmodifiableMap(lessons);
     }

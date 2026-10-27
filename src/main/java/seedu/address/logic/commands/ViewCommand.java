@@ -20,7 +20,7 @@ public class ViewCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "Viewing all students.";
     public static final String MESSAGE_USAGE = "view: Lists contacts or distinct values and their frequencies.\n"
-            + "Parameters: [/name | /phone | /email | /address | /tag | /lesson]\n"
+            + "Parameters: [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]\n"
             + "Example: view /email";
 
     private final String field;
@@ -47,6 +47,9 @@ public class ViewCommand extends Command {
             return new CommandResult(MESSAGE_SUCCESS);
         }
         Map<String, Integer> frequencies = new TreeMap<>();
+        if (field.equals("lesson")) {
+            model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(lesson.toString(), 0));
+        }
         for (Person person : model.getAddressBook().getPersonList()) {
             valuesOf(person).forEach(value -> frequencies.merge(value, 1, Integer::sum));
         }
@@ -67,6 +70,9 @@ public class ViewCommand extends Command {
             case "address" -> Stream.of(person.getAddress().toString());
             case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
             case "lesson" -> person.getLessons().stream().map(Lesson::toString);
+            case "guardian" -> person.getGuardian().stream().map(Object::toString);
+            case "payment" -> person.getPayments().stream().map(Object::toString);
+            case "attendance" -> person.getAttendance().stream().map(Object::toString);
             default -> throw new IllegalArgumentException("Unsupported view field: " + field);
         };
     }

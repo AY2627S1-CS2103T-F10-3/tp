@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.CollectionUtil;
@@ -63,11 +64,13 @@ public class EditCommand extends Command {
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com "
             + PREFIX_GUARDIAN_PHONE + "98765432 "
-            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN-30";
+            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-ELEVEN";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. "
+            + "Add them with addlesson first.";
     public static final String MESSAGE_INCOMPLETE_GUARDIAN = "This student has no guardian. "
             + "To add one, provide all of: "
             + PREFIX_GUARDIAN_NAME + " " + PREFIX_GUARDIAN_PHONE + " " + PREFIX_GUARDIAN_EMAIL + " "
@@ -99,6 +102,16 @@ public class EditCommand extends Command {
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
+
+        Set<Lesson> canonicalLessons = editedPerson.getLessons().stream()
+                .map(lesson -> model.getLesson(lesson.getId()).orElse(null))
+                .collect(Collectors.toSet());
+        if (canonicalLessons.contains(null) || canonicalLessons.size() != editedPerson.getLessons().size()) {
+            throw new CommandException(MESSAGE_LESSON_NOT_FOUND);
+        }
+        editedPerson = new Person(editedPerson.getName(), editedPerson.getPhone(), editedPerson.getEmail(),
+                editedPerson.getAddress(), editedPerson.getTags(), canonicalLessons, editedPerson.getGuardian(),
+                editedPerson.getPayments(), editedPerson.getAttendance());
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);

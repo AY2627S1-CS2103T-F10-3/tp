@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+
+package "Logic" {
+    class "{abstract}\nCommand" as Command
+    class FindCommand
+    class FindCommandParser
+    class ParserUtil
+
+    FindCommand -up-|> Command
+    FindCommandParser ..> FindCommand : <<create>>
+    FindCommandParser ..> ParserUtil : <<use>>
+}
+
+interface Predicate MODEL_COLOR
+interface Model MODEL_COLOR
+
+package "Model predicates" {
+    class NameContainsKeywordsPredicate MODEL_COLOR
+    class FieldsContainKeywordsPredicate MODEL_COLOR
+    class PaidInMonthPredicate MODEL_COLOR
+    class UnpaidInMonthPredicate MODEL_COLOR
+    NameContainsKeywordsPredicate -[hidden]down-> FieldsContainKeywordsPredicate
+    FieldsContainKeywordsPredicate -[hidden]down-> PaidInMonthPredicate
+    PaidInMonthPredicate -[hidden]down-> UnpaidInMonthPredicate
+}
+
+FindCommand --> "1" Predicate : predicate
+FindCommand ..> Model : <<use>>
+NameContainsKeywordsPredicate ..|> Predicate
+FieldsContainKeywordsPredicate ..|> Predicate
+PaidInMonthPredicate ..|> Predicate
+UnpaidInMonthPredicate ..|> Predicate
+
+FindCommandParser ..> FieldsContainKeywordsPredicate : <<create>>
+FindCommandParser ..> NameContainsKeywordsPredicate : <<create>>
+FindCommandParser ..> PaidInMonthPredicate : <<create>>
+FindCommandParser ..> UnpaidInMonthPredicate : <<create>>
+
+note bottom of Predicate
+    java.util.function.Predicate
+    Used with type argument Person.
+    Field and payment predicates can be
+    combined using and().
+end note
+@enduml

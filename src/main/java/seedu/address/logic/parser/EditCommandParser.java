@@ -134,7 +134,7 @@ public class EditCommandParser implements Parser<EditCommand> {
             return Optional.empty();
         }
         Collection<String> lessonSet = lessons.size() == 1 && lessons.contains("") ? Collections.emptySet() : lessons;
-        return Optional.of(ParserUtil.parseLessons(lessonSet));
+        return Optional.of(ParserUtil.parseLessonReferences(lessonSet));
     }
 
 }

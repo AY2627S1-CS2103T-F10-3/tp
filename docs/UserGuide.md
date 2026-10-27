@@ -101,6 +101,49 @@ records without guardian information remain readable.
 A student can have any number of tags or lessons, including zero.
 </div>
 
+Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
+match lessons already in the lesson catalog; `addstudent` does not create new lessons. Student lesson
+references must use the five-part lesson ID without the cost:
+`l/YEAR-SUBJECT-DAY-START_TIME-END_TIME`. A cost-bearing value such as
+`l/2026-MATH-MONDAY-TEN-ELEVEN-30` is invalid; the cost is always taken from the lesson catalog.
+
+### Adding a lesson: `addlesson`
+
+Creates a reusable lesson definition in the lesson catalog.
+
+Format: `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`
+
+Example: `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
+
+Use the resulting lesson ID when enrolling students with `addstudent` or `edit`.
+
+### Deleting a lesson: `deletelesson`
+
+Removes a lesson from the lesson catalog and unenrols it from all students.
+
+Format: `deletelesson LESSON_ID`
+
+Example: `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
+
+The student's recorded attendance and payments are retained, but the deleted lesson no longer
+contributes to enrolled-class fee summaries.
+
+### Editing a lesson: `editlesson`
+
+Updates every field of an existing lesson and propagates the change to all enrolled students.
+
+Format: `editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`
+
+At least one field must be supplied. Fields not supplied retain their current values.
+
+`CURRENT_ID` uses the format `YEAR-SUBJECT-DAY-START_TIME-END_TIME`, without the cost,
+for example `2026-MATH-MONDAY-TEN-ELEVEN`.
+
+Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/40`
+
+Student enrolments and attendance references are updated to the new lesson ID. Recorded payments
+remain attached to their students, while fee summaries use the edited lesson cost.
+
 **Lessons** \
 Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
 where:
@@ -113,7 +156,7 @@ where:
 
 Examples:
 
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN-30`
+* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN`
 * `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 ### Viewing persons and contact values: `view`
@@ -162,7 +205,8 @@ Format:
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 * When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
-  cumulative. Lessons use the same format as in [`addstudent`](#adding-a-student-addstudent).
+  cumulative. Each lesson must already exist in the catalog; use `addlesson` first. Lesson values must be five-part
+  IDs without a cost; the catalog supplies the lesson cost.
 * To remove all of a person's lessons, enter `l/` without a lesson after it.
 
 Examples:
@@ -172,7 +216,7 @@ Examples:
 * `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 * `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
   `Father` respectively. (Note: this example requires the student to already have guardian information stored)
-* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN-30 l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` Replaces the lessons of the
+* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN` Replaces the lessons of the
   1st person with the two given lessons.
 * `edit 2 l/` Removes all lessons of the 2nd person.
 
@@ -286,12 +330,51 @@ Finds students using partial student names, student phone numbers, guardian name
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`
+To find students with outstanding fees for a billing month, use `find unpaid/YYYY-MM`.
+
+Use `find paid/YYYY-MM` for students with positive fees fully covered by payments, including overpayments.
+Students with no fees due are excluded from both payment-status searches.
+For example, `find l/math paid/2026-10` shows Maths students who have fully paid their total October fees.
+Choose either `paid/` or `unpaid/` in one command; supplying both is rejected.
+
+* `find unpaid/2026-10` includes students with no payment or only partial payment for October 2026.
+* `find n/Alice unpaid/2026-10` requires both the name and outstanding-fee condition to match.
+* `find l/math unpaid/2026-10` shows Maths students with outstanding total monthly fees,
+  not necessarily unpaid fees for the Maths lesson alone.
+
+Fully paid students, overpaid students and students with no fees due are excluded. Payments for other billing
+months do not count. The calculation uses the existing payment feature and current enrolled lessons for that year.
+This is independent of tags such as `unpaid`. Supply one complete month, for example `2026-10`;
+empty values, invalid months and repeated `unpaid/` prefixes are rejected.
+
+
+Use `l/` to find students by enrolled lesson ID, including a class roster:
+
+* `find l/math` matches students enrolled in any lesson whose ID contains `math`.
+* `find l/2026-MATH-MONDAY` matches students in the corresponding year, subject and day.
+* `find l/2026-MATH-MONDAY-TEN-ELEVEN` shows that lesson's roster.
+* `find l/math science` matches either subject; `find n/Alice l/math` requires both fields to match.
+
+Lesson searches are case-insensitive and exclude cost. An ID with five hyphen-separated components
+(`YEAR-SUBJECT-DAY-START-END`) must match the whole ID exactly; fewer components are matched as substrings.
+Students without lessons do not match. Each student appears only once even if several enrolled lessons match.
+Field-specific format: `find [n/KEYWORDS] [p/KEYWORDS] [e/KEYWORDS] [a/KEYWORDS] [t/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS] [ge/KEYWORDS] [ga/KEYWORDS] [gr/KEYWORDS] [l/KEYWORDS]`
+
+Additional fields support the same case-insensitive partial matching:
+
+* `e/`: student email; `a/`: student address; `t/`: individual tag names.
+* `ge/`: guardian email; `ga/`: guardian address; `gr/`: guardian relationship.
+* `find e/school.com a/Tampines` requires both email and address to match.
+* `find ge/example.com gr/mother` searches guardian details but returns students.
+* `find t/friend scholarship` matches either tag fragment. Students without tags do not match.
+
+`find t/unpaid` searches an explicitly assigned tag only, not calculated payment status.
+Tag searches are substring searches, so `find t/paid` also matches the tag `unpaid`.
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * Without a prefix, the search considers only student names. `n/` searches student names, `p/` student phone numbers,
-  `gn/` guardian names, and `gp/` guardian phone numbers.
+  `gn/` guardian names, and `gp/` guardian phone numbers. The additional prefixes above search their named fields.
 * Partial matches are supported; for example, `lic` matches `Alice`, and `9123` matches `91234567`.
 * With multiple prefixes, every specified field must match (`AND`). For example, `find n/Alice gp/9876` returns
   only students whose name contains `Alice` and whose guardian phone number contains `9876`.
@@ -390,17 +473,20 @@ previous EduReg home folder.
 
 Action | Format, Examples
 --------|------------------
-**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​`
+**Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
+**Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
+**Edit Lesson** | `editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40`
+**Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON_ID]…​`
 \<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 1 amt/70 m/2026-10 d/2026-10-03`
 **View Payments** | `viewpayments INDEX`<br> e.g., `viewpayments 1`
 **Delete Payment** | `deletepayment INDEX i/PAYMENT_INDEX`<br> e.g., `deletepayment 1 i/2`
 **Attendance** | `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
 **View Attendance** | `viewattendance INDEX`
 **Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/KEYWORDS] [gn/KEYWORDS] [gp/KEYWORDS]`<br> e.g., `find gn/Mary`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find e/example.com gr/mother`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson]`
 **Help** | `help`

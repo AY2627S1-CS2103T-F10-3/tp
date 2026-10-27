@@ -15,5 +15,6 @@ public enum Time {
     SIXTEEN,
     SEVENTEEN,
     EIGHTEEN,
-    NINETEEN
+    NINETEEN,
+    TWENTY
 }
