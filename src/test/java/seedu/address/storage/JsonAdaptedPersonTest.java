@@ -68,7 +68,9 @@ public class JsonAdaptedPersonTest {
         LessonBook lessonBook = new LessonBook();
         lessonBook.addLesson(MATH_LESSON);
 
-        assertEquals(List.of(historicalAttendance.toModelType()), person.toModelType(lessonBook).getAttendance());
+        // Attendance saved without a stable lesson ID is linked to the lesson on load.
+        assertEquals(List.of(historicalAttendance.toModelType().withLessonUid(MATH_LESSON.getUid())),
+                person.toModelType(lessonBook).getAttendance());
     }
 
     @Test

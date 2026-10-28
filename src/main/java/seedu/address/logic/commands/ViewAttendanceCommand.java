@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
@@ -10,6 +11,8 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.attendance.Attendance;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.person.Person;
 
 /**
@@ -26,6 +29,7 @@ public class ViewAttendanceCommand extends Command {
 
     public static final String MESSAGE_HEADER = "Attendance for %1$s (earliest date first):";
     public static final String MESSAGE_NO_ATTENDANCE = "No attendance recorded.";
+    public static final String MESSAGE_SCHEDULE_CHANGED = "   Schedule changed to %1$s";
 
     private final Index index;
 
@@ -53,8 +57,27 @@ public class ViewAttendanceCommand extends Command {
         }
         for (int i = 0; i < attendance.size(); i++) {
             feedback.append("\n").append(i + 1).append(". ").append(attendance.get(i));
+            describeLaterChange(model, attendance.get(i)).ifPresent(change ->
+                    feedback.append("\n").append(String.format(MESSAGE_SCHEDULE_CHANGED, change)));
         }
         return new CommandResult(feedback.toString());
+    }
+
+    /**
+     * Returns how the lesson of {@code record} is held now, if it has changed since the session was recorded.
+     * Changes to the weekly slot are shown as eg. {@code TUESDAY TEN-ELEVEN}; other changes show the full lesson ID.
+     */
+    private static Optional<String> describeLaterChange(Model model, Attendance record) {
+        Optional<Lesson> lesson = record.getLessonUid().flatMap(uid -> model.getAddressBook().getLessonList()
+                .stream().filter(candidate -> candidate.getUid().equals(uid)).findFirst());
+        if (lesson.isEmpty() || lesson.get().getId().equals(record.getLessonId())) {
+            return Optional.empty();
+        }
+        LessonRevision original = lesson.get().getRevisionOn(record.getDate());
+        LessonRevision latest = lesson.get().getLatestRevision();
+        boolean onlySlotChanged = original.getYear().equals(latest.getYear())
+                && original.getSubject() == latest.getSubject();
+        return Optional.of(onlySlotChanged ? latest.getScheduleDescription() : latest.getId());
     }
 
     @Override

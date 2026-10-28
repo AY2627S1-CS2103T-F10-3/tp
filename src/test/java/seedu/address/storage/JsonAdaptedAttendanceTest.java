@@ -15,6 +15,9 @@ public class JsonAdaptedAttendanceTest {
     public void toModelType_validRecord_roundTrips() throws Exception {
         assertEquals(ATTENDANCE_PRESENT, new JsonAdaptedAttendance(ATTENDANCE_PRESENT).toModelType());
         assertEquals(ATTENDANCE_PRESENT,
+                new JsonAdaptedAttendance(MATH_LESSON.getId(), MATH_LESSON.getUid(), "2026-10-19", "present")
+                        .toModelType());
+        assertEquals(ATTENDANCE_PRESENT.withLessonUid(null),
                 new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", "present").toModelType());
     }
 

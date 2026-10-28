@@ -139,10 +139,18 @@ The `Model` component,
 * stores each distinct `Lesson` once in a `LessonBook`. Students who take the same lesson refer to the same `Lesson` definition.
 * creates and deletes lesson definitions through `AddLessonCommand` and `DeleteLessonCommand`. Student creation and
   editing may only reference lessons already present in the `LessonBook`; they cannot create lesson definitions.
-* edits lesson definitions through `EditLessonCommand`, replacing lesson references in every `Person` and migrating
-  matching attendance lesson IDs. `EditLessonCommandParser` accepts any non-empty subset of lesson fields and the
-  command preserves omitted fields from the current definition. Payment records remain student-owned; fee calculations
-  consequently use the edited cost.
+* versions lessons instead of overwriting them. A `Lesson` has a stable internal `uid` (by default its first lesson
+  ID) and an immutable, non-empty list of `LessonRevision`s, each holding the year, subject, day, times, cost and the
+  `effectiveFrom` billing month. The plain getters (`getId()`, `getCost()`, ...) describe the latest revision.
+  `getRevisionFor(month)` and `getRevisionOn(date)` return the revision in effect at that time.
+* edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
+  `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
+  `from/` sets the revision's `effectiveFrom` and defaults to next month. A revision may not take effect before
+  the latest one, and a revision in the same month replaces it. `LessonBook#addLesson` gives a new lesson a fresh
+  `uid` if an earlier lesson that has since moved away from this ID already uses it.
+* computes fees per month: `Person#getFeesDue(month)` sums `Lesson#getCostFor(month)`, the cost of the revision in
+  effect that month (zero if that revision is for another year). Payments store their own amount and month and are
+  never rewritten, so editing a lesson's cost does not change whether earlier months are paid.
 * reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
 * represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
@@ -207,10 +215,13 @@ order for records on the same date. Deletion resolves the displayed number to th
 the stored list. Both commands use the currently filtered student list, as payment commands do.
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
 
-`AddressBook#editLesson` updates matching attendance lesson IDs for every student, including students no longer
-enrolled in the lesson. Session dates and statuses remain unchanged when the schedule changes. All replacement
-students are prepared before the model is modified. If the replacement ID would merge two sessions for the same
-student and date, an `AttendanceConflictException` aborts the edit and `EditLessonCommand` reports the conflict.
+Each `Attendance` stores the ID of the lesson revision in effect on its date (so the original timing is kept) and the
+lesson's `uid`. `AttendanceCommand` accepts the lesson's current ID or any earlier one, validates the date against
+`Lesson#getRevisionOn(date)`, and records the revision's ID and the `uid`. Linked records are compared for duplicates
+by `uid` and date, so a session cannot be recorded twice under the old and new IDs. `AddressBook#editLesson` does not
+modify attendance. `viewattendance` looks up the record's lesson by `uid` and, if its current ID differs, adds a
+`Schedule changed to ...` line. `JsonAdaptedAttendance` stores `lessonUid`. Records from older files that have no
+`lessonUid` are linked on load to the lesson that has (or had) that lesson ID.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
 
 ### Finding students

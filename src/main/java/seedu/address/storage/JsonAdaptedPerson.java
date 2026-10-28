@@ -156,7 +156,7 @@ class JsonAdaptedPerson {
             if (record == null) {
                 throw new IllegalValueException("Attendance records must not be null.");
             }
-            Attendance modelAttendance = record.toModelType();
+            Attendance modelAttendance = linkToLesson(record.toModelType(), lessonBook);
             if (personAttendance.stream().anyMatch(modelAttendance::isSameSession)) {
                 throw new IllegalValueException(Person.MESSAGE_DUPLICATE_ATTENDANCE);
             }
@@ -200,6 +200,17 @@ class JsonAdaptedPerson {
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelLessons,
                 guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), personPayments,
                 personAttendance);
+    }
+
+    /**
+     * Links attendance saved by older versions, which stored only a lesson ID, to the lesson that had that ID.
+     */
+    private static Attendance linkToLesson(Attendance attendance, LessonBook lessonBook) {
+        if (attendance.getLessonUid().isPresent() || lessonBook == null) {
+            return attendance;
+        }
+        Lesson lesson = lessonBook.findLessonWithRevisionId(attendance.getLessonId());
+        return lesson == null ? attendance : attendance.withLessonUid(lesson.getUid());
     }
 
 }

@@ -7,7 +7,11 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalPayments.PAYMENT_NOVEMBER;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
@@ -17,15 +21,19 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceStatus;
-import seedu.address.model.attendance.exceptions.AttendanceConflictException;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
+import seedu.address.model.payment.Amount;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
 public class EditLessonCommandTest {
+    private static final YearMonth OCTOBER = YearMonth.of(2026, 10);
+    private static final YearMonth NOVEMBER = YearMonth.of(2026, 11);
+
     @Test
     public void execute_partialEdit_updatesLesson() throws Exception {
         ModelManager model = new ModelManager();
@@ -77,40 +85,140 @@ public class EditLessonCommandTest {
     }
 
     @Test
-    public void execute_editLesson_updatesAttendanceIdButPreservesHistoricalDateAndStatus() throws Exception {
+    public void execute_editLesson_keepsHistoricalAttendanceUnchanged() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
-        Attendance historicalAttendance = new Attendance(VALID_LESSON_MATH.getId(),
+        Attendance historicalAttendance = new Attendance(VALID_LESSON_MATH.getId(), VALID_LESSON_MATH.getUid(),
                 LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
         model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH)
                 .withAttendance(historicalAttendance).build());
 
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                Day.TUESDAY, null, null, null);
-        command.execute(model);
-
-        assertEquals(List.of(new Attendance(model.getAddressBook().getLessonList().getFirst().getId(),
-                historicalAttendance.getDate(), historicalAttendance.getStatus())),
-                model.getFilteredPersonList().getFirst().getAttendance());
-    }
-
-    @Test
-    public void execute_editEndTime_rejectsConflictingStatusForExistingSession() throws Exception {
-        ModelManager model = new ModelManager();
-        Attendance recorded = new Attendance(VALID_LESSON_MATH.getId(),
-                LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
-        model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH).withAttendance(recorded).build());
-        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, Time.TWELVE, null)
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, Day.TUESDAY, null, null, null, NOVEMBER)
                 .execute(model);
 
-        String newId = model.getAddressBook().getLessonList().getFirst().getId();
-        Attendance conflicting = new Attendance(newId, recorded.getDate(), AttendanceStatus.ABSENT);
-        assertCommandFailure(new AttendanceCommand(INDEX_FIRST_PERSON, conflicting), model,
-                Person.MESSAGE_DUPLICATE_ATTENDANCE);
+        assertEquals(List.of(historicalAttendance), model.getFilteredPersonList().getFirst().getAttendance());
+        assertEquals("2026-MATH-TUESDAY-TEN-ELEVEN", model.getAddressBook().getLessonList().getFirst().getId());
     }
 
     @Test
-    public void execute_editLesson_updatesFormerStudentsAndPreservesOtherData() throws Exception {
+    public void execute_editLesson_keepsEarlierRevisionForSessionsBeforeEffectiveMonth() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH).build());
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, Day.TUESDAY, null, null, null, NOVEMBER)
+                .execute(model);
+        String newId = model.getAddressBook().getLessonList().getFirst().getId();
+        String uid = VALID_LESSON_MATH.getUid();
+
+        // An October Monday is still a valid session and is recorded under the October timing.
+        new AttendanceCommand(INDEX_FIRST_PERSON,
+                new Attendance(newId, LocalDate.of(2026, 10, 26), AttendanceStatus.PRESENT)).execute(model);
+        // A November Tuesday follows the new timing.
+        new AttendanceCommand(INDEX_FIRST_PERSON,
+                new Attendance(newId, LocalDate.of(2026, 11, 3), AttendanceStatus.ABSENT)).execute(model);
+        assertEquals(List.of(
+                new Attendance(VALID_LESSON_MATH.getId(), uid, LocalDate.of(2026, 10, 26), AttendanceStatus.PRESENT),
+                new Attendance(newId, uid, LocalDate.of(2026, 11, 3), AttendanceStatus.ABSENT)),
+                model.getFilteredPersonList().getFirst().getAttendance());
+
+        // A November Monday no longer matches the schedule.
+        assertCommandFailure(new AttendanceCommand(INDEX_FIRST_PERSON,
+                new Attendance(newId, LocalDate.of(2026, 11, 2), AttendanceStatus.PRESENT)), model,
+                AttendanceCommand.MESSAGE_INVALID_SESSION_DATE);
+        // The same session cannot be recorded again under the old lesson ID.
+        assertCommandFailure(new AttendanceCommand(INDEX_FIRST_PERSON,
+                new Attendance(VALID_LESSON_MATH.getId(), LocalDate.of(2026, 10, 26), AttendanceStatus.ABSENT)),
+                model, Person.MESSAGE_DUPLICATE_ATTENDANCE);
+    }
+
+    @Test
+    public void execute_editLesson_viewAttendanceShowsScheduleChange() throws Exception {
+        ModelManager model = new ModelManager();
+        Attendance recorded = new Attendance(VALID_LESSON_MATH.getId(), VALID_LESSON_MATH.getUid(),
+                LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
+        Person student = new PersonBuilder().withLessons(VALID_LESSON_MATH).withAttendance(recorded).build();
+        model.addPerson(student);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, Day.TUESDAY, null, null, null, NOVEMBER)
+                .execute(model);
+
+        assertEquals(String.format(ViewAttendanceCommand.MESSAGE_HEADER, student.getName())
+                + "\n1. 2026-MATH-MONDAY-TEN-ELEVEN on 2026-10-19: PRESENT"
+                + "\n" + String.format(ViewAttendanceCommand.MESSAGE_SCHEDULE_CHANGED, "TUESDAY TEN-ELEVEN"),
+                new ViewAttendanceCommand(INDEX_FIRST_PERSON).execute(model).getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_editCost_onlyChangesFeesFromEffectiveMonth() throws Exception {
+        ModelManager model = new ModelManager();
+        Payment octoberPayment = new Payment(new Amount("30"), OCTOBER, LocalDate.of(2026, 10, 3));
+        model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH).withPayments(octoberPayment).build());
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 40, NOVEMBER)
+                .execute(model);
+
+        Person updated = model.getFilteredPersonList().getFirst();
+        assertEquals(30, updated.getFeesDue(OCTOBER));
+        assertEquals(0, updated.getOutstandingFees(OCTOBER));
+        assertEquals(40, updated.getFeesDue(NOVEMBER));
+        assertEquals(40, updated.getFeesDue(YearMonth.of(2026, 12)));
+        assertEquals(List.of(octoberPayment), updated.getPayments());
+    }
+
+    @Test
+    public void execute_multipleEdits_eachMonthUsesItsOwnRevision() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH).build());
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 40, NOVEMBER)
+                .execute(model);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 50, YearMonth.of(2026, 12))
+                .execute(model);
+
+        Person updated = model.getFilteredPersonList().getFirst();
+        assertEquals(30, updated.getFeesDue(OCTOBER));
+        assertEquals(40, updated.getFeesDue(NOVEMBER));
+        assertEquals(50, updated.getFeesDue(YearMonth.of(2026, 12)));
+        assertEquals(3, model.getAddressBook().getLessonList().getFirst().getRevisions().size());
+    }
+
+    @Test
+    public void execute_effectiveMonthBeforeLatestChange_throwsCommandException() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 40, NOVEMBER)
+                .execute(model);
+
+        assertCommandFailure(new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 50,
+                OCTOBER), model, String.format(Lesson.MESSAGE_REVISION_TOO_EARLY, NOVEMBER));
+    }
+
+    @Test
+    public void execute_sameEffectiveMonth_replacesPendingChange() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 40, NOVEMBER)
+                .execute(model);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 45, NOVEMBER)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(2, lesson.getRevisions().size());
+        assertEquals(45, lesson.getCostFor(NOVEMBER));
+    }
+
+    @Test
+    public void execute_noEffectiveMonth_defaultsToNextMonth() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+        Clock clock = Clock.fixed(Instant.parse("2026-10-28T12:00:00Z"), ZoneOffset.UTC);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, null, 40, null, clock)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(NOVEMBER, lesson.getLatestRevision().getEffectiveFrom());
+        assertEquals(30, lesson.getCostFor(OCTOBER));
+    }
+
+    @Test
+    public void execute_editLesson_leavesFormerStudentsAttendanceUnchanged() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
         Attendance recorded = new Attendance(VALID_LESSON_MATH.getId(),
@@ -123,28 +231,6 @@ public class EditLessonCommandTest {
         new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, null, Time.TWELVE, null)
                 .execute(model);
 
-        String newId = model.getAddressBook().getLessonList().getFirst().getId();
-        assertEquals(formerStudent.withAttendance(List.of(
-                new Attendance(newId, recorded.getDate(), recorded.getStatus()), unrelated)),
-                model.getAddressBook().getPersonList().getFirst());
-    }
-
-    @Test
-    public void execute_editLessonWithHistoricalIdCollision_failsWithoutPartialChanges() {
-        ModelManager model = new ModelManager();
-        Lesson edited = new Lesson(VALID_LESSON_MATH.getYear(), VALID_LESSON_MATH.getSubject(),
-                VALID_LESSON_MATH.getDay(), VALID_LESSON_MATH.getStartTime(), Time.TWELVE,
-                VALID_LESSON_MATH.getCost());
-        Attendance recorded = new Attendance(VALID_LESSON_MATH.getId(),
-                LocalDate.of(2026, 10, 19), AttendanceStatus.PRESENT);
-        Attendance conflicting = new Attendance(edited.getId(), recorded.getDate(), AttendanceStatus.ABSENT);
-        model.addPerson(new PersonBuilder().withName("First Student").withLessons(VALID_LESSON_MATH)
-                .withAttendance(recorded).build());
-        model.addPerson(new PersonBuilder().withName("Second Student").withLessons(VALID_LESSON_MATH)
-                .withAttendance(recorded, conflicting).build());
-
-        assertCommandFailure(new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                null, null, Time.TWELVE, null), model, new AttendanceConflictException().getMessage());
-        assertEquals(List.of(VALID_LESSON_MATH), model.getAddressBook().getLessonList());
+        assertEquals(formerStudent, model.getAddressBook().getPersonList().getFirst());
     }
 }

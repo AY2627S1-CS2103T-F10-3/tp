@@ -20,6 +20,7 @@ class JsonAdaptedAttendance {
     public static final String MESSAGE_INVALID_DATE = "Attendance date must be a valid date in yyyy-MM-dd form.";
 
     private final String lessonId;
+    private final String lessonUid;
     private final String date;
     private final String status;
 
@@ -27,11 +28,20 @@ class JsonAdaptedAttendance {
      * Creates an adapted attendance record from saved fields.
      */
     @JsonCreator
-    public JsonAdaptedAttendance(@JsonProperty("lessonId") String lessonId, @JsonProperty("date") String date,
+    public JsonAdaptedAttendance(@JsonProperty("lessonId") String lessonId,
+            @JsonProperty("lessonUid") String lessonUid, @JsonProperty("date") String date,
             @JsonProperty("status") String status) {
         this.lessonId = lessonId;
+        this.lessonUid = lessonUid;
         this.date = date;
         this.status = status;
+    }
+
+    /**
+     * Creates an adapted attendance record without a stable lesson ID, as saved by older versions.
+     */
+    public JsonAdaptedAttendance(String lessonId, String date, String status) {
+        this(lessonId, null, date, status);
     }
 
     /**
@@ -39,6 +49,7 @@ class JsonAdaptedAttendance {
      */
     public JsonAdaptedAttendance(Attendance source) {
         lessonId = source.getLessonId();
+        lessonUid = source.getLessonUid().orElse(null);
         date = source.getDate().toString();
         status = source.getStatus().name();
     }
@@ -68,6 +79,6 @@ class JsonAdaptedAttendance {
         } catch (IllegalArgumentException exception) {
             throw new IllegalValueException(Attendance.MESSAGE_STATUS_CONSTRAINTS, exception);
         }
-        return new Attendance(lessonId, modelDate, modelStatus);
+        return new Attendance(lessonId, lessonUid, modelDate, modelStatus);
     }
 }

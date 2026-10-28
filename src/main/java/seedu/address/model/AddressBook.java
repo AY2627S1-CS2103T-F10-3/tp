@@ -2,15 +2,13 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.attendance.Attendance;
-import seedu.address.model.attendance.exceptions.AttendanceConflictException;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Person;
@@ -82,34 +80,33 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
-     * Replaces a lesson and updates enrolments and attendance references, retaining session dates and statuses.
-     * @throws AttendanceConflictException if the new ID would merge attendance sessions; nothing is changed
+     * Replaces lesson {@code lessonId} with {@code editedLesson}, a newer version of the same logical lesson, and
+     * updates every enrolment. Attendance is left untouched: each record keeps the ID of the revision in effect
+     * when it was taken and stays linked to the lesson through its stable internal ID.
+     *
+     * @return false if the lesson does not exist or another lesson already has the edited lesson's current ID
      */
     public boolean editLesson(String lessonId, Lesson editedLesson) {
+        requireNonNull(editedLesson);
         Lesson existing = lessonBook.getLesson(lessonId);
-        if (existing == null || (!existing.getId().equals(editedLesson.getId())
-                && lessonBook.getLesson(editedLesson.getId()) != null)) {
+        if (existing == null) {
             return false;
         }
+        Lesson clash = lessonBook.getLessonByCurrentId(editedLesson.getId());
+        if (clash != null && !clash.getUid().equals(existing.getUid())) {
+            return false;
+        }
+        Lesson replacement = editedLesson.getUid().equals(existing.getUid())
+                ? editedLesson : editedLesson.withUid(existing.getUid());
         List<Person> updatedPersons = persons.asUnmodifiableObservableList().stream().map(person -> {
-            Set<Lesson> lessons = new HashSet<>(person.getLessons());
-            if (lessons.remove(existing)) {
-                lessons.add(editedLesson);
-            }
-            Set<LocalDate> dates = new HashSet<>();
-            List<Attendance> attendance = person.getAttendance().stream().map(record -> {
-                Attendance updated = record.getLessonId().equals(lessonId)
-                        ? new Attendance(editedLesson.getId(), record.getDate(), record.getStatus()) : record;
-                if (updated.getLessonId().equals(editedLesson.getId()) && !dates.add(updated.getDate())) {
-                    throw new AttendanceConflictException();
-                }
-                return updated;
-            }).toList();
-            return person.withLessons(lessons).withAttendance(attendance);
+            Set<Lesson> lessons = person.getLessons().stream()
+                    .map(lesson -> lesson.getUid().equals(existing.getUid()) ? replacement : lesson)
+                    .collect(Collectors.toSet());
+            return person.withLessons(lessons);
         }).toList();
         lessonBook.removeLesson(existing.getId());
         persons.setPersons(updatedPersons);
-        lessonBook.addLesson(editedLesson);
+        lessonBook.addLesson(replacement);
         return true;
     }
 

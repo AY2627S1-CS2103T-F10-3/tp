@@ -168,13 +168,13 @@ public class Person {
     }
 
     /**
-     * Returns the fees due for {@code month}: the monthly cost of each lesson held in that month's year.
+     * Returns the fees due for {@code month}: for each enrolled lesson, the monthly cost of the lesson revision
+     * in effect during that month. Later lesson edits therefore do not change the fees of earlier months.
      */
     public long getFeesDue(YearMonth month) {
         requireNonNull(month);
         return lessons.stream()
-                .filter(lesson -> lesson.getYear().getValue() == month.getYear())
-                .mapToLong(Lesson::getCost)
+                .mapToLong(lesson -> lesson.getCostFor(month))
                 .sum();
     }
 
