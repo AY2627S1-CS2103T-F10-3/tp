@@ -22,7 +22,7 @@ public class ImportCsvCommand extends Command {
             + "are required.\n"
             + "importstudents.csv fields: name, phone, email, address, tags, guardian_name, guardian_phone, "
             + "guardian_email, guardian_relationship, guardian_address, lessons.\n"
-            + "importlessons.csv fields: id, year, subject, day, start_time, end_time, cost.";
+            + "importlessons.csv fields: year, subject, day, start_time, end_time, cost.";
     private static final String MESSAGE_SUCCESS = "Imported %d student(s) from data/importstudents.csv and "
             + "data/importlessons.csv.";
     private static final String IMPORT_STUDENTS_FILENAME = "importstudents.csv";

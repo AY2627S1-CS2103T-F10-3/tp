@@ -33,8 +33,8 @@ public class ImportCsvCommandTest {
     public void execute_duplicateStudents_skipsAndReportsAllDuplicates() throws Exception {
         Path lessons = temporaryDirectory.resolve("importlessons.csv");
         Path students = temporaryDirectory.resolve("importstudents.csv");
-        Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
-                + "2026-ENGLISH-MONDAY-TEN-ELEVEN,2026,ENGLISH,MONDAY,TEN,ELEVEN,30\n");
+        Files.writeString(lessons, "year,subject,day,start_time,end_time,cost\n"
+                + "2026,ENGLISH,MONDAY,TEN,ELEVEN,30\n");
         String header = "name,phone,email,address,lessons\n";
         String alice = "Alice Tan,91234567,alice@example.com,1 Main Street,"
                 + "2026-ENGLISH-MONDAY-TEN-ELEVEN\n";
@@ -56,8 +56,8 @@ public class ImportCsvCommandTest {
     public void execute_conflictingExistingLesson_rejectsImport() throws Exception {
         Path lessons = temporaryDirectory.resolve("importlessons.csv");
         Path students = temporaryDirectory.resolve("importstudents.csv");
-        Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
-                + "2026-ENGLISH-MONDAY-TEN-ELEVEN,2026,ENGLISH,MONDAY,TEN,ELEVEN,50\n");
+        Files.writeString(lessons, "year,subject,day,start_time,end_time,cost\n"
+                + "2026,ENGLISH,MONDAY,TEN,ELEVEN,50\n");
         Files.writeString(students, "name,phone,email,address\nAlice Tan,91234567,alice@example.com,1 Main Street\n");
 
         ModelManager model = new ModelManager();
@@ -78,8 +78,8 @@ public class ImportCsvCommandTest {
     public void execute_invalidLessonCsv_reportsLessonFile() throws Exception {
         Path lessons = temporaryDirectory.resolve("importlessons.csv");
         Path students = temporaryDirectory.resolve("importstudents.csv");
-        Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
-                + "BAD,2026,MATH,MONDAY,TEN,ELEVEN,30\n");
+        Files.writeString(lessons, "year,subject,day,start_time,end_time,cost\n"
+                + "2026,MATH,FUNDAY,TEN,ELEVEN,30\n");
         Files.writeString(students, "name,phone,email,address\n"
                 + "Alice Tan,91234567,alice@example.com,1 Main Street\n");
 
@@ -87,6 +87,6 @@ public class ImportCsvCommandTest {
                 new ImportCsvCommand(students, lessons).execute(new ModelManager()));
 
         assertTrue(exception.getMessage().startsWith("Unable to import data/importlessons.csv:"));
-        assertTrue(exception.getMessage().contains("Lesson id does not match lesson data: BAD"));
+        assertTrue(exception.getMessage().contains("Lesson CSV row 2:"));
     }
 }
