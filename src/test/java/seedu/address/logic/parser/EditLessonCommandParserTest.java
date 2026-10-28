@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,5 +22,10 @@ public class EditLessonCommandParserTest {
     public void parse_noFields_failure() {
         assertParseFailure(parser, "2026-MATH-MONDAY-TEN-ELEVEN",
                 String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT, EditLessonCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_invalidYearFormat_failure() {
+        assertParseFailure(parser, "2026-MATH-MONDAY-TEN-ELEVEN y/+99999", YEAR_CONSTRAINT);
     }
 }

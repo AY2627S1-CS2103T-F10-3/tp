@@ -37,4 +37,12 @@ public class LessonCsvImporterTest {
 
         assertThrows(ParseException.class, () -> new LessonCsvImporter().read(file));
     }
+
+    @Test
+    public void read_invalidYearFormat_throwsParseException() throws Exception {
+        Path file = temporaryDirectory.resolve("importlessons.csv");
+        Files.writeString(file, HEADER + "-5-ENGLISH-MONDAY-TEN-ELEVEN,-5,ENGLISH,MONDAY,TEN,ELEVEN,30\n");
+
+        assertThrows(ParseException.class, () -> new LessonCsvImporter().read(file));
+    }
 }

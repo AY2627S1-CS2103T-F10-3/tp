@@ -154,11 +154,10 @@ public class ParserUtil {
      */
     public static Year parseYear(String year) throws ParseException {
         requireNonNull(year);
-        try {
-            return Year.parse(year.trim());
-        } catch (RuntimeException exception) {
-            throw new ParseException(Lesson.YEAR_CONSTRAINT, exception);
+        if (!Lesson.isValidYear(year)) {
+            throw new ParseException(Lesson.YEAR_CONSTRAINT);
         }
+        return Year.parse(year.trim());
     }
 
     /**

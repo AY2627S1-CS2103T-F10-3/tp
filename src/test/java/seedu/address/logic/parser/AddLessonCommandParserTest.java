@@ -5,6 +5,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_COST;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.model.lesson.Lesson.SUBJECT_CONSTRAINT;
+import static seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,5 +36,13 @@ public class AddLessonCommandParserTest {
     @Test
     public void parse_invalidValue_failure() {
         assertParseFailure(parser, validArgs.replace("s/MATH", "s/HISTORY"), SUBJECT_CONSTRAINT);
+    }
+
+    @Test
+    public void parse_invalidYearFormat_failure() {
+        String[] invalidYears = {"-5", "0", "26", "+99999"};
+        for (String invalidYear : invalidYears) {
+            assertParseFailure(parser, validArgs.replace("y/2026", "y/" + invalidYear), YEAR_CONSTRAINT);
+        }
     }
 }

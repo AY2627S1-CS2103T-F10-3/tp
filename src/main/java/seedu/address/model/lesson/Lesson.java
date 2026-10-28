@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import seedu.address.model.lesson.exceptions.LessonException;
@@ -92,12 +91,7 @@ public class Lesson {
         if (year == null) {
             return false;
         }
-        try {
-            Year.parse(year.trim());
-            return true;
-        } catch (DateTimeParseException exception) {
-            return false;
-        }
+        return year.trim().matches("[0-9]{4}");
     }
 
     /** Returns the year in which the lesson is conducted. */
