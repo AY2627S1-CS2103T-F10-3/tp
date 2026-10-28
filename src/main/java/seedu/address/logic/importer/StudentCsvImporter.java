@@ -38,13 +38,23 @@ public class StudentCsvImporter {
                 throw new ParseException("Student CSV must have a header row.");
             }
             String line;
+            int rowNumber = 1;
             while ((line = reader.readLine()) != null) {
+                rowNumber++;
                 if (!line.isBlank()) {
-                    List<String> values = CsvParser.parseLine(line);
-                    while (values.size() < headers.size()) {
-                        values.add("");
+                    List<String> values = List.of();
+                    try {
+                        values = CsvParser.parseLine(line);
+                        while (values.size() < headers.size()) {
+                            values.add("");
+                        }
+                        students.add(createPerson(headers, values, lessonsById));
+                    } catch (ParseException exception) {
+                        String studentName = valueForError(headers, values, "name");
+                        String context = studentName.isBlank() ? "" : " (" + studentName + ")";
+                        throw new ParseException("Student CSV row " + rowNumber + context + ": "
+                                + exception.getMessage(), exception);
                     }
-                    students.add(createPerson(headers, values, lessonsById));
                 }
             }
         }
@@ -93,5 +103,14 @@ public class StudentCsvImporter {
 
     private static String valueOrEmpty(CsvRow row, String field) throws ParseException {
         return row.hasField(field) ? row.get(field) : "";
+    }
+
+    private static String valueForError(List<String> headers, List<String> values, String field) {
+        for (int i = 0; i < headers.size(); i++) {
+            if (headers.get(i).trim().equalsIgnoreCase(field)) {
+                return i < values.size() ? values.get(i).trim() : "";
+            }
+        }
+        return "";
     }
 }
