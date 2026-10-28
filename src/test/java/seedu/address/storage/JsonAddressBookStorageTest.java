@@ -126,7 +126,7 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
-    public void readAndSaveAddressBook_historicalAttendanceKeepsOriginalLessonId_success() throws Exception {
+    public void readAndSaveAddressBook_historicalAttendanceUsesEditedLessonId_success() throws Exception {
         Path filePath = testFolder.resolve("HistoricalAttendanceAddressBook.json");
         AddressBook original = new AddressBook();
         Attendance attendance = new Attendance(VALID_LESSON_MATH.getId(),
@@ -142,7 +142,7 @@ public class JsonAddressBookStorageTest {
         storage.saveAddressBook(original, filePath);
         ReadOnlyAddressBook loaded = storage.readAddressBook(filePath).get();
 
-        assertEquals(VALID_LESSON_MATH.getId(), loaded.getPersonList().get(0)
+        assertEquals(editedLesson.getId(), loaded.getPersonList().get(0)
                 .getAttendance().get(0).getLessonId());
         assertEquals(LocalDate.of(2026, 10, 19), loaded.getPersonList().get(0)
                 .getAttendance().get(0).getDate());
