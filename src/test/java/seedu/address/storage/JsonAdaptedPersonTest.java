@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.storage.JsonAdaptedPerson.MISSING_FIELD_MESSAGE_FORMAT;
+import static seedu.address.storage.JsonAdaptedPerson.NULL_ENTRY_MESSAGE_FORMAT;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalAttendance.MATH_LESSON;
 import static seedu.address.testutil.TypicalPayments.PAYMENT_NOVEMBER;
@@ -9,6 +10,7 @@ import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_PARTIAL;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +59,38 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
                 VALID_TAGS, null, null, null, List.of(new JsonAdaptedPayment("0", "2026-10", "2026-10-01")));
         assertThrows(IllegalValueException.class, Amount.MESSAGE_CONSTRAINTS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullPayment_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_TAGS, null, null, null, Collections.singletonList(null));
+        assertThrows(IllegalValueException.class, String.format(NULL_ENTRY_MESSAGE_FORMAT, "Payment"),
+                person::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullTag_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                Collections.singletonList(null));
+        assertThrows(IllegalValueException.class, String.format(NULL_ENTRY_MESSAGE_FORMAT, "Tags"),
+                person::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullLegacyLesson_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_TAGS, null, Collections.singletonList(null), null, null);
+        assertThrows(IllegalValueException.class, String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"),
+                person::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullAttendance_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_TAGS, null, null, null, null, Collections.singletonList(null));
+        assertThrows(IllegalValueException.class, String.format(NULL_ENTRY_MESSAGE_FORMAT, "Attendance"),
+                person::toModelType);
     }
 
     @Test

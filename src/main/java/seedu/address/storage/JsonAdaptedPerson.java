@@ -29,6 +29,7 @@ class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
     public static final String UNKNOWN_LESSON_ID_MESSAGE = "Person references an unknown lesson ID: %s";
+    public static final String NULL_ENTRY_MESSAGE_FORMAT = "%s records must not be null.";
 
     private final String name;
     private final String phone;
@@ -124,6 +125,9 @@ class JsonAdaptedPerson {
     public Person toModelType(LessonBook lessonBook) throws IllegalValueException {
         final List<Tag> personTags = new ArrayList<>();
         for (JsonAdaptedTag tag : tags) {
+            if (tag == null) {
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Tags"));
+            }
             personTags.add(tag.toModelType());
         }
 
@@ -140,6 +144,9 @@ class JsonAdaptedPerson {
             // v1.3 stored complete lesson definitions inside each person. Import them
             // into the shared lesson book so the next save can normalize the format.
             for (JsonAdaptedLesson legacyLesson : legacyLessons) {
+                if (legacyLesson == null) {
+                    throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"));
+                }
                 Lesson lesson = legacyLesson.toModelType();
                 lessonBook.addLesson(lesson);
                 personLessons.add(lessonBook.getLesson(lesson.getId()));
@@ -148,13 +155,16 @@ class JsonAdaptedPerson {
 
         final List<Payment> personPayments = new ArrayList<>();
         for (JsonAdaptedPayment payment : payments) {
+            if (payment == null) {
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Payment"));
+            }
             personPayments.add(payment.toModelType());
         }
 
         final List<Attendance> personAttendance = new ArrayList<>();
         for (JsonAdaptedAttendance record : attendance) {
             if (record == null) {
-                throw new IllegalValueException("Attendance records must not be null.");
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Attendance"));
             }
             Lesson lesson = lessonBook == null ? null : lessonBook.getLesson(record.getLessonId());
             Attendance modelAttendance = record.toModelType(lesson);
