@@ -8,6 +8,8 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_START_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_YEAR;
 
+import java.util.Locale;
+
 import seedu.address.logic.commands.EditLessonCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -17,7 +19,7 @@ public class EditLessonCommandParser implements Parser<EditLessonCommand> {
     public EditLessonCommand parse(String args) throws ParseException {
         ArgumentMultimap map = ArgumentTokenizer.tokenize(args, PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY,
                 PREFIX_START_TIME, PREFIX_END_TIME, PREFIX_COST);
-        String currentId = map.getPreamble().trim();
+        String currentId = map.getPreamble().trim().toUpperCase(Locale.ROOT);
         if (currentId.isEmpty() || !hasAnyField(map)) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditLessonCommand.MESSAGE_USAGE));
         }

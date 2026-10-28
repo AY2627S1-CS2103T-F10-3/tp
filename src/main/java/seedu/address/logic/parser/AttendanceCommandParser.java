@@ -37,7 +37,7 @@ public class AttendanceCommandParser implements Parser<AttendanceCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AttendanceCommand.MESSAGE_USAGE),
                     exception);
         }
-        String lessonId = argMultimap.getValue(PREFIX_LESSON).get().trim();
+        String lessonId = argMultimap.getValue(PREFIX_LESSON).get().trim().toUpperCase(Locale.ROOT);
         if (lessonId.isBlank()) {
             throw new ParseException(Attendance.MESSAGE_LESSON_CONSTRAINTS);
         }

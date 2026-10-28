@@ -25,7 +25,7 @@ public class EditLessonCommandParserTest {
 
     @Test
     public void parse_caseInsensitiveLessonFields_success() {
-        assertParseSuccess(parser, "2026-MATH-MONDAY-TEN-ELEVEN y/2027 s/math d/mOnDaY st/ten et/eleven",
+        assertParseSuccess(parser, "2026-mAtH-mOnDaY-tEn-ElEvEn y/2027 s/math d/mOnDaY st/ten et/eleven",
                 new EditLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN", Year.of(2027), Subject.MATH, Day.MONDAY,
                         Time.TEN, Time.ELEVEN, null));
     }
