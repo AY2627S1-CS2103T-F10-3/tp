@@ -22,6 +22,12 @@ public class AddLessonCommandParserTest {
     }
 
     @Test
+    public void parse_caseInsensitiveLessonFields_success() {
+        String args = " y/2026 s/math d/mOnDaY st/ten et/eleven c/30";
+        assertParseSuccess(parser, args, new AddLessonCommand(VALID_LESSON_MATH));
+    }
+
+    @Test
     public void parse_missingPrefix_failure() {
         String expected = String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT, AddLessonCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN", expected);
