@@ -24,7 +24,7 @@ public class ImportCsvCommand extends Command {
             + "guardian_email, guardian_relationship, guardian_address, lessons.\n"
             + "importlessons.csv fields: id, year, subject, day, start_time, end_time, cost.";
     private static final String MESSAGE_SUCCESS = "Imported %d student(s) and %d lesson(s) "
-            + "from data/importstudents.csv.";
+            + "from data/importstudents.csv and data/importlessons.csv.";
     private final Path importPath;
     private final Path lessonsPath;
 
