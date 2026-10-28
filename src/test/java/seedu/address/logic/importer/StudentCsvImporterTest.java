@@ -56,6 +56,15 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_utf8BomHeader_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "\uFEFFname,phone,email,address\n"
+                + "Alice Tan,91234567,alice@example.com,1 Main Street\n");
+
+        assertEquals(1, new StudentCsvImporter().read(file, Map.of()).size());
+    }
+
+    @Test
     public void read_multilineQuotedAddress_success() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, "name,phone,email,address\n"

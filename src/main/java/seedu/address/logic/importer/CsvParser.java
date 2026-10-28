@@ -20,6 +20,9 @@ public final class CsvParser {
         if (line == null) {
             return null;
         }
+        if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
+            line = line.substring(1);
+        }
         List<String> result = new ArrayList<>();
         StringBuilder cell = new StringBuilder();
         boolean quoted = false;
