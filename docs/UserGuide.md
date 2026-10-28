@@ -141,7 +141,11 @@ for example `2026-MATH-MONDAY-TEN-ELEVEN`.
 
 Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/40`
 
-Student enrolments and attendance references are updated to the new lesson ID. Recorded payments
+Student enrolments and attendance references are updated to the new lesson ID, including attendance for students
+who are no longer enrolled. Historical attendance dates and statuses remain unchanged, even if the lesson's
+year or weekday changes. If the new ID would create two attendance records for the same student and date,
+the edit is rejected without changing any data. Use `viewattendance` and `deleteattendance` to resolve the
+conflicting records before retrying. Recorded payments
 remain attached to their students, while fee summaries use the edited lesson cost.
 
 **Lessons** \
@@ -308,7 +312,8 @@ Examples (assuming student 1 is enrolled in the Monday Math lesson above):
 
 Format: `viewattendance INDEX`
 
-Lists the student's attendance records in recording order, with numbers starting at 1. Each entry shows the
+Lists the student's attendance records from earliest to latest date, with numbers starting at 1.
+Records on the same date retain their recording order. Each entry shows the
 lesson ID, date and status. If there are no records, EduReg displays `No attendance recorded.`
 The command does not change the student list or any records.
 
@@ -319,7 +324,9 @@ Example: `viewattendance 1`
 Format: `deleteattendance INDEX i/ATTENDANCE_INDEX`
 
 Deletes the record numbered `ATTENDANCE_INDEX` in that student's `viewattendance` output. Both indexes must
-be positive integers. Remaining records are renumbered, so view the records again before deleting another one.
+be positive integers. Zero, negative, or non-integer indexes are rejected with a message identifying the invalid
+student or attendance index. Records are renumbered after additions or deletions, so run `viewattendance` again
+before deleting another record, especially after adding a backdated entry.
 Historical records can still be viewed and deleted after the student leaves the lesson.
 
 Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.

@@ -156,8 +156,7 @@ class JsonAdaptedPerson {
             if (record == null) {
                 throw new IllegalValueException("Attendance records must not be null.");
             }
-            Lesson lesson = lessonBook == null ? null : lessonBook.getLesson(record.getLessonId());
-            Attendance modelAttendance = record.toModelType(lesson);
+            Attendance modelAttendance = record.toModelType();
             if (personAttendance.stream().anyMatch(modelAttendance::isSameSession)) {
                 throw new IllegalValueException(Person.MESSAGE_DUPLICATE_ATTENDANCE);
             }
