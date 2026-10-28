@@ -232,6 +232,10 @@ Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
 * `MONTH` is the billing month that the payment is for, in the form `yyyy-MM`, for example `2026-10`.
 * `DATE` is the date the payment was received, in the form `yyyy-MM-dd`. If you leave it out, today's date is used.
 * A student can make more than one payment for the same month, for example when paying in parts.
+* The student must have fees due for `MONTH`, that is, at least one lesson in that month's year. Otherwise the payment
+  is rejected.
+* `AMOUNT` can't be more than the amount still outstanding for `MONTH`. For example, if $30 is due and $10 has been
+  paid, the largest payment accepted is $20.
 * After recording the payment, EduReg shows the fees due, the total paid and the amount still outstanding for that
   month.
 

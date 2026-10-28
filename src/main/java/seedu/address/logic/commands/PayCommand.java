@@ -5,6 +5,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_AMOUNT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MONTH;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class PayCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "Recorded payment for %1$s: %2$s\n"
             + "Fees for %3$s: $%4$d due, $%5$d paid, $%6$d outstanding";
+    public static final String MESSAGE_NO_FEES_DUE = "%1$s has no lessons in %2$d, so no fees are due for %3$s.";
+    public static final String MESSAGE_OVERPAYMENT = "Payment of %1$s exceeds the $%2$d outstanding for %3$s "
+            + "($%4$d due, $%5$d already paid).";
 
     private final Index index;
     private final Payment payment;
@@ -62,15 +66,25 @@ public class PayCommand extends Command {
         }
 
         Person student = lastShownList.get(index.getZeroBased());
+        YearMonth month = payment.getMonth();
+        long feesDue = student.getFeesDue(month);
+        if (feesDue == 0) {
+            throw new CommandException(String.format(MESSAGE_NO_FEES_DUE, student.getName(), month.getYear(),
+                    month));
+        }
+        long outstanding = student.getOutstandingFees(month);
+        if (payment.getAmount().value > outstanding) {
+            throw new CommandException(String.format(MESSAGE_OVERPAYMENT, payment.getAmount(), outstanding, month,
+                    feesDue, student.getAmountPaid(month)));
+        }
+
         List<Payment> updatedPayments = new ArrayList<>(student.getPayments());
         updatedPayments.add(payment);
         Person updatedStudent = student.withPayments(updatedPayments);
         model.setPerson(student, updatedStudent);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, updatedStudent.getName(), payment,
-                payment.getMonth(), updatedStudent.getFeesDue(payment.getMonth()),
-                updatedStudent.getAmountPaid(payment.getMonth()),
-                updatedStudent.getOutstandingFees(payment.getMonth())));
+                month, feesDue, updatedStudent.getAmountPaid(month), updatedStudent.getOutstandingFees(month)));
     }
 
     @Override
