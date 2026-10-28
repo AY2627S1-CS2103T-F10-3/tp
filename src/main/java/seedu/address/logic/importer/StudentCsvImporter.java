@@ -39,22 +39,48 @@ public class StudentCsvImporter {
             }
             String line;
             int rowNumber = 1;
+            int recordStartRow = 2;
+            StringBuilder record = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 rowNumber++;
-                if (!line.isBlank()) {
-                    List<String> values = List.of();
-                    try {
-                        values = CsvParser.parseLine(line);
-                        while (values.size() < headers.size()) {
-                            values.add("");
+                if (record.length() > 0) {
+                    record.append('\n');
+                } else {
+                    recordStartRow = rowNumber;
+                }
+                record.append(line);
+                if (!CsvParser.hasUnclosedQuote(record.toString())) {
+                    if (!record.toString().isBlank()) {
+                        List<String> values = List.of();
+                        try {
+                            values = CsvParser.parseLine(record.toString());
+                            while (values.size() < headers.size()) {
+                                values.add("");
+                            }
+                            students.add(createPerson(headers, values, lessonsById));
+                        } catch (ParseException exception) {
+                            String studentName = valueForError(headers, values, "name");
+                            String context = studentName.isBlank() ? "" : " (" + studentName + ")";
+                            throw new ParseException("Student CSV row " + recordStartRow + context + ": "
+                                    + exception.getMessage(), exception);
                         }
-                        students.add(createPerson(headers, values, lessonsById));
-                    } catch (ParseException exception) {
-                        String studentName = valueForError(headers, values, "name");
-                        String context = studentName.isBlank() ? "" : " (" + studentName + ")";
-                        throw new ParseException("Student CSV row " + rowNumber + context + ": "
-                                + exception.getMessage(), exception);
                     }
+                    record.setLength(0);
+                }
+            }
+            if (record.length() > 0) {
+                List<String> values = List.of();
+                try {
+                    values = CsvParser.parseLine(record.toString());
+                    while (values.size() < headers.size()) {
+                        values.add("");
+                    }
+                    students.add(createPerson(headers, values, lessonsById));
+                } catch (ParseException exception) {
+                    String studentName = valueForError(headers, values, "name");
+                    String context = studentName.isBlank() ? "" : " (" + studentName + ")";
+                    throw new ParseException("Student CSV row " + recordStartRow + context + ": "
+                            + exception.getMessage(), exception);
                 }
             }
         }

@@ -20,6 +20,9 @@ public final class CsvParser {
         if (line == null) {
             return null;
         }
+        if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
+            line = line.substring(1);
+        }
         List<String> result = new ArrayList<>();
         StringBuilder cell = new StringBuilder();
         boolean quoted = false;
@@ -35,6 +38,10 @@ public final class CsvParser {
             } else if (character == ',' && !quoted) {
                 result.add(cell.toString());
                 cell.setLength(0);
+            } else if ((character == '\n' || character == '\r') && quoted) {
+                // CSV permits line breaks inside quoted fields. Store them as spaces so
+                // imported values remain valid for fields that disallow embedded breaks.
+                cell.append(' ');
             } else {
                 cell.append(character);
             }
@@ -44,5 +51,26 @@ public final class CsvParser {
         }
         result.add(cell.toString());
         return result;
+    }
+
+    /**
+     * Checks whether a CSV record has an open quoted value.
+     *
+     * @param record CSV record, which may contain line breaks
+     * @return true if the record contains an unclosed quoted value
+     */
+    static boolean hasUnclosedQuote(String record) {
+        boolean quoted = false;
+        for (int i = 0; i < record.length(); i++) {
+            if (record.charAt(i) != '"') {
+                continue;
+            }
+            if (quoted && i + 1 < record.length() && record.charAt(i + 1) == '"') {
+                i++;
+            } else {
+                quoted = !quoted;
+            }
+        }
+        return quoted;
     }
 }

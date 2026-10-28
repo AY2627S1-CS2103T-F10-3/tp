@@ -32,6 +32,15 @@ public class LessonCsvImporterTest {
     }
 
     @Test
+    public void read_utf8BomHeader_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importlessons.csv");
+        Files.writeString(file, "\uFEFF" + HEADER
+                + "2026,ENGLISH,MONDAY,TEN,ELEVEN,30\n");
+
+        assertEquals(1, new LessonCsvImporter().read(file).size());
+    }
+
+    @Test
     public void read_derivesLessonIdFromFields_success() throws Exception {
         Path file = temporaryDirectory.resolve("importlessons.csv");
         Files.writeString(file, HEADER + "2026,ENGLISH,MONDAY,TEN,ELEVEN,30\n");
