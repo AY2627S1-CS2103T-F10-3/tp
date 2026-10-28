@@ -3,6 +3,7 @@ package seedu.address.logic.importer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -133,7 +134,7 @@ public class StudentCsvImporterTest {
         ParseException exception = assertThrows(ParseException.class, () ->
                 new StudentCsvImporter().read(file, Map.of()));
 
-        org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().startsWith(
+        assertTrue(exception.getMessage().startsWith(
                 "Student CSV row 3 (Bob Tan): Emails should be of the format"));
     }
 }
