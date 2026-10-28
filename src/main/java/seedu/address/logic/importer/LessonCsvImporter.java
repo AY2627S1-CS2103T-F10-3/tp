@@ -32,23 +32,27 @@ public class LessonCsvImporter {
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             List<String> headers = CsvParser.parseLine(reader.readLine());
             String line;
+            int rowNumber = 1;
             while ((line = reader.readLine()) != null) {
+                rowNumber++;
                 if (line.isBlank()) {
                     continue;
                 }
-                List<String> values = CsvParser.parseLine(line);
-                String id = value(headers, values, "id");
-                Lesson lesson = new Lesson(ParserUtil.parseYear(value(headers, values, "year")),
-                        ParserUtil.parseSubject(value(headers, values, "subject").toUpperCase(Locale.ROOT)),
-                        ParserUtil.parseDay(value(headers, values, "day").toUpperCase(Locale.ROOT)),
-                        ParserUtil.parseTime(value(headers, values, "start_time").toUpperCase(Locale.ROOT)),
-                        ParserUtil.parseTime(value(headers, values, "end_time").toUpperCase(Locale.ROOT)),
-                        ParserUtil.parseCost(value(headers, values, "cost")));
-                if (!lesson.getId().equals(id)) {
-                    throw new ParseException("Lesson id does not match lesson data: " + id);
-                }
-                if (lessons.putIfAbsent(id, lesson) != null) {
-                    throw new ParseException("Duplicate lesson id: " + id);
+                try {
+                    List<String> values = CsvParser.parseLine(line);
+                    Lesson lesson = new Lesson(ParserUtil.parseYear(value(headers, values, "year")),
+                            ParserUtil.parseSubject(value(headers, values, "subject").toUpperCase(Locale.ROOT)),
+                            ParserUtil.parseDay(value(headers, values, "day").toUpperCase(Locale.ROOT)),
+                            ParserUtil.parseTime(value(headers, values, "start_time").toUpperCase(Locale.ROOT)),
+                            ParserUtil.parseTime(value(headers, values, "end_time").toUpperCase(Locale.ROOT)),
+                            ParserUtil.parseCost(value(headers, values, "cost")));
+                    String id = lesson.getId();
+                    if (lessons.putIfAbsent(id, lesson) != null) {
+                        throw new ParseException("Duplicate lesson id: " + id);
+                    }
+                } catch (Exception exception) {
+                    throw new ParseException("Lesson CSV row " + rowNumber + ": " + exception.getMessage(),
+                            exception);
                 }
             }
         }
