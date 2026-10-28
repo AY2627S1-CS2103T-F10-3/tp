@@ -4,7 +4,11 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_LESSON_MATH;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_COST;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.model.lesson.Lesson.COST_CONSTRAINT;
+import static seedu.address.model.lesson.Lesson.DAY_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.SUBJECT_CONSTRAINT;
+import static seedu.address.model.lesson.Lesson.TIME_CONSTRAINT;
+import static seedu.address.model.lesson.Lesson.TIME_ORDER_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT;
 
 import org.junit.jupiter.api.Test;
@@ -42,6 +46,25 @@ public class AddLessonCommandParserTest {
     @Test
     public void parse_invalidValue_failure() {
         assertParseFailure(parser, validArgs.replace("s/MATH", "s/HISTORY"), SUBJECT_CONSTRAINT);
+    }
+
+    @Test
+    public void parse_invalidIndividualFields_failure() {
+        assertParseFailure(parser, validArgs.replace("y/2026", "y/26"), YEAR_CONSTRAINT);
+        assertParseFailure(parser, validArgs.replace("d/MONDAY", "d/FUNDAY"), DAY_CONSTRAINT);
+        assertParseFailure(parser, validArgs.replace("st/TEN", "st/NOON"), TIME_CONSTRAINT);
+        assertParseFailure(parser, validArgs.replace("et/ELEVEN", "et/NOON"), TIME_CONSTRAINT);
+        assertParseFailure(parser, validArgs.replace("c/30", "c/-1"), COST_CONSTRAINT);
+        assertParseFailure(parser, validArgs.replace("st/TEN et/ELEVEN", "st/ELEVEN et/TEN"),
+                TIME_ORDER_CONSTRAINT);
+    }
+
+    @Test
+    public void parse_multipleInvalidValues_failure() {
+        String args = validArgs.replace("s/MATH", "s/HISTORY")
+                .replace("d/MONDAY", "d/FUNDAY")
+                .replace("st/TEN", "st/NOON");
+        assertParseFailure(parser, args, "Invalid fields: subject, day, start time.");
     }
 
     @Test
