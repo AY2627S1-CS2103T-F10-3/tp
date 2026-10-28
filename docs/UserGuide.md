@@ -151,7 +151,7 @@ where:
 - year is in the form yyyy eg. 2026
 - subj (subject) is either `ENGLISH`, `MATH` or `SCIENCE`
 - day is any day of the week, eg. `MONDAY`
-- starttime and endtime are any hour between 10am to 7pm in 24h time eg. TEN for 10am and THIRTEEN for 1pm
+- starttime and endtime are any hour between 10am to 8pm in 24h time eg. TEN for 10am and THIRTEEN for 1pm
 - cost is any non-negative integer
 
 Examples:

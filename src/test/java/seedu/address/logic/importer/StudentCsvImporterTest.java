@@ -3,6 +3,7 @@ package seedu.address.logic.importer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,5 +105,36 @@ public class StudentCsvImporterTest {
         Files.writeString(file, HEADER + "Alice Tan,,alice@example.com,1 Main Street,,,"
                 + ",,,\n");
         assertThrows(ParseException.class, () -> new StudentCsvImporter().read(file, Map.of()));
+    }
+
+    @Test
+    public void read_invalidRow_reportsRowNumberAndStudentName() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,81234567,"
+                + "mary@example.com,Mother,2 Main Street,\n"
+                + "Bob Tan,12,bob@example.com,2 Main Street,"
+                + ",Mary Tan,81234567,mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertEquals("Student CSV row 3 (Bob Tan): "
+                + "Phone numbers should only contain digits, and should be at least 3 digits long",
+                exception.getMessage());
+    }
+
+    @Test
+    public void read_invalidEmail_reportsRowNumberAndStudentName() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,81234567,"
+                + "mary@example.com,Mother,2 Main Street,\n"
+                + "Bob Tan,91234568,not-an-email,2 Main Street,"
+                + ",Mary Tan,81234567,mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertTrue(exception.getMessage().startsWith(
+                "Student CSV row 3 (Bob Tan): Emails should be of the format"));
     }
 }

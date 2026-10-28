@@ -127,6 +127,37 @@ The importer classes used by the `importcsv` command are shown below:
 
 The `ImportCsvCommand` coordinates the import by using `LessonCsvImporter` to read lesson definitions and `StudentCsvImporter` to read student records. Both importers use `CsvParser` and `CsvRow` to parse and access CSV data, and use `ParserUtil` to validate values before creating model objects of Person, Guardian and Lesson.
 
+#### CSV import format
+
+The `importcsv` command reads `data/importlessons.csv` and `data/importstudents.csv`.
+The lesson CSV must have the following columns:
+
+```csv
+year,subject,day,start_time,end_time,cost
+```
+
+Lesson IDs are not stored in the CSV. `LessonCsvImporter` derives each ID from the
+parsed fields using `{year}-{subject}-{day}-{start_time}-{end_time}`. It validates
+the lesson fields and rejects duplicate derived IDs.
+
+The student CSV must have the following required columns:
+
+```csv
+name,phone,email,address
+```
+
+The optional columns are `tags`, `lessons`, and the complete set of guardian columns:
+`guardian_name`, `guardian_phone`, `guardian_email`, `guardian_relationship`, and
+`guardian_address`. Lesson references in the student CSV must match a lesson ID
+derived from `importlessons.csv`.
+
+Validation errors identify the source file and physical CSV row, including the
+header row. For example:
+
+```text
+Unable to import data/importlessons.csv: Lesson CSV row 2: Day is any day of the week eg. MONDAY
+```
+
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
