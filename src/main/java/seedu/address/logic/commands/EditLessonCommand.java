@@ -21,7 +21,7 @@ public class EditLessonCommand extends Command {
     public static final String MESSAGE_NOT_FOUND = "Lesson with CURRENT_ID '%s' was not found. "
             + "CURRENT_ID must contain these fields in order: YEAR-SUBJECT-DAY-START_TIME-END_TIME "
             + "(year, subject, day, start time and end time; no cost). "
-            + "for example, 2026-MATH-MONDAY-TEN-ELEVEN. "
+            + "For example, 2026-MATH-MONDAY-TEN-ELEVEN. "
             + "Command format: editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] "
             + "[c/COST] (at least one field required).";
     public static final String MESSAGE_DUPLICATE = "A lesson with the edited ID already exists.";
