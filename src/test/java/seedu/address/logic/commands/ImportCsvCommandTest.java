@@ -48,6 +48,42 @@ public class ImportCsvCommandTest {
         assertEquals(2, model.getAddressBook().getPersonList().size());
         assertTrue(result.getFeedbackToUser().contains("Imported 2 student(s)"));
         assertTrue(result.getFeedbackToUser().contains("Alice Tan"));
+        assertEquals(1, model.getAddressBook().getLessonList().size());
+    }
+
+    @Test
+    public void execute_unreferencedLesson_retainsLessonInCatalog() throws Exception {
+        Path lessons = temporaryDirectory.resolve("importlessons.csv");
+        Path students = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
+                + "2026-MATH-MONDAY-TEN-ELEVEN,2026,MATH,MONDAY,TEN,ELEVEN,30\n");
+        Files.writeString(students, "name,phone,email,address\n"
+                + "Alpha Import Student,91234567,alpha@example.com,1 Main Street\n");
+
+        ModelManager model = new ModelManager();
+        CommandResult result = new ImportCsvCommand(students, lessons).execute(model);
+
+        assertEquals(1, model.getAddressBook().getLessonList().size());
+        assertEquals("2026-MATH-MONDAY-TEN-ELEVEN",
+                model.getAddressBook().getLessonList().get(0).getId());
+        assertTrue(result.getFeedbackToUser().contains("1 lesson(s)"));
+    }
+
+    @Test
+    public void execute_mixedReferencedAndUnreferencedLessons_retainsBoth() throws Exception {
+        Path lessons = temporaryDirectory.resolve("importlessons.csv");
+        Path students = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
+                + "2026-MATH-MONDAY-TEN-ELEVEN,2026,MATH,MONDAY,TEN,ELEVEN,30\n"
+                + "2026-SCIENCE-TUESDAY-TEN-ELEVEN,2026,SCIENCE,TUESDAY,TEN,ELEVEN,40\n");
+        Files.writeString(students, "name,phone,email,address,lessons\n"
+                + "Alpha Import Student,91234567,alpha@example.com,1 Main Street,"
+                + "2026-MATH-MONDAY-TEN-ELEVEN\n");
+
+        ModelManager model = new ModelManager();
+        new ImportCsvCommand(students, lessons).execute(model);
+
+        assertEquals(2, model.getAddressBook().getLessonList().size());
     }
 
     @Test
@@ -55,8 +91,10 @@ public class ImportCsvCommandTest {
         Path lessons = temporaryDirectory.resolve("importlessons.csv");
         Path students = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(lessons, "id,year,subject,day,start_time,end_time,cost\n"
-                + "2026-ENGLISH-MONDAY-TEN-ELEVEN,2026,ENGLISH,MONDAY,TEN,ELEVEN,50\n");
-        Files.writeString(students, "name,phone,email,address\nAlice Tan,91234567,alice@example.com,1 Main Street\n");
+                + "2026-ENGLISH-MONDAY-TEN-ELEVEN,2026,ENGLISH,MONDAY,TEN,ELEVEN,50\n"
+                + "2026-MATH-MONDAY-TEN-ELEVEN,2026,MATH,MONDAY,TEN,ELEVEN,30\n");
+        Files.writeString(students, "name,phone,email,address\nAlice Tan,91234567,"
+                + "alice@example.com,1 Main Street\n");
 
         ModelManager model = new ModelManager();
         Lesson existingLesson = new Lesson(Year.of(2026), Subject.ENGLISH, Day.MONDAY,
@@ -70,5 +108,6 @@ public class ImportCsvCommandTest {
 
         assertTrue(exception.getMessage().contains("Lesson ID conflict"));
         assertEquals(1, model.getAddressBook().getPersonList().size());
+        assertEquals(1, model.getAddressBook().getLessonList().size());
     }
 }
