@@ -198,19 +198,11 @@ The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
    occur before any model change. `Person` also enforces session uniqueness when constructed directly.
 4. The existing logic/storage pipeline saves the updated address book. `JsonAdaptedPerson` stores an optional
    `attendance` array using `JsonAdaptedAttendance`. Older files without it load with empty attendance history.
-   Invalid fields, null entries and duplicate sessions produce a data-loading error. Loading validates calendar
-   dates but does not compare historical dates with the current lesson schedule, since lessons can be edited.
+   Invalid records, null entries and duplicate sessions produce a data-loading error.
 
-`viewattendance` displays numbered records from earliest to latest date without changing the model.
-Both it and `deleteattendance` use `Person#getAttendanceInDateOrder()`, a stable date sort that retains recording
-order for records on the same date. Deletion resolves the displayed number to the record and removes it from
-the stored list. Both commands use the currently filtered student list, as payment commands do.
+`viewattendance` displays numbered records without changing the model. `deleteattendance` removes a record by
+its displayed attendance number. Both use the currently filtered student list, as payment commands do.
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
-
-`AddressBook#editLesson` updates matching attendance lesson IDs for every student, including students no longer
-enrolled in the lesson. Session dates and statuses remain unchanged when the schedule changes. All replacement
-students are prepared before the model is modified. If the replacement ID would merge two sessions for the same
-student and date, an `AttendanceConflictException` aborts the edit and `EditLessonCommand` reports the conflict.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
 
 ### Finding students
@@ -450,10 +442,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **MSS**
 
-1. User requests to add a new student using `addstudent`, specifying the student's name, phone number, email and
-   address, and all five mandatory guardian fields: name (`gn/`), phone (`gp/`), email (`ge/`), relationship (`gr/`)
-   and address (`ga/`). Tags (`t/`) and existing lesson IDs (`l/`) are optional.
-2. EduReg validates the input format, including the presence of all five non-blank guardian fields.
+1. User requests to add a new student contact by specifying their details (e.g., name, phone number, email, address, and optional tags).
+2. EduReg validates the input format of the provided details.
 3. EduReg adds the new student to the student directory.
 4. EduReg displays a success message showing the newly added student's details.
 
@@ -461,8 +451,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **Extensions**
 
-* 2a. The provided details do not follow the required format (e.g., a missing or blank guardian field,
-  invalid phone number, or malformed email).
+* 2a. The provided details do not follow the required format (e.g., missing mandatory fields, invalid phone number, malformed email).
 
     * 2a1. EduReg displays an error message specifying the formatting error and required command usage.
 

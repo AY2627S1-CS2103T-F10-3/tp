@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.attendance.exceptions.AttendanceConflictException;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
@@ -77,12 +76,8 @@ public class EditLessonCommand extends Command {
                 editedStartTime,
                 editedEndTime,
                 cost == null ? currentLesson.getCost() : cost);
-        try {
-            if (!model.editLesson(currentId, editedLesson)) {
-                throw new CommandException(MESSAGE_DUPLICATE);
-            }
-        } catch (AttendanceConflictException e) {
-            throw new CommandException(e.getMessage(), e);
+        if (!model.editLesson(currentId, editedLesson)) {
+            throw new CommandException(MESSAGE_DUPLICATE);
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, editedLesson));
     }

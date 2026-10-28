@@ -22,24 +22,19 @@ public class DeleteAttendanceCommandParser implements Parser<DeleteAttendanceCom
         requireNonNull(args);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_ATTENDANCE_INDEX);
 
-        if (argMultimap.getValue(PREFIX_ATTENDANCE_INDEX).isEmpty() || argMultimap.getPreamble().isBlank()) {
+        if (argMultimap.getValue(PREFIX_ATTENDANCE_INDEX).isEmpty()) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteAttendanceCommand.MESSAGE_USAGE));
         }
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_ATTENDANCE_INDEX);
 
-        Index index;
         try {
-            index = ParserUtil.parseIndex(argMultimap.getPreamble());
+            Index index = ParserUtil.parseIndex(argMultimap.getPreamble());
+            Index attendanceIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_ATTENDANCE_INDEX).get());
+            return new DeleteAttendanceCommand(index, attendanceIndex);
         } catch (ParseException pe) {
-            throw new ParseException(DeleteAttendanceCommand.MESSAGE_INVALID_STUDENT_INDEX_FORMAT, pe);
+            throw new ParseException(
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteAttendanceCommand.MESSAGE_USAGE), pe);
         }
-        Index attendanceIndex;
-        try {
-            attendanceIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_ATTENDANCE_INDEX).get());
-        } catch (ParseException pe) {
-            throw new ParseException(DeleteAttendanceCommand.MESSAGE_INVALID_ATTENDANCE_INDEX_FORMAT, pe);
-        }
-        return new DeleteAttendanceCommand(index, attendanceIndex);
     }
 }

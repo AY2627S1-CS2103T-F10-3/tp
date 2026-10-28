@@ -11,8 +11,6 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
@@ -21,7 +19,6 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.attendance.Attendance;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -49,28 +46,6 @@ public class DeleteAttendanceCommandTest {
         expectedModel.setPerson(student, updatedStudent);
 
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-    }
-
-    @Test
-    public void execute_backdatedAttendance_deletesDisplayedRecordAndRenumbers() throws Exception {
-        Person original = model.getFilteredPersonList().getFirst();
-        Attendance sameDate = new Attendance("2026-ENGLISH-MONDAY-TEN-ELEVEN",
-                ATTENDANCE_PRESENT.getDate(), ATTENDANCE_PRESENT.getStatus());
-        Person student = new PersonBuilder(original)
-                .withAttendance(ATTENDANCE_ABSENT, ATTENDANCE_PRESENT, sameDate).build();
-        model.setPerson(original, student);
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
-        expectedModel.setPerson(student, new PersonBuilder(student)
-                .withAttendance(ATTENDANCE_ABSENT, ATTENDANCE_PRESENT).build());
-
-        assertCommandSuccess(new DeleteAttendanceCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON), model,
-                String.format(DeleteAttendanceCommand.MESSAGE_SUCCESS, student.getName(), sameDate), expectedModel);
-        assertEquals(String.format(ViewAttendanceCommand.MESSAGE_HEADER, student.getName())
-                + "\n1. " + ATTENDANCE_PRESENT + "\n2. " + ATTENDANCE_ABSENT,
-                new ViewAttendanceCommand(INDEX_FIRST_PERSON).execute(model).getFeedbackToUser());
-
-        new DeleteAttendanceCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON).execute(model);
-        assertEquals(List.of(ATTENDANCE_ABSENT), model.getFilteredPersonList().getFirst().getAttendance());
     }
 
     @Test

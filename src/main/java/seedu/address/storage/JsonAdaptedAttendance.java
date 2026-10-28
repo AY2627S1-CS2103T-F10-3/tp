@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceStatus;
+import seedu.address.model.lesson.Lesson;
 
 /**
  * Jackson-friendly attendance record. Lesson IDs are retained even after unenrolment.
@@ -18,6 +19,8 @@ class JsonAdaptedAttendance {
 
     public static final String MESSAGE_MISSING_FIELD = "Attendance's %s field is missing!";
     public static final String MESSAGE_INVALID_DATE = "Attendance date must be a valid date in yyyy-MM-dd form.";
+    public static final String MESSAGE_INVALID_SESSION_DATE =
+            "Attendance date must match the lesson's year and weekday.";
 
     private final String lessonId;
     private final String date;
@@ -43,12 +46,24 @@ class JsonAdaptedAttendance {
         status = source.getStatus().name();
     }
 
+    /** Returns the saved lesson identifier. */
+    public String getLessonId() {
+        return lessonId;
+    }
+
     /**
      * Validates saved fields and reconstructs the attendance record.
-     * Historical dates need not match the current lesson schedule, which may have been edited.
-     * Session year and weekday are validated when recording new attendance instead.
      */
     public Attendance toModelType() throws IllegalValueException {
+        return toModelType(null);
+    }
+
+    /**
+     * Validates saved fields and reconstructs an attendance record, checking its date against {@code lesson}
+     * when the lesson definition is available. A null lesson is allowed for historical records whose lesson
+     * definition is no longer available.
+     */
+    public Attendance toModelType(Lesson lesson) throws IllegalValueException {
         if (lessonId == null || date == null || status == null) {
             String field = lessonId == null ? "lessonId" : date == null ? "date" : "status";
             throw new IllegalValueException(String.format(MESSAGE_MISSING_FIELD, field));
@@ -67,6 +82,9 @@ class JsonAdaptedAttendance {
             modelStatus = AttendanceStatus.valueOf(status.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
             throw new IllegalValueException(Attendance.MESSAGE_STATUS_CONSTRAINTS, exception);
+        }
+        if (lesson != null && !lesson.isValidSessionDate(modelDate)) {
+            throw new IllegalValueException(MESSAGE_INVALID_SESSION_DATE);
         }
         return new Attendance(lessonId, modelDate, modelStatus);
     }

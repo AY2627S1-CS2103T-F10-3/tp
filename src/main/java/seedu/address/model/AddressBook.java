@@ -2,7 +2,6 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +9,6 @@ import java.util.Set;
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.attendance.Attendance;
-import seedu.address.model.attendance.exceptions.AttendanceConflictException;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
 import seedu.address.model.person.Person;
@@ -81,10 +79,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         return lessonBook.addLesson(lesson);
     }
 
-    /**
-     * Replaces a lesson and updates enrolments and attendance references, retaining session dates and statuses.
-     * @throws AttendanceConflictException if the new ID would merge attendance sessions; nothing is changed
-     */
+    /** Replaces a lesson and updates student enrolments, preserving historical attendance references. */
     public boolean editLesson(String lessonId, Lesson editedLesson) {
         Lesson existing = lessonBook.getLesson(lessonId);
         if (existing == null || (!existing.getId().equals(editedLesson.getId())
@@ -96,15 +91,7 @@ public class AddressBook implements ReadOnlyAddressBook {
             if (lessons.remove(existing)) {
                 lessons.add(editedLesson);
             }
-            Set<LocalDate> dates = new HashSet<>();
-            List<Attendance> attendance = person.getAttendance().stream().map(record -> {
-                Attendance updated = record.getLessonId().equals(lessonId)
-                        ? new Attendance(editedLesson.getId(), record.getDate(), record.getStatus()) : record;
-                if (updated.getLessonId().equals(editedLesson.getId()) && !dates.add(updated.getDate())) {
-                    throw new AttendanceConflictException();
-                }
-                return updated;
-            }).toList();
+            List<Attendance> attendance = person.getAttendance();
             return person.withLessons(lessons).withAttendance(attendance);
         }).toList();
         lessonBook.removeLesson(existing.getId());

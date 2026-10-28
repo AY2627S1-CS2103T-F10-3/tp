@@ -7,7 +7,6 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -150,14 +149,6 @@ public class Person {
      */
     public List<Attendance> getAttendance() {
         return Collections.unmodifiableList(attendance);
-    }
-
-    /**
-     * Returns attendance from earliest to latest date, preserving recording order for the same date.
-     * The immutable result supplies the numbering used by both viewing and deleting attendance.
-     */
-    public List<Attendance> getAttendanceInDateOrder() {
-        return attendance.stream().sorted(Comparator.comparing(Attendance::getDate)).toList();
     }
 
     /**

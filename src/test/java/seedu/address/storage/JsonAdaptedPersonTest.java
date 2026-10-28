@@ -60,15 +60,16 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
-    public void toModelType_attendanceOutsideCurrentSchedule_preservesHistoricalDate() throws Exception {
-        JsonAdaptedAttendance historicalAttendance =
+    public void toModelType_attendanceOnInvalidLessonDate_throwsIllegalValueException() {
+        JsonAdaptedAttendance invalidAttendance =
                 new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-20", "PRESENT");
         JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
-                VALID_TAGS, List.of(MATH_LESSON.getId()), null, null, null, List.of(historicalAttendance));
+                VALID_TAGS, List.of(MATH_LESSON.getId()), null, null, null, List.of(invalidAttendance));
         LessonBook lessonBook = new LessonBook();
         lessonBook.addLesson(MATH_LESSON);
 
-        assertEquals(List.of(historicalAttendance.toModelType()), person.toModelType(lessonBook).getAttendance());
+        assertThrows(IllegalValueException.class, JsonAdaptedAttendance.MESSAGE_INVALID_SESSION_DATE, () ->
+                person.toModelType(lessonBook));
     }
 
     @Test

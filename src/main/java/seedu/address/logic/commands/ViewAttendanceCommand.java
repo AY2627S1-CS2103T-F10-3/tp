@@ -24,7 +24,7 @@ public class ViewAttendanceCommand extends Command {
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_HEADER = "Attendance for %1$s (earliest date first):";
+    public static final String MESSAGE_HEADER = "Attendance for %1$s:";
     public static final String MESSAGE_NO_ATTENDANCE = "No attendance recorded.";
 
     private final Index index;
@@ -47,7 +47,7 @@ public class ViewAttendanceCommand extends Command {
 
         Person student = lastShownList.get(index.getZeroBased());
         StringBuilder feedback = new StringBuilder(String.format(MESSAGE_HEADER, student.getName()));
-        List<Attendance> attendance = student.getAttendanceInDateOrder();
+        List<Attendance> attendance = student.getAttendance();
         if (attendance.isEmpty()) {
             feedback.append("\n").append(MESSAGE_NO_ATTENDANCE);
         }
