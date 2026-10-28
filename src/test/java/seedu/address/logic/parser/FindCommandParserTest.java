@@ -81,6 +81,10 @@ public class FindCommandParserTest {
         assertParseSuccess(parser, "n/Alice e/example ge/parent",
                 new FindCommand(new FieldsContainKeywordsPredicate(Map.of(Field.NAME, List.of("Alice"),
                         Field.EMAIL, List.of("example"), Field.GUARDIAN_EMAIL, List.of("parent")))));
+        assertParseSuccess(parser, "a/Block 12/34 ga/Unit 56/78",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.ADDRESS, List.of("Block", "12/34"),
+                        Field.GUARDIAN_ADDRESS, List.of("Unit", "56/78")))));
     }
 
     @Test

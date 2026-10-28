@@ -59,7 +59,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                 Map.entry(PREFIX_GUARDIAN_ADDRESS, Field.GUARDIAN_ADDRESS),
                 Map.entry(PREFIX_GUARDIAN_RELATIONSHIP, Field.GUARDIAN_RELATIONSHIP),
                 Map.entry(PREFIX_LESSON, Field.LESSON));
-        Matcher prefixMatcher = Pattern.compile("(?:^|\\s)([^\\s/]+/)").matcher(trimmedArgs);
+        Matcher prefixMatcher = Pattern.compile("(?:^|\\s)([A-Za-z]+/)").matcher(trimmedArgs);
         boolean hasPrefixes = false;
         while (prefixMatcher.find()) {
             hasPrefixes = true;
