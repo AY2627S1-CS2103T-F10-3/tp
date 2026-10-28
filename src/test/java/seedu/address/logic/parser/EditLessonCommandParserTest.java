@@ -2,16 +2,12 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT;
-
-import java.time.Year;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditLessonCommand;
 import seedu.address.model.lesson.Day;
-import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 
 public class EditLessonCommandParserTest {
@@ -20,14 +16,13 @@ public class EditLessonCommandParserTest {
     @Test
     public void parse_partialFields_success() {
         assertParseSuccess(parser, "2026-MATH-MONDAY-TEN-ELEVEN c/40",
-                new EditLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN", null, null, null, null, null, 40));
+                new EditLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN", null, null, null, 40));
     }
 
     @Test
     public void parse_caseInsensitiveLessonFields_success() {
-        assertParseSuccess(parser, "2026-mAtH-mOnDaY-tEn-ElEvEn y/2027 s/math d/mOnDaY st/ten et/eleven",
-                new EditLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN", Year.of(2027), Subject.MATH, Day.MONDAY,
-                        Time.TEN, Time.ELEVEN, null));
+        assertParseSuccess(parser, "2026-mAtH-mOnDaY-tEn-ElEvEn d/mOnDaY st/ten et/eleven",
+                new EditLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN", Day.MONDAY, Time.TEN, Time.ELEVEN, null));
     }
 
     @Test
@@ -37,7 +32,14 @@ public class EditLessonCommandParserTest {
     }
 
     @Test
-    public void parse_invalidYearFormat_failure() {
-        assertParseFailure(parser, "2026-MATH-MONDAY-TEN-ELEVEN y/+99999", YEAR_CONSTRAINT);
+    public void parse_year_failure() {
+        assertParseFailure(parser, "2026-MATH-MONDAY-TEN-ELEVEN y/2027",
+                EditLessonCommand.MESSAGE_IMMUTABLE_FIELDS);
+    }
+
+    @Test
+    public void parse_subject_failure() {
+        assertParseFailure(parser, "2026-MATH-MONDAY-TEN-ELEVEN s/SCIENCE",
+                EditLessonCommand.MESSAGE_IMMUTABLE_FIELDS);
     }
 }

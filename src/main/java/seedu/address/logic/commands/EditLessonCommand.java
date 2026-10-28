@@ -2,14 +2,12 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.Year;
 import java.util.Objects;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
-import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 
 
@@ -17,19 +15,18 @@ import seedu.address.model.lesson.Time;
 public class EditLessonCommand extends Command {
     public static final String COMMAND_WORD = "editlesson";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits supplied lesson fields. Parameters: CURRENT_ID "
-            + "[y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]";
+            + "[d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]";
     public static final String MESSAGE_SUCCESS = "Lesson updated: %1$s";
+    public static final String MESSAGE_IMMUTABLE_FIELDS = "Year and subject cannot be changed.";
     public static final String MESSAGE_NOT_FOUND = "Lesson with CURRENT_ID '%s' was not found. "
             + "CURRENT_ID must contain these fields in order: YEAR-SUBJECT-DAY-START_TIME-END_TIME "
-            + "(year, subject, day, start time and end time; no cost), "
+            + "(year, subject, day, start time and end time; no cost). "
             + "for example, 2026-MATH-MONDAY-TEN-ELEVEN. "
-            + "Command format: editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] "
-            + "[et/END_TIME] [c/COST] (at least one field required).";
+            + "Command format: editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] "
+            + "[c/COST] (at least one field required).";
     public static final String MESSAGE_DUPLICATE = "A lesson with the edited ID already exists.";
     public static final String MESSAGE_INVALID_TIME_RANGE = "Start time must be before end time.";
     private final String currentId;
-    private final Year year;
-    private final Subject subject;
     private final Day day;
     private final Time startTime;
     private final Time endTime;
@@ -39,18 +36,14 @@ public class EditLessonCommand extends Command {
      * Creates an {@code EditLessonCommand} with the specified lesson identifier and updated fields.
      *
      * @param currentId identifier of the lesson to edit
-     * @param year updated year, or {@code null} to retain the existing value
-     * @param subject updated subject, or {@code null} to retain the existing value
      * @param day updated day, or {@code null} to retain the existing value
      * @param startTime updated start time, or {@code null} to retain the existing value
      * @param endTime updated end time, or {@code null} to retain the existing value
      * @param cost updated cost, or {@code null} to retain the existing value
      */
-    public EditLessonCommand(String currentId, Year year, Subject subject, Day day, Time startTime,
+    public EditLessonCommand(String currentId, Day day, Time startTime,
             Time endTime, Integer cost) {
         this.currentId = requireNonNull(currentId);
-        this.year = year;
-        this.subject = subject;
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -70,8 +63,8 @@ public class EditLessonCommand extends Command {
         if (!Lesson.isValidTimeRange(editedStartTime, editedEndTime)) {
             throw new CommandException(MESSAGE_INVALID_TIME_RANGE);
         }
-        Lesson editedLesson = new Lesson(year == null ? currentLesson.getYear() : year,
-                subject == null ? currentLesson.getSubject() : subject,
+        Lesson editedLesson = new Lesson(currentLesson.getYear(),
+                currentLesson.getSubject(),
                 day == null ? currentLesson.getDay() : day,
                 editedStartTime,
                 editedEndTime,
@@ -91,8 +84,6 @@ public class EditLessonCommand extends Command {
             return false;
         }
         return currentId.equals(otherCommand.currentId)
-                && Objects.equals(year, otherCommand.year)
-                && Objects.equals(subject, otherCommand.subject)
                 && Objects.equals(day, otherCommand.day)
                 && Objects.equals(startTime, otherCommand.startTime)
                 && Objects.equals(endTime, otherCommand.endTime)
@@ -101,7 +92,7 @@ public class EditLessonCommand extends Command {
 
     @Override
     public int hashCode() {
-        return Objects.hash(currentId, year, subject, day, startTime, endTime, cost);
+        return Objects.hash(currentId, day, startTime, endTime, cost);
     }
 
 }

@@ -20,15 +20,15 @@ public class EditLessonCommandParser implements Parser<EditLessonCommand> {
         ArgumentMultimap map = ArgumentTokenizer.tokenize(args, PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY,
                 PREFIX_START_TIME, PREFIX_END_TIME, PREFIX_COST);
         String currentId = map.getPreamble().trim().toUpperCase(Locale.ROOT);
+        if (map.getValue(PREFIX_YEAR).isPresent() || map.getValue(PREFIX_SUBJECT).isPresent()) {
+            throw new ParseException(EditLessonCommand.MESSAGE_IMMUTABLE_FIELDS);
+        }
         if (currentId.isEmpty() || !hasAnyField(map)) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditLessonCommand.MESSAGE_USAGE));
         }
         map.verifyNoDuplicatePrefixesFor(PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY, PREFIX_START_TIME,
                 PREFIX_END_TIME, PREFIX_COST);
         return new EditLessonCommand(currentId,
-                map.getValue(PREFIX_YEAR).isPresent() ? ParserUtil.parseYear(map.getValue(PREFIX_YEAR).get()) : null,
-                map.getValue(PREFIX_SUBJECT).isPresent()
-                        ? ParserUtil.parseSubject(map.getValue(PREFIX_SUBJECT).get()) : null,
                 map.getValue(PREFIX_DAY).isPresent() ? ParserUtil.parseDay(map.getValue(PREFIX_DAY).get()) : null,
                 map.getValue(PREFIX_START_TIME).isPresent()
                         ? ParserUtil.parseTime(map.getValue(PREFIX_START_TIME).get()) : null,
@@ -38,7 +38,7 @@ public class EditLessonCommandParser implements Parser<EditLessonCommand> {
     }
 
     private static boolean hasAnyField(ArgumentMultimap map) {
-        return java.util.stream.Stream.of(PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY, PREFIX_START_TIME,
+        return java.util.stream.Stream.of(PREFIX_DAY, PREFIX_START_TIME,
                 PREFIX_END_TIME, PREFIX_COST).anyMatch(prefix -> map.getValue(prefix).isPresent());
     }
 }
