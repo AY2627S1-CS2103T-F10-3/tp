@@ -30,16 +30,15 @@ public class LessonCsvImporter {
         }
         Map<String, Lesson> lessons = new LinkedHashMap<>();
         try (BufferedReader reader = Files.newBufferedReader(path)) {
-            List<String> headers = CsvParser.parseLine(reader.readLine());
-            String line;
+            List<String> headers = CsvParser.parseRecord(reader);
             int rowNumber = 1;
-            while ((line = reader.readLine()) != null) {
+            List<String> values;
+            while ((values = CsvParser.parseRecord(reader)) != null) {
                 rowNumber++;
-                if (line.isBlank()) {
+                if (values.isEmpty() || values.stream().allMatch(String::isBlank)) {
                     continue;
                 }
                 try {
-                    List<String> values = CsvParser.parseLine(line);
                     Lesson lesson = new Lesson(ParserUtil.parseYear(value(headers, values, "year")),
                             ParserUtil.parseSubject(value(headers, values, "subject").toUpperCase(Locale.ROOT)),
                             ParserUtil.parseDay(value(headers, values, "day").toUpperCase(Locale.ROOT)),

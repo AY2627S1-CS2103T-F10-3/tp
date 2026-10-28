@@ -1,5 +1,7 @@
 package seedu.address.logic.importer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +46,46 @@ public final class CsvParser {
         }
         result.add(cell.toString());
         return result;
+    }
+
+    /**
+     * Reads and parses one CSV record. A record may span multiple physical lines when a quoted
+     * value contains a line break.
+     *
+     * @param reader source of CSV lines
+     * @return parsed values, or {@code null} at end of file
+     * @throws IOException if the source cannot be read
+     * @throws ParseException if the record contains an unclosed quoted value
+     */
+    public static List<String> parseRecord(BufferedReader reader) throws IOException, ParseException {
+        String line = reader.readLine();
+        if (line == null) {
+            return null;
+        }
+        StringBuilder record = new StringBuilder(line);
+        boolean quoted = isQuotedAtEnd(line, false);
+        while (quoted) {
+            record.append('\n');
+            String continuation = reader.readLine();
+            if (continuation == null) {
+                throw new ParseException("Unclosed quote in CSV row.");
+            }
+            record.append(continuation);
+            quoted = isQuotedAtEnd(continuation, quoted);
+        }
+        return parseLine(record.toString());
+    }
+
+    private static boolean isQuotedAtEnd(String line, boolean quoted) {
+        for (int i = 0; i < line.length(); i++) {
+            if (line.charAt(i) == '"') {
+                if (quoted && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    i++;
+                } else {
+                    quoted = !quoted;
+                }
+            }
+        }
+        return quoted;
     }
 }

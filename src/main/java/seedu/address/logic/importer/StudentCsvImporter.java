@@ -33,18 +33,16 @@ public class StudentCsvImporter {
     public List<Person> read(Path path, Map<String, Lesson> lessonsById) throws IOException, ParseException {
         List<Person> students = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(path)) {
-            List<String> headers = CsvParser.parseLine(reader.readLine());
+            List<String> headers = CsvParser.parseRecord(reader);
             if (headers == null || headers.isEmpty()) {
                 throw new ParseException("Student CSV must have a header row.");
             }
-            String line;
             int rowNumber = 1;
-            while ((line = reader.readLine()) != null) {
+            List<String> values;
+            while ((values = CsvParser.parseRecord(reader)) != null) {
                 rowNumber++;
-                if (!line.isBlank()) {
-                    List<String> values = List.of();
+                if (!values.isEmpty() && values.stream().anyMatch(value -> !value.isBlank())) {
                     try {
-                        values = CsvParser.parseLine(line);
                         while (values.size() < headers.size()) {
                             values.add("");
                         }
