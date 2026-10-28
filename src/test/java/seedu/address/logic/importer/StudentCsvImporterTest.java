@@ -56,6 +56,17 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_multilineQuotedAddress_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address\n"
+                + "Amy Tan,91234567,amy@example.com,\"1 Road\nSingapore\"\n");
+
+        Person student = new StudentCsvImporter().read(file, Map.of()).get(0);
+
+        assertEquals("1 Road Singapore", student.getAddress().toString());
+    }
+
+    @Test
     public void read_unknownLessonId_throwsParseException() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,"

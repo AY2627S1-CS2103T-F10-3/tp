@@ -38,14 +38,29 @@ public class StudentCsvImporter {
                 throw new ParseException("Student CSV must have a header row.");
             }
             String line;
+            StringBuilder record = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                if (!line.isBlank()) {
-                    List<String> values = CsvParser.parseLine(line);
-                    while (values.size() < headers.size()) {
-                        values.add("");
-                    }
-                    students.add(createPerson(headers, values, lessonsById));
+                if (record.length() > 0) {
+                    record.append('\n');
                 }
+                record.append(line);
+                if (!CsvParser.hasUnclosedQuote(record.toString())) {
+                    if (!record.toString().isBlank()) {
+                        List<String> values = CsvParser.parseLine(record.toString());
+                        while (values.size() < headers.size()) {
+                            values.add("");
+                        }
+                        students.add(createPerson(headers, values, lessonsById));
+                    }
+                    record.setLength(0);
+                }
+            }
+            if (record.length() > 0) {
+                List<String> values = CsvParser.parseLine(record.toString());
+                while (values.size() < headers.size()) {
+                    values.add("");
+                }
+                students.add(createPerson(headers, values, lessonsById));
             }
         }
         return students;
