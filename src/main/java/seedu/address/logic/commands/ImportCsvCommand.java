@@ -78,6 +78,8 @@ public class ImportCsvCommand extends Command {
         }
 
         try {
+            // Validate every enrolment before adding any catalog definitions or students.
+            imported.forEach(person -> Lesson.validateEnrolments(person.getLessons()));
             List<Person> studentsToAdd = new ArrayList<>();
             List<String> duplicateStudents = new ArrayList<>();
             for (Person person : imported) {

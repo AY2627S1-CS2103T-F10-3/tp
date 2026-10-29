@@ -21,6 +21,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.person.Person;
 
 /**
@@ -89,7 +90,12 @@ public class AddStudentCommand extends Command {
 
         Person canonicalPerson = new Person(toAdd.getName(), toAdd.getPhone(), toAdd.getEmail(), toAdd.getAddress(),
                 toAdd.getTags(), canonicalLessons, toAdd.getGuardian(), toAdd.getPayments(), toAdd.getAttendance());
-        model.addPerson(canonicalPerson);
+        try {
+            Lesson.validateEnrolments(canonicalLessons);
+            model.addPerson(canonicalPerson);
+        } catch (LessonException e) {
+            throw new CommandException(e.getMessage(), e);
+        }
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(canonicalPerson)));
     }
 

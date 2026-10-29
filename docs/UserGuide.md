@@ -107,6 +107,12 @@ references must use the five-part lesson ID without the cost:
 `l/YEAR-SUBJECT-DAY-START_TIME-END_TIME`. A cost-bearing value such as
 `l/2026-MATH-MONDAY-TEN-ELEVEN-30` is invalid; the cost is always taken from the lesson catalog.
 
+A student cannot enrol in two lessons that have the same year, subject, day, start time and end time
+in the same billing month. This check includes earlier schedules and pending changes, even when the lessons'
+latest IDs differ. Student enrolment changes, CSV imports and lesson edits that create such an overlap are rejected.
+Separate catalog lessons may reuse a slot, and a student may take both if their use of that slot does not overlap
+in any billing month.
+
 ### Adding a lesson: `addlesson`
 
 Creates a reusable lesson definition in the lesson catalog.
