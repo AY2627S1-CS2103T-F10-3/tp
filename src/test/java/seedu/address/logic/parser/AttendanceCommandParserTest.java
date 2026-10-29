@@ -29,14 +29,15 @@ public class AttendanceCommandParserTest {
 
     @Test
     public void parse_validFields_acceptsAnyOrderAndStatusCase() {
-        AttendanceCommand expected = new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT);
+        // The parser only knows the typed lesson ID; the command links the record to the lesson when run.
+        AttendanceCommand expected = new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT.withLessonUid(null));
         assertParseSuccess(parser, "1" + LESSON + DATE + STATUS, expected);
         assertParseSuccess(parser, " 1 s/PrEsEnT" + DATE + LESSON + " ", expected);
     }
 
     @Test
     public void parse_caseInsensitiveLessonId_success() {
-        AttendanceCommand expected = new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT);
+        AttendanceCommand expected = new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT.withLessonUid(null));
         assertParseSuccess(parser, "1 l/2026-mAtH-mOnDaY-tEn-ElEvEn" + DATE + STATUS, expected);
     }
 
@@ -73,7 +74,7 @@ public class AttendanceCommandParserTest {
     @Test
     public void addressBookParser_routesAttendanceCommands() throws Exception {
         AddressBookParser dispatcher = new AddressBookParser();
-        assertEquals(new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT),
+        assertEquals(new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT.withLessonUid(null)),
                 dispatcher.parseCommand("attendance 1" + LESSON + DATE + STATUS));
         assertEquals(new ViewAttendanceCommand(INDEX_FIRST_PERSON), dispatcher.parseCommand("viewattendance 1"));
         assertEquals(new DeleteAttendanceCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON),

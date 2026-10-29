@@ -28,8 +28,17 @@ public class DeleteAttendanceCommandParserTest {
     public void parse_invalidArgs_failure() {
         assertParseFailure(parser, "1", MESSAGE_INVALID_FORMAT);
         assertParseFailure(parser, "i/2", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "a i/2", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "1 i/0", MESSAGE_INVALID_FORMAT);
         assertParseFailure(parser, "1 i/2 i/3", Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ATTENDANCE_INDEX));
+    }
+
+    @Test
+    public void parse_invalidIndexes_identifiesIndexAndPositiveIntegerRequirement() {
+        for (String invalidIndex : new String[] {"-1", "0", "1.5", "a", "2147483648"}) {
+            assertParseFailure(parser, invalidIndex + " i/2",
+                    DeleteAttendanceCommand.MESSAGE_INVALID_STUDENT_INDEX_FORMAT);
+            assertParseFailure(parser, "1 i/" + invalidIndex,
+                    DeleteAttendanceCommand.MESSAGE_INVALID_ATTENDANCE_INDEX_FORMAT);
+        }
+        assertParseFailure(parser, "1 i/", DeleteAttendanceCommand.MESSAGE_INVALID_ATTENDANCE_INDEX_FORMAT);
     }
 }

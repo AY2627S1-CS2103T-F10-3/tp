@@ -24,11 +24,14 @@ public class DeleteAttendanceCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Deletes an attendance record for the student at the index in the displayed list.\n"
             + "Parameters: INDEX (must be a positive integer) "
-            + PREFIX_ATTENDANCE_INDEX + "ATTENDANCE_INDEX (as shown by " + ViewAttendanceCommand.COMMAND_WORD + ")\n"
+            + PREFIX_ATTENDANCE_INDEX + "ATTENDANCE_INDEX (must be a positive integer, as shown by "
+            + ViewAttendanceCommand.COMMAND_WORD + ")\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_ATTENDANCE_INDEX + "2";
 
     public static final String MESSAGE_SUCCESS = "Deleted attendance for %1$s: %2$s";
     public static final String MESSAGE_INVALID_ATTENDANCE_INDEX = "The attendance index provided is invalid.";
+    public static final String MESSAGE_INVALID_STUDENT_INDEX_FORMAT = "Student index must be a positive integer.";
+    public static final String MESSAGE_INVALID_ATTENDANCE_INDEX_FORMAT = "Attendance index must be a positive integer.";
 
     private final Index index;
     private final Index attendanceIndex;
@@ -59,7 +62,8 @@ public class DeleteAttendanceCommand extends Command {
         }
 
         List<Attendance> updatedAttendance = new ArrayList<>(student.getAttendance());
-        Attendance deletedAttendance = updatedAttendance.remove(attendanceIndex.getZeroBased());
+        Attendance deletedAttendance = student.getAttendanceInDateOrder().get(attendanceIndex.getZeroBased());
+        updatedAttendance.remove(deletedAttendance);
         model.setPerson(student, student.withAttendance(updatedAttendance));
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, student.getName(), deletedAttendance));

@@ -15,19 +15,10 @@ public class JsonAdaptedAttendanceTest {
     public void toModelType_validRecord_roundTrips() throws Exception {
         assertEquals(ATTENDANCE_PRESENT, new JsonAdaptedAttendance(ATTENDANCE_PRESENT).toModelType());
         assertEquals(ATTENDANCE_PRESENT,
+                new JsonAdaptedAttendance(MATH_LESSON.getId(), MATH_LESSON.getUid(), "2026-10-19", "present")
+                        .toModelType());
+        assertEquals(ATTENDANCE_PRESENT.withLessonUid(null),
                 new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", "present").toModelType());
-        assertEquals(ATTENDANCE_PRESENT,
-                new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", "present")
-                        .toModelType(MATH_LESSON));
-    }
-
-    @Test
-    public void toModelType_invalidLessonDate_throwsIllegalValueException() {
-        JsonAdaptedAttendance attendance =
-                new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-20", "PRESENT");
-
-        assertThrows(IllegalValueException.class, JsonAdaptedAttendance.MESSAGE_INVALID_SESSION_DATE, () ->
-                attendance.toModelType(MATH_LESSON));
     }
 
     @Test
@@ -45,4 +36,12 @@ public class JsonAdaptedAttendanceTest {
                     new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", status).toModelType());
         }
     }
+
+    @Test
+    public void toModelType_blankUid_throwsIllegalValueException() {
+        JsonAdaptedAttendance record = new JsonAdaptedAttendance("2026-MATH-MONDAY-TEN-ELEVEN", " ",
+                "2026-10-19", "PRESENT");
+        assertThrows(IllegalValueException.class, record::toModelType);
+    }
+
 }

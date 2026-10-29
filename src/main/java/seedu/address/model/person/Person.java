@@ -7,6 +7,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -152,6 +153,14 @@ public class Person {
     }
 
     /**
+     * Returns attendance from earliest to latest date, preserving recording order for the same date.
+     * The immutable result supplies the numbering used by both viewing and deleting attendance.
+     */
+    public List<Attendance> getAttendanceInDateOrder() {
+        return attendance.stream().sorted(Comparator.comparing(Attendance::getDate)).toList();
+    }
+
+    /**
      * Returns a copy of this person with the given attendance history, retaining payments.
      */
     public Person withAttendance(List<Attendance> attendance) {
@@ -159,13 +168,13 @@ public class Person {
     }
 
     /**
-     * Returns the fees due for {@code month}: the monthly cost of each lesson held in that month's year.
+     * Returns the fees due for {@code month}: for each enrolled lesson, the monthly cost of the lesson revision
+     * in effect during that month. Later lesson edits therefore do not change the fees of earlier months.
      */
     public long getFeesDue(YearMonth month) {
         requireNonNull(month);
         return lessons.stream()
-                .filter(lesson -> lesson.getYear().getValue() == month.getYear())
-                .mapToLong(Lesson::getCost)
+                .mapToLong(lesson -> lesson.getCostFor(month))
                 .sum();
     }
 

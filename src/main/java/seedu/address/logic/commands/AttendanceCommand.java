@@ -15,6 +15,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.person.Person;
 
 /**
@@ -33,7 +34,8 @@ public class AttendanceCommand extends Command {
     public static final String MESSAGE_SUCCESS = "Recorded attendance for %1$s: %2$s";
     public static final String MESSAGE_NOT_ENROLLED = "The student is not enrolled in the specified lesson. "
             + "Use the lesson ID without its cost.";
-    public static final String MESSAGE_INVALID_SESSION_DATE = "The date must match the lesson's year and weekday.";
+    public static final String MESSAGE_INVALID_SESSION_DATE = "The date must match the year and weekday of the "
+            + "lesson schedule in effect on that date.";
 
     private final Index index;
     private final Attendance attendance;
@@ -55,20 +57,26 @@ public class AttendanceCommand extends Command {
         }
 
         Person student = lastShownList.get(index.getZeroBased());
+        String lessonId = attendance.getLessonId();
         Lesson lesson = student.getLessons().stream()
-                .filter(candidate -> candidate.getId().equals(attendance.getLessonId()))
-                .findFirst().orElseThrow(() -> new CommandException(MESSAGE_NOT_ENROLLED));
-        if (!lesson.isValidSessionDate(attendance.getDate())) {
+                .filter(candidate -> candidate.getId().equals(lessonId)).findFirst()
+                .or(() -> student.getLessons().stream()
+                        .filter(candidate -> candidate.hasRevisionId(lessonId)).findFirst())
+                .orElseThrow(() -> new CommandException(MESSAGE_NOT_ENROLLED));
+        LessonRevision revision = lesson.getRevisionOn(attendance.getDate());
+        if (!revision.isValidSessionDate(attendance.getDate())) {
             throw new CommandException(MESSAGE_INVALID_SESSION_DATE);
         }
-        if (student.getAttendance().stream().anyMatch(attendance::isSameSession)) {
+        Attendance recorded = new Attendance(revision.getId(), lesson.getUid(), attendance.getDate(),
+                attendance.getStatus());
+        if (student.getAttendance().stream().anyMatch(recorded::isSameSession)) {
             throw new CommandException(Person.MESSAGE_DUPLICATE_ATTENDANCE);
         }
 
         List<Attendance> updatedAttendance = new ArrayList<>(student.getAttendance());
-        updatedAttendance.add(attendance);
+        updatedAttendance.add(recorded);
         model.setPerson(student, student.withAttendance(updatedAttendance));
-        return new CommandResult(String.format(MESSAGE_SUCCESS, student.getName(), attendance));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, student.getName(), recorded));
     }
 
     @Override
