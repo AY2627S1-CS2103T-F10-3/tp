@@ -14,6 +14,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
@@ -149,7 +150,11 @@ class JsonAdaptedPerson {
             // into the shared lesson book so the next save can normalize the format.
             for (JsonAdaptedLesson legacyLesson : legacyLessons) {
                 Lesson lesson = legacyLesson.toModelType();
-                lessonBook.addLesson(lesson);
+                try {
+                    lessonBook.addLesson(lesson);
+                } catch (LessonException exception) {
+                    throw new IllegalValueException(exception.getMessage(), exception);
+                }
                 personLessons.add(lessonBook.getLesson(lesson.getId()));
             }
         }
@@ -167,8 +172,7 @@ class JsonAdaptedPerson {
             if (record == null) {
                 throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Attendance"));
             }
-            Lesson lesson = lessonBook == null ? null : lessonBook.getLesson(record.getLessonId());
-            Attendance modelAttendance = record.toModelType(lesson);
+            Attendance modelAttendance = linkToLesson(record.toModelType(), lessonBook);
             if (personAttendance.stream().anyMatch(modelAttendance::isSameSession)) {
                 throw new IllegalValueException(Person.MESSAGE_DUPLICATE_ATTENDANCE);
             }
@@ -212,6 +216,26 @@ class JsonAdaptedPerson {
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelLessons,
                 guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), personPayments,
                 personAttendance);
+    }
+
+    /**
+     * Links attendance saved by older versions, which stored only a lesson ID, to the lesson that had that ID.
+     */
+    private static Attendance linkToLesson(Attendance attendance, LessonBook lessonBook) throws IllegalValueException {
+        if (lessonBook == null) {
+            return attendance;
+        }
+        if (attendance.getLessonUid().isPresent()) {
+            Lesson linked = lessonBook.getLessonByUid(attendance.getLessonUid().get());
+            if (linked != null && !linked.hasRevisionId(attendance.getLessonId())) {
+                throw new IllegalValueException("Attendance lessonId does not belong to lessonUid: "
+                        + attendance.getLessonId());
+            }
+            // An unknown UID may refer to a deleted lesson; retain its historical attendance.
+            return attendance;
+        }
+        Lesson lesson = lessonBook.findLessonWithRevisionId(attendance.getLessonId());
+        return lesson == null ? attendance : attendance.withLessonUid(lesson.getUid());
     }
 
 }

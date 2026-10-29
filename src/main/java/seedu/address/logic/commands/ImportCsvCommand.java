@@ -60,6 +60,14 @@ public class ImportCsvCommand extends Command {
             throw new CommandException("Unable to import data/importlessons.csv: " + exception.getMessage());
         }
 
+        validateLessonDefinitions(model, lessonsById);
+        // Reuse the catalog's identity and full revision history before resolving student enrolments.
+        for (Lesson existing : model.getAddressBook().getLessonList()) {
+            if (lessonsById.containsKey(existing.getId())) {
+                lessonsById.put(existing.getId(), existing);
+            }
+        }
+
         List<Person> imported;
         try {
             imported = new StudentCsvImporter().read(importPath, lessonsById);
@@ -70,7 +78,6 @@ public class ImportCsvCommand extends Command {
         }
 
         try {
-            validateLessonDefinitions(model, lessonsById);
             List<Person> studentsToAdd = new ArrayList<>();
             List<String> duplicateStudents = new ArrayList<>();
             for (Person person : imported) {
@@ -98,8 +105,6 @@ public class ImportCsvCommand extends Command {
                 result += " Skipped " + skippedLessons + " existing lesson(s).";
             }
             return new CommandResult(result);
-        } catch (CommandException exception) {
-            throw exception;
         } catch (Exception exception) {
             throw new CommandException("Unable to import data/importstudents.csv: " + exception.getMessage());
         }
@@ -109,7 +114,8 @@ public class ImportCsvCommand extends Command {
             throws CommandException {
         for (Lesson existingLesson : model.getAddressBook().getLessonList()) {
             Lesson importedLesson = importedLessons.get(existingLesson.getId());
-            if (importedLesson != null && !existingLesson.equals(importedLesson)) {
+            if (importedLesson != null
+                    && !existingLesson.getLatestRevision().hasSameDetails(importedLesson.getLatestRevision())) {
                 throw new CommandException("Lesson ID conflict for " + existingLesson.getId()
                         + ": the app already stores a different lesson definition or cost.");
             }

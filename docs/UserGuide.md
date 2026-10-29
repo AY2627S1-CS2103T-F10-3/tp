@@ -130,20 +130,35 @@ contributes to enrolled-class fee summaries.
 
 ### Editing a lesson: `editlesson`
 
-Updates the editable fields of an existing lesson and propagates the change to all enrolled students.
+Changes an existing lesson from a billing month onwards and propagates the change to all enrolled students.
+Months before that keep the lesson's earlier timing and cost.
 
-Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`
+Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`
 
-At least one field must be supplied. Fields not supplied retain their current values.
-The year and subject are part of the lesson ID and cannot be changed.
+At least one lesson field must be supplied. Fields not supplied retain their current values.
+`from/` is the first billing month the change applies to. If it is omitted, the change applies from next month, or from the latest pending change if that is later.
+The effective month must be later than the current month and cannot be earlier than the latest revision.
+Only a pending revision can be replaced using the same month. Current and past billing months cannot be edited.
+The lesson year and subject cannot be changed.
 
 `CURRENT_ID` uses the format `YEAR-SUBJECT-DAY-START_TIME-END_TIME`, without the cost,
 for example `2026-MATH-MONDAY-TEN-ELEVEN`.
 
-Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN d/MONDAY st/TEN et/ELEVEN c/40`
+Examples:
+* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11` charges $40 from November 2026. October is still
+  charged at the old cost, so a student who already paid for October stays fully paid.
+* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN d/TUESDAY` moves the lesson to Tuesdays from next month.
 
-Student enrolments and attendance references are updated to the new lesson ID. Recorded payments
-remain attached to their students, while fee summaries use the edited lesson cost.
+After the edit, refer to the lesson by its new ID. Student enrolments are updated to the new ID. Attendance
+already recorded keeps the lesson ID and date it was taken under, and `viewattendance` notes the change:
+
+```
+1. 2026-MATH-MONDAY-TEN-ELEVEN on 2026-10-19: PRESENT
+   Schedule changed to TUESDAY TEN-ELEVEN
+```
+
+Sessions before the change takes effect can still be recorded with either ID. They are checked against the old
+timing. Recorded payments are never changed. The fees due for each month use the lesson cost in effect that month.
 
 **Lessons** \
 Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
@@ -314,7 +329,8 @@ Examples (assuming student 1 is enrolled in the Monday Math lesson above):
 
 Format: `viewattendance INDEX`
 
-Lists the student's attendance records in recording order, with numbers starting at 1. Each entry shows the
+Lists the student's attendance records from earliest to latest date, with numbers starting at 1.
+Records on the same date retain their recording order. Each entry shows the
 lesson ID, date and status. If there are no records, EduReg displays `No attendance recorded.`
 The command does not change the student list or any records.
 
@@ -325,7 +341,9 @@ Example: `viewattendance 1`
 Format: `deleteattendance INDEX i/ATTENDANCE_INDEX`
 
 Deletes the record numbered `ATTENDANCE_INDEX` in that student's `viewattendance` output. Both indexes must
-be positive integers. Remaining records are renumbered, so view the records again before deleting another one.
+be positive integers. Zero, negative, or non-integer indexes are rejected with a message identifying the invalid
+student or attendance index. Records are renumbered after additions or deletions, so run `viewattendance` again
+before deleting another record, especially after adding a backdated entry.
 Historical records can still be viewed and deleted after the student leaves the lesson.
 
 Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.
@@ -481,7 +499,7 @@ Action | Format, Examples
 --------|------------------
 **Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
 **Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
-**Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40`
+**Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11`
 **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON_ID]…​`
 <br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`

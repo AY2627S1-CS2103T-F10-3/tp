@@ -255,7 +255,9 @@ public class ParserUtil {
         if (!Lesson.isValidTimeRange(startTime, endTime)) {
             throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
         }
-        return new Lesson(year, subject, day, startTime, endTime, 0);
+        Lesson reference = new Lesson(year, subject, day, startTime, endTime, 0);
+        // This is a lookup token, not a new catalog lesson. Execution resolves its real identity.
+        return reference.withUid("reference:" + reference.getId());
     }
 
     /**

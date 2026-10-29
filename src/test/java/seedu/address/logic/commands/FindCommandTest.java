@@ -201,7 +201,7 @@ public class FindCommandTest {
         Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 100);
         Person paid = new PersonBuilder().withName("Paid Student").withLessons(lesson)
                 .withPayments(payment, payment, payment).build();
-        Lesson expensiveLesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
+        Lesson expensiveLesson = new Lesson(Year.of(2026), Subject.MATH, Day.WEDNESDAY,
                 Time.TEN, Time.ELEVEN, Integer.MAX_VALUE);
         Lesson otherLesson = new Lesson(Year.of(2026), Subject.MATH, Day.TUESDAY,
                 Time.TEN, Time.ELEVEN, Integer.MAX_VALUE);
