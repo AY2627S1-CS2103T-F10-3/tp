@@ -35,6 +35,12 @@ public class AttendanceCommandParserTest {
     }
 
     @Test
+    public void parse_caseInsensitiveLessonId_success() {
+        AttendanceCommand expected = new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT);
+        assertParseSuccess(parser, "1 l/2026-mAtH-mOnDaY-tEn-ElEvEn" + DATE + STATUS, expected);
+    }
+
+    @Test
     public void parse_missingFields_failure() {
         assertParseFailure(parser, LESSON + DATE + STATUS, INVALID_FORMAT);
         assertParseFailure(parser, "1" + DATE + STATUS, INVALID_FORMAT);

@@ -271,6 +271,18 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_caseInsensitiveLessonId_success() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+        String lowercaseLessonId = LESSON_DESC_MATH.replace("MATH-MONDAY-TEN-ELEVEN", "math-monday-ten-eleven");
+        String userInput = targetIndex.getOneBased() + lowercaseLessonId;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withLessons(VALID_LESSON_MATH_REFERENCE).build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
     public void parse_invalidLesson_failure() {
         assertParseFailure(parser, "1" + INVALID_LESSON_DAY_DESC, Lesson.DAY_CONSTRAINT);
 

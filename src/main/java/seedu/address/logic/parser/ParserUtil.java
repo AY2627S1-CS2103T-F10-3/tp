@@ -8,6 +8,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
@@ -154,11 +155,10 @@ public class ParserUtil {
      */
     public static Year parseYear(String year) throws ParseException {
         requireNonNull(year);
-        try {
-            return Year.parse(year.trim());
-        } catch (RuntimeException exception) {
-            throw new ParseException(Lesson.YEAR_CONSTRAINT, exception);
+        if (!Lesson.isValidYear(year)) {
+            throw new ParseException(Lesson.YEAR_CONSTRAINT);
         }
+        return Year.parse(year.trim());
     }
 
     /**
@@ -167,7 +167,7 @@ public class ParserUtil {
     public static Subject parseSubject(String subject) throws ParseException {
         requireNonNull(subject);
         try {
-            return Subject.valueOf(subject.trim());
+            return Subject.valueOf(subject.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
             throw new ParseException(Lesson.SUBJECT_CONSTRAINT, exception);
         }
@@ -179,7 +179,7 @@ public class ParserUtil {
     public static Day parseDay(String day) throws ParseException {
         requireNonNull(day);
         try {
-            return Day.valueOf(day.trim());
+            return Day.valueOf(day.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
             throw new ParseException(Lesson.DAY_CONSTRAINT, exception);
         }
@@ -191,7 +191,7 @@ public class ParserUtil {
     public static Time parseTime(String time) throws ParseException {
         requireNonNull(time);
         try {
-            return Time.valueOf(time.trim());
+            return Time.valueOf(time.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
             throw new ParseException(Lesson.TIME_CONSTRAINT, exception);
         }

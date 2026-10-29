@@ -92,6 +92,15 @@ public class AddStudentCommandParserTest {
     }
 
     @Test
+    public void parse_caseInsensitiveLessonId_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags(VALID_TAG_FRIEND)
+                .withLessons(VALID_LESSON_MATH_REFERENCE).build();
+        String lowercaseLessonId = LESSON_DESC_MATH.replace("MATH-MONDAY-TEN-ELEVEN", "math-monday-ten-eleven");
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + TAG_DESC_FRIEND + lowercaseLessonId + GUARDIAN_DETAILS, new AddStudentCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_multipleLessons_success() {
         Person expectedPerson = new PersonBuilder(BOB).withGuardian(MARY).withTags()
                 .withLessons(VALID_LESSON_MATH_REFERENCE, VALID_LESSON_ENGLISH_REFERENCE).build();

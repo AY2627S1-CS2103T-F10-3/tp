@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import seedu.address.model.lesson.exceptions.LessonException;
@@ -15,13 +14,15 @@ public class Lesson {
             Lessons are defined as `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`;
             student lesson references must use `{year}-{subj}-{day}-{starttime}-{endtime}` without a cost,
             where:
-            year is of the form yyyy eg. 2026
+            year is a four-digit year from 2000 to 9999 eg. 2026
             subject is one of the allowed subjects
             day is any day of the week
             startTime and endTime are any allowed hour
             cost is any non negative integer
             """;
-    public static final String YEAR_CONSTRAINT = "Year must be of the form yyyy eg. 2026";
+    public static final int MIN_YEAR = 2000;
+    public static final int MAX_YEAR = 9999;
+    public static final String YEAR_CONSTRAINT = "Year must be a four-digit year from 2000 to 9999 eg. 2026";
     public static final String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
     public static final String DAY_CONSTRAINT = "Day is any day of the week eg. MONDAY";
     public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to twenty";
@@ -55,6 +56,9 @@ public class Lesson {
         requireNonNull(startTime);
         requireNonNull(endTime);
         requireNonNull(cost);
+        if (year.getValue() < MIN_YEAR || year.getValue() > MAX_YEAR) {
+            throw new LessonException(YEAR_CONSTRAINT);
+        }
         if (!isValidTimeRange(startTime, endTime)) {
             throw new LessonException(TIME_ORDER_CONSTRAINT);
         }
@@ -92,12 +96,12 @@ public class Lesson {
         if (year == null) {
             return false;
         }
-        try {
-            Year.parse(year.trim());
-            return true;
-        } catch (DateTimeParseException exception) {
+        String trimmedYear = year.trim();
+        if (!trimmedYear.matches("[0-9]{4}")) {
             return false;
         }
+        int yearValue = Integer.parseInt(trimmedYear);
+        return yearValue >= MIN_YEAR && yearValue <= MAX_YEAR;
     }
 
     /** Returns the year in which the lesson is conducted. */
