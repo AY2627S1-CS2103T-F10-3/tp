@@ -18,6 +18,12 @@ public class DeleteLessonCommandParserTest {
     }
 
     @Test
+    public void parse_caseInsensitiveId_success() {
+        assertParseSuccess(parser, "2026-math-monday-ten-eleven",
+                new DeleteLessonCommand("2026-MATH-MONDAY-TEN-ELEVEN"));
+    }
+
+    @Test
     public void parse_emptyId_failure() {
         assertParseFailure(parser, " ", String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT,
                 DeleteLessonCommand.MESSAGE_USAGE));
