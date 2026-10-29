@@ -51,7 +51,7 @@ public class AddStudentCommand extends Command {
             + PREFIX_TAG + "friends "
             + PREFIX_TAG + "owesMoney "
             + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN "
-            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN"
+            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN "
             + PREFIX_GUARDIAN_NAME + "Mary Doe "
             + PREFIX_GUARDIAN_PHONE + "91234567 "
             + PREFIX_GUARDIAN_EMAIL + "mary@example.com "
