@@ -55,7 +55,11 @@ public class AddLessonCommandParser implements Parser<AddLessonCommand> {
             if (parseExceptions.size() == 1 && invalidFields.size() == 1) {
                 throw parseExceptions.get(0);
             }
-            throw new ParseException("Invalid fields: " + String.join(", ", invalidFields) + ".");
+            List<String> invalidFieldMessages = new ArrayList<>();
+            for (int i = 0; i < invalidFields.size(); i++) {
+                invalidFieldMessages.add(invalidFields.get(i) + " (" + parseExceptions.get(i).getMessage() + ")");
+            }
+            throw new ParseException("Invalid fields: " + String.join(", ", invalidFieldMessages) + ".");
         }
 
         Lesson lesson = new Lesson(

@@ -25,7 +25,7 @@ public class Lesson {
     public static final String YEAR_CONSTRAINT = "Year must be a four-digit year from 2000 to 9999 eg. 2026";
     public static final String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
     public static final String DAY_CONSTRAINT = "Day is any day of the week eg. MONDAY";
-    public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to nineteen";
+    public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to twenty";
     public static final String TIME_ORDER_CONSTRAINT = "Start time must be before end time";
     public static final String COST_CONSTRAINT = "Cost must be a non negative integer";
     public static final String STUDENT_REFERENCE_CONSTRAINT = "Student lesson references must be in the form "

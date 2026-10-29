@@ -11,10 +11,16 @@ import static seedu.address.model.lesson.Lesson.TIME_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.TIME_ORDER_CONSTRAINT;
 import static seedu.address.model.lesson.Lesson.YEAR_CONSTRAINT;
 
+import java.time.Year;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddLessonCommand;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 
 public class AddLessonCommandParserTest {
     private final AddLessonCommandParser parser = new AddLessonCommandParser();
@@ -29,6 +35,13 @@ public class AddLessonCommandParserTest {
     public void parse_caseInsensitiveLessonFields_success() {
         String args = " y/2026 s/math d/mOnDaY st/ten et/eleven c/30";
         assertParseSuccess(parser, args, new AddLessonCommand(VALID_LESSON_MATH));
+    }
+
+    @Test
+    public void parse_timeAtTwenty_success() {
+        String args = validArgs.replace("et/ELEVEN", "et/TWENTY");
+        assertParseSuccess(parser, args, new AddLessonCommand(
+                new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.TWENTY, 30)));
     }
 
     @Test
@@ -61,10 +74,19 @@ public class AddLessonCommandParserTest {
 
     @Test
     public void parse_multipleInvalidValues_failure() {
-        String args = validArgs.replace("s/MATH", "s/HISTORY")
+        String args = validArgs.replace("y/2026", "y/1999")
+                .replace("s/MATH", "s/HISTORY")
                 .replace("d/MONDAY", "d/FUNDAY")
-                .replace("st/TEN", "st/NOON");
-        assertParseFailure(parser, args, "Invalid fields: subject, day, start time.");
+                .replace("st/TEN", "st/NOON")
+                .replace("et/ELEVEN", "et/NOON")
+                .replace("c/30", "c/-1");
+        String expected = "Invalid fields: year (" + YEAR_CONSTRAINT + "), "
+                + "subject (" + SUBJECT_CONSTRAINT + "), "
+                + "day (" + DAY_CONSTRAINT + "), "
+                + "start time (" + TIME_CONSTRAINT + "), "
+                + "end time (" + TIME_CONSTRAINT + "), "
+                + "cost (" + COST_CONSTRAINT + ").";
+        assertParseFailure(parser, args, expected);
     }
 
     @Test
