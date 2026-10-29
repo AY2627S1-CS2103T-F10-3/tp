@@ -22,24 +22,24 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
 2. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-F10-3/tp/releases).
 
-3. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+3. Copy the file to the folder you want to use as the _home folder_ for EduReg.
 
 4. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar edureg.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
-   ![Ui](images/Ui.png)
+   ![EduReg interface showing the command box, results panel, and student directory](images/Ui.png)
 
 5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open
    the help window.<br>
    Some example commands you can try:
 
-    * `view` : Lists all contacts.
+    * `view` : Lists all students.
 
     * `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-      : Adds a contact named `John Doe` to the Address Book.
+      : Adds a student named `John Doe` to EduReg.
 
-    * `delete 3` : Deletes the 3rd contact shown in the current list.
+    * `delete 3` : Deletes the 3rd student shown in the current directory.
 
-    * `clear` : Deletes all contacts.
+    * `clear` : Deletes all students.
 
     * `exit` : Exits the app.
 
@@ -76,9 +76,9 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens a window containing the link to the EduReg User Guide. Use **Copy URL** to copy the link.
 
-![help message](images/helpMessage.png)
+![EduReg Help window showing the User Guide link](images/helpMessage.png)
 
 Format: `help`
 
