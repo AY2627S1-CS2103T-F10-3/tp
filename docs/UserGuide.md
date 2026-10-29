@@ -132,16 +132,17 @@ contributes to enrolled-class fee summaries.
 
 ### Editing a lesson: `editlesson`
 
-Updates every field of an existing lesson and propagates the change to all enrolled students.
+Updates the editable fields of an existing lesson and propagates the change to all enrolled students.
 
-Format: `editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`
+Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`
 
 At least one field must be supplied. Fields not supplied retain their current values.
+The year and subject are part of the lesson ID and cannot be changed.
 
 `CURRENT_ID` uses the format `YEAR-SUBJECT-DAY-START_TIME-END_TIME`, without the cost,
 for example `2026-MATH-MONDAY-TEN-ELEVEN`.
 
-Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/40`
+Example: `editlesson 2026-MATH-MONDAY-TEN-ELEVEN d/MONDAY st/TEN et/ELEVEN c/40`
 
 Student enrolments and attendance references are updated to the new lesson ID. Recorded payments
 remain attached to their students, while fee summaries use the edited lesson cost.
@@ -477,7 +478,7 @@ Action | Format, Examples
 --------|------------------
 **Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
 **Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
-**Edit Lesson** | `editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40`
+**Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40`
 **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS]`
 \<br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`

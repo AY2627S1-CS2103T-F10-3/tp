@@ -8,9 +8,15 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_START_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_YEAR;
 
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+
 import seedu.address.logic.commands.AddLessonCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 
 /** Parses arguments for {@link AddLessonCommand}. */
@@ -25,19 +31,62 @@ public class AddLessonCommandParser implements Parser<AddLessonCommand> {
         }
         map.verifyNoDuplicatePrefixesFor(PREFIX_YEAR, PREFIX_SUBJECT, PREFIX_DAY, PREFIX_START_TIME,
                 PREFIX_END_TIME, PREFIX_COST);
-        Time startTime = ParserUtil.parseTime(map.getValue(PREFIX_START_TIME).get());
-        Time endTime = ParserUtil.parseTime(map.getValue(PREFIX_END_TIME).get());
-        if (!Lesson.isValidTimeRange(startTime, endTime)) {
-            throw new ParseException(Lesson.TIME_ORDER_CONSTRAINT);
+
+        List<String> invalidFields = new ArrayList<>();
+        List<ParseException> parseExceptions = new ArrayList<>();
+        Year year = parseField(map, PREFIX_YEAR, "year", ParserUtil::parseYear,
+                invalidFields, parseExceptions);
+        Subject subject = parseField(map, PREFIX_SUBJECT, "subject", ParserUtil::parseSubject,
+                invalidFields, parseExceptions);
+        Day day = parseField(map, PREFIX_DAY, "day", ParserUtil::parseDay,
+                invalidFields, parseExceptions);
+        Time startTime = parseField(map, PREFIX_START_TIME, "start time", ParserUtil::parseTime,
+                invalidFields, parseExceptions);
+        Time endTime = parseField(map, PREFIX_END_TIME, "end time", ParserUtil::parseTime,
+                invalidFields, parseExceptions);
+        Integer cost = parseField(map, PREFIX_COST, "cost", ParserUtil::parseCost,
+                invalidFields, parseExceptions);
+
+        if (startTime != null && endTime != null && !Lesson.isValidTimeRange(startTime, endTime)) {
+            invalidFields.add("start time and end time");
+            parseExceptions.add(new ParseException(Lesson.TIME_ORDER_CONSTRAINT));
         }
+        if (!parseExceptions.isEmpty()) {
+            if (parseExceptions.size() == 1 && invalidFields.size() == 1) {
+                throw parseExceptions.get(0);
+            }
+            List<String> invalidFieldMessages = new ArrayList<>();
+            for (int i = 0; i < invalidFields.size(); i++) {
+                invalidFieldMessages.add(invalidFields.get(i) + " (" + parseExceptions.get(i).getMessage() + ")");
+            }
+            throw new ParseException("Invalid fields: " + String.join(", ", invalidFieldMessages) + ".");
+        }
+
         Lesson lesson = new Lesson(
-                ParserUtil.parseYear(map.getValue(PREFIX_YEAR).get()),
-                ParserUtil.parseSubject(map.getValue(PREFIX_SUBJECT).get()),
-                ParserUtil.parseDay(map.getValue(PREFIX_DAY).get()),
+                year,
+                subject,
+                day,
                 startTime,
                 endTime,
-                ParserUtil.parseCost(map.getValue(PREFIX_COST).get()));
+                cost);
         return new AddLessonCommand(lesson);
+    }
+
+    private static <T> T parseField(ArgumentMultimap map, Prefix prefix, String fieldName,
+                                    FieldParser<T> parser, List<String> invalidFields,
+                                    List<ParseException> parseExceptions) {
+        try {
+            return parser.parse(map.getValue(prefix).get());
+        } catch (ParseException exception) {
+            invalidFields.add(fieldName);
+            parseExceptions.add(exception);
+            return null;
+        }
+    }
+
+    @FunctionalInterface
+    private interface FieldParser<T> {
+        T parse(String value) throws ParseException;
     }
 
     private static boolean arePrefixesPresent(ArgumentMultimap map, Prefix... prefixes) {

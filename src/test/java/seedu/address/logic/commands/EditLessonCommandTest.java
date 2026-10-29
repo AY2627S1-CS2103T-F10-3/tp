@@ -14,7 +14,6 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceStatus;
 import seedu.address.model.lesson.Day;
-import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
@@ -25,8 +24,7 @@ public class EditLessonCommandTest {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
 
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                null, null, null, 40);
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40);
         command.execute(model);
 
         assertEquals(40, model.getAddressBook().getLessonList().get(0).getCost());
@@ -39,8 +37,8 @@ public class EditLessonCommandTest {
         Person student = new PersonBuilder().withLessons(VALID_LESSON_MATH).build();
         model.addPerson(student);
 
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, Subject.MATH,
-                Day.MONDAY, Time.TEN, Time.ELEVEN, 40);
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 40);
         command.execute(model);
 
         assertEquals(Set.of(model.getAddressBook().getLessonList().get(0)),
@@ -51,8 +49,7 @@ public class EditLessonCommandTest {
     @Test
     public void execute_missingLesson_throwsCommandException() {
         ModelManager model = new ModelManager();
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                null, null, null, 40);
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40);
 
         assertThrows(CommandException.class, () -> command.execute(model));
     }
@@ -62,8 +59,8 @@ public class EditLessonCommandTest {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
 
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                null, Time.TWELVE, null, null);
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null,
+                Time.TWELVE, null, null);
 
         assertThrows(CommandException.class, EditLessonCommand.MESSAGE_INVALID_TIME_RANGE, () ->
                 command.execute(model));
@@ -79,8 +76,7 @@ public class EditLessonCommandTest {
         model.addPerson(new PersonBuilder().withLessons(VALID_LESSON_MATH)
                 .withAttendance(historicalAttendance).build());
 
-        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null,
-                Day.TUESDAY, null, null, null);
+        EditLessonCommand command = new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.TUESDAY, null, null, null);
         command.execute(model);
 
         assertEquals(VALID_LESSON_MATH.getId(), model.getFilteredPersonList().getFirst()
