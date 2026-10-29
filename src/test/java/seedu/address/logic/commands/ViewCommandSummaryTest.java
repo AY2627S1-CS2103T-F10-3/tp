@@ -71,13 +71,15 @@ public class ViewCommandSummaryTest {
     @Test
     public void execute_newFieldSummaries_countsGuardiansPaymentsAndAttendance() {
         AddressBook book = new AddressBook();
-        book.addPerson(new PersonBuilder().withName("Bob").withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
+        book.addPerson(new PersonBuilder().withName("Bob").withGuardian(MARY)
+                .withPayments(PAYMENT_OCTOBER_PARTIAL, PAYMENT_OCTOBER_PARTIAL)
                 .withAttendance(ATTENDANCE_PRESENT).build());
         book.addPerson(new PersonBuilder().withGuardian(MARY).withPayments(PAYMENT_OCTOBER_PARTIAL)
                 .withAttendance(ATTENDANCE_PRESENT).build());
         Model model = new ModelManager(book, new UserPrefs());
 
-        assertSummary(model, "guardian", MARY.toString() + " : 2");
+        assertSummary(model, "guardian", "Name: Mary Tan | Phone: 91234567 | Email: mary@example.com | "
+                + "Relationship: Mother | Address: 123 Example Road : 2");
         assertSummary(model, "payment", PAYMENT_OCTOBER_PARTIAL + " : 2");
         assertSummary(model, "attendance", ATTENDANCE_PRESENT + " : 2");
     }

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import seedu.address.model.Model;
+import seedu.address.model.guardian.Guardian;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Person;
 
@@ -51,7 +52,7 @@ public class ViewCommand extends Command {
             model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(lesson.toString(), 0));
         }
         for (Person person : model.getAddressBook().getPersonList()) {
-            valuesOf(person).forEach(value -> frequencies.merge(value, 1, Integer::sum));
+            valuesOf(person).distinct().forEach(value -> frequencies.merge(value, 1, Integer::sum));
         }
         StringBuilder feedback = new StringBuilder("Distinct " + field + " values (frequency):");
         if (frequencies.isEmpty()) {
@@ -70,11 +71,17 @@ public class ViewCommand extends Command {
             case "address" -> Stream.of(person.getAddress().toString());
             case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
             case "lesson" -> person.getLessons().stream().map(Lesson::toString);
-            case "guardian" -> person.getGuardian().stream().map(Object::toString);
+            case "guardian" -> person.getGuardian().stream().map(ViewCommand::formatGuardian);
             case "payment" -> person.getPayments().stream().map(Object::toString);
             case "attendance" -> person.getAttendance().stream().map(Object::toString);
             default -> throw new IllegalArgumentException("Unsupported view field: " + field);
         };
+    }
+
+    private static String formatGuardian(Guardian guardian) {
+        return String.format("Name: %s | Phone: %s | Email: %s | Relationship: %s | Address: %s",
+                guardian.getName(), guardian.getPhone(), guardian.getEmail(),
+                guardian.getRelationship(), guardian.getAddress());
     }
 
     @Override
