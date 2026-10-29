@@ -131,6 +131,10 @@ class JsonAdaptedPerson {
             personTags.add(tag.toModelType());
         }
 
+        // Check legacy lessons even when lessonIds takes precedence, so a null entry is never ignored.
+        if (legacyLessons.contains(null)) {
+            throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"));
+        }
         final List<Lesson> personLessons = new ArrayList<>();
         if (lessonBook != null && !lessonIds.isEmpty()) {
             for (String lessonId : lessonIds) {
@@ -144,9 +148,6 @@ class JsonAdaptedPerson {
             // v1.3 stored complete lesson definitions inside each person. Import them
             // into the shared lesson book so the next save can normalize the format.
             for (JsonAdaptedLesson legacyLesson : legacyLessons) {
-                if (legacyLesson == null) {
-                    throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"));
-                }
                 Lesson lesson = legacyLesson.toModelType();
                 lessonBook.addLesson(lesson);
                 personLessons.add(lessonBook.getLesson(lesson.getId()));

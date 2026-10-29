@@ -86,6 +86,17 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_lessonIdsWithNullLegacyLesson_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_TAGS, List.of(MATH_LESSON.getId()), Collections.singletonList(null), null, null);
+        LessonBook lessonBook = new LessonBook();
+        lessonBook.addLesson(MATH_LESSON);
+
+        assertThrows(IllegalValueException.class, String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"), () ->
+                person.toModelType(lessonBook));
+    }
+
+    @Test
     public void toModelType_nullAttendance_throwsIllegalValueException() {
         JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
                 VALID_TAGS, null, null, null, null, Collections.singletonList(null));
