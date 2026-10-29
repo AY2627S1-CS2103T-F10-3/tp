@@ -45,9 +45,16 @@ public class AddStudentCommandParser implements Parser<AddStudentCommand> {
                         PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
                         PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS);
 
-        if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_ADDRESS, PREFIX_PHONE, PREFIX_EMAIL,
-                PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
+        boolean hasAnyGuardianPrefix = Stream.of(PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE, PREFIX_GUARDIAN_EMAIL,
                 PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS)
+                .anyMatch(prefix -> argMultimap.getValue(prefix).isPresent());
+        boolean hasAllGuardianPrefixes = arePrefixesPresent(argMultimap, PREFIX_GUARDIAN_NAME, PREFIX_GUARDIAN_PHONE,
+                PREFIX_GUARDIAN_EMAIL, PREFIX_GUARDIAN_RELATIONSHIP, PREFIX_GUARDIAN_ADDRESS);
+
+        if (hasAnyGuardianPrefix && !hasAllGuardianPrefixes) {
+            throw new ParseException(AddStudentCommand.MESSAGE_INCOMPLETE_GUARDIAN_DETAILS);
+        }
+        if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_ADDRESS, PREFIX_PHONE, PREFIX_EMAIL)
                 || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddStudentCommand.MESSAGE_USAGE));
         }
@@ -62,13 +69,16 @@ public class AddStudentCommandParser implements Parser<AddStudentCommand> {
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
         Set<Lesson> lessonList = ParserUtil.parseLessonReferences(argMultimap.getAllValues(PREFIX_LESSON));
 
-        Guardian guardian = new Guardian(
-                ParserUtil.parseName(argMultimap.getValue(PREFIX_GUARDIAN_NAME).get()),
-                ParserUtil.parsePhone(argMultimap.getValue(PREFIX_GUARDIAN_PHONE).get()),
-                ParserUtil.parseEmail(argMultimap.getValue(PREFIX_GUARDIAN_EMAIL).get()),
-                ParserUtil.parseRelationship(argMultimap.getValue(PREFIX_GUARDIAN_RELATIONSHIP).get()),
-                ParserUtil.parseAddress(argMultimap.getValue(PREFIX_GUARDIAN_ADDRESS).get()));
-        Person person = new Person(name, phone, email, address, tagList, lessonList, Optional.of(guardian));
+        Optional<Guardian> guardian = Optional.empty();
+        if (hasAnyGuardianPrefix) {
+            guardian = Optional.of(new Guardian(
+                    ParserUtil.parseName(argMultimap.getValue(PREFIX_GUARDIAN_NAME).get()),
+                    ParserUtil.parsePhone(argMultimap.getValue(PREFIX_GUARDIAN_PHONE).get()),
+                    ParserUtil.parseEmail(argMultimap.getValue(PREFIX_GUARDIAN_EMAIL).get()),
+                    ParserUtil.parseRelationship(argMultimap.getValue(PREFIX_GUARDIAN_RELATIONSHIP).get()),
+                    ParserUtil.parseAddress(argMultimap.getValue(PREFIX_GUARDIAN_ADDRESS).get())));
+        }
+        Person person = new Person(name, phone, email, address, tagList, lessonList, guardian);
 
         return new AddStudentCommand(person);
     }
