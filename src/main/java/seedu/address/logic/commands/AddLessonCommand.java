@@ -35,6 +35,7 @@ public class AddLessonCommand extends Command {
 
     @Override
     public boolean equals(Object other) {
-        return other == this || other instanceof AddLessonCommand command && toAdd.equals(command.toAdd);
+        return other == this || other instanceof AddLessonCommand command
+                && toAdd.getRevisions().equals(command.toAdd.getRevisions());
     }
 }

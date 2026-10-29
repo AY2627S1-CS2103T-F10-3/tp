@@ -64,7 +64,7 @@ public class AttendanceCommandTest {
         Lesson english = new Lesson(MATH_LESSON.getYear(), Subject.ENGLISH, MATH_LESSON.getDay(),
                 MATH_LESSON.getStartTime(), MATH_LESSON.getEndTime(), 100);
         model.addPerson(new PersonBuilder(student).withLessons(MATH_LESSON, english).build());
-        Attendance englishRecord = new Attendance(english.getId(), ATTENDANCE_PRESENT.getDate(),
+        Attendance englishRecord = new Attendance(english.getId(), english.getUid(), ATTENDANCE_PRESENT.getDate(),
                 AttendanceStatus.ABSENT);
         new AttendanceCommand(INDEX_FIRST_PERSON, ATTENDANCE_PRESENT).execute(model);
         new AttendanceCommand(INDEX_FIRST_PERSON, englishRecord).execute(model);

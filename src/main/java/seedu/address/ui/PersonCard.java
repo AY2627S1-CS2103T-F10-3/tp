@@ -87,12 +87,14 @@ public class PersonCard extends UiPart<Region> {
             guardianRelationship.setText("Relationship: " + guardian.getRelationship().value);
             guardianAddress.setText("Address: " + guardian.getAddress().value);
         });
+        YearMonth currentMonth = YearMonth.now();
         lessons.setText(person.getLessons().stream()
-                .map(lesson -> String.format("%s-%s-%s-%s-%s-%d", lesson.getYear(), lesson.getSubject(),
-                        lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost()))
+                .map(lesson -> String.format("%s-%s-%s-%s-%s-%d%s", lesson.getYear(), lesson.getSubject(),
+                        lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost(),
+                        lesson.getLatestRevision().getEffectiveFrom().isAfter(currentMonth)
+                                ? " (from " + lesson.getLatestRevision().getEffectiveFrom() + ")" : ""))
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
-        YearMonth currentMonth = YearMonth.now();
         long feesDue = person.getFeesDue(currentMonth);
         long outstanding = person.getOutstandingFees(currentMonth);
         fees.setText(String.format("Fees (%s): %s", currentMonth.format(MONTH_FORMAT),

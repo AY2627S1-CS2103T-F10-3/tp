@@ -13,6 +13,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.person.Person;
 
 /**
@@ -68,7 +69,11 @@ class JsonSerializableAddressBook {
             Lesson modelLesson = lesson.toModelType();
             // Lesson definitions are shared across students. Keep the first definition when
             // malformed or manually edited JSON contains the same definition more than once.
-            lessonBook.addLesson(modelLesson);
+            try {
+                lessonBook.addLesson(modelLesson);
+            } catch (LessonException exception) {
+                throw new IllegalValueException(exception.getMessage(), exception);
+            }
         }
         for (JsonAdaptedPerson jsonAdaptedPerson : persons) {
             if (jsonAdaptedPerson == null) {

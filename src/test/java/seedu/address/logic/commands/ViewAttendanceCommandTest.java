@@ -11,6 +11,8 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
@@ -19,6 +21,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.attendance.Attendance;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -36,6 +39,22 @@ public class ViewAttendanceCommandTest {
         String expectedMessage = String.format(ViewAttendanceCommand.MESSAGE_HEADER, student.getName())
                 + "\n1. " + ATTENDANCE_PRESENT + "\n2. " + ATTENDANCE_ABSENT;
         assertCommandSuccess(new ViewAttendanceCommand(INDEX_FIRST_PERSON), model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_backdatedAttendance_sortsDatesAndPreservesSameDateOrder() {
+        Person student = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Attendance sameDate = new Attendance("2026-ENGLISH-MONDAY-TEN-ELEVEN",
+                ATTENDANCE_PRESENT.getDate(), ATTENDANCE_PRESENT.getStatus());
+        model.setPerson(student, new PersonBuilder(student)
+                .withAttendance(ATTENDANCE_ABSENT, ATTENDANCE_PRESENT, sameDate).build());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+
+        String expectedMessage = String.format(ViewAttendanceCommand.MESSAGE_HEADER, student.getName())
+                + "\n1. " + ATTENDANCE_PRESENT + "\n2. " + sameDate + "\n3. " + ATTENDANCE_ABSENT;
+        assertCommandSuccess(new ViewAttendanceCommand(INDEX_FIRST_PERSON), model, expectedMessage, expectedModel);
+        assertEquals(List.of(ATTENDANCE_ABSENT, ATTENDANCE_PRESENT, sameDate),
+                model.getFilteredPersonList().getFirst().getAttendance());
     }
 
     @Test
