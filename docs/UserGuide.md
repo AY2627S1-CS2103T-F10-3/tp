@@ -232,8 +232,8 @@ Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
 * `MONTH` is the billing month that the payment is for, in the form `yyyy-MM`, for example `2026-10`.
 * `DATE` is the date the payment was received, in the form `yyyy-MM-dd`. If you leave it out, today's date is used.
 * A student can make more than one payment for the same month, for example when paying in parts.
-* The student must have fees due for `MONTH`, that is, at least one lesson in that month's year. Otherwise the payment
-  is rejected.
+* The student must have fees due for `MONTH`, that is, at least one lesson with a cost in that month's year. Otherwise
+  the payment is rejected.
 * `AMOUNT` can't be more than the amount still outstanding for `MONTH`. For example, if $30 is due and $10 has been
   paid, the largest payment accepted is $20.
 * After recording the payment, EduReg shows the fees due, the total paid and the amount still outstanding for that
@@ -252,11 +252,12 @@ earlier months.
 Each student card shows the fees for the current month, either **Paid** or the amount outstanding. Students with no
 lessons in the current year don't show a fees line.
 
-Examples:
+Examples (using the sample data, where the 2nd student owes $35 and the 3rd student owes $40 for October 2026):
 
-* `pay 1 amt/70 m/2026-10` records a $70 payment for October 2026 from the 1st student, received today.
-* `pay 2 amt/30 m/2026-10 d/2026-10-03` records a $30 payment for October 2026 from the 2nd student, received on
-  3 October 2026.
+* `pay 2 amt/35 m/2026-10` records a $35 payment for October 2026 from the 2nd student, received today. October is
+  now fully paid.
+* `pay 3 amt/20 m/2026-10 d/2026-10-03` records a $20 part payment for October 2026 from the 3rd student, received
+  on 3 October 2026. $20 is still outstanding.
 
 ### Viewing a student's payments: `viewpayments`
 
@@ -485,7 +486,7 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
-**Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 1 amt/70 m/2026-10 d/2026-10-03`
+**Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 2 amt/35 m/2026-10 d/2026-10-03`
 **View Payments** | `viewpayments INDEX`<br> e.g., `viewpayments 1`
 **Delete Payment** | `deletepayment INDEX i/PAYMENT_INDEX`<br> e.g., `deletepayment 1 i/2`
 **Attendance** | `attendance INDEX l/LESSON_ID d/DATE s/STATUS`

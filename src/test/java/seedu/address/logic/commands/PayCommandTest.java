@@ -17,6 +17,7 @@ import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_REST;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,10 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 import seedu.address.model.payment.Amount;
 import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Person;
@@ -82,7 +87,7 @@ public class PayCommandTest {
         model.setPerson(student, studentWithoutLessons);
 
         PayCommand payCommand = new PayCommand(INDEX_FIRST_PERSON, PAYMENT_NOVEMBER);
-        String expectedMessage = String.format(PayCommand.MESSAGE_NO_FEES_DUE, student.getName(), 2026,
+        String expectedMessage = String.format(PayCommand.MESSAGE_NO_LESSONS, student.getName(), 2026,
                 NOVEMBER_2026);
         assertCommandFailure(payCommand, model, expectedMessage);
     }
@@ -94,9 +99,19 @@ public class PayCommandTest {
 
         YearMonth september2025 = YearMonth.of(2025, 9);
         Payment payment = new Payment(new Amount("1"), september2025, LocalDate.of(2026, 10, 27));
-        String expectedMessage = String.format(PayCommand.MESSAGE_NO_FEES_DUE, student.getName(), 2025,
+        String expectedMessage = String.format(PayCommand.MESSAGE_NO_LESSONS, student.getName(), 2025,
                 september2025);
         assertCommandFailure(new PayCommand(INDEX_FIRST_PERSON, payment), model, expectedMessage);
+    }
+
+    @Test
+    public void execute_zeroCostLesson_throwsCommandException() {
+        Person student = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Lesson trialLesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 0);
+        model.setPerson(student, new PersonBuilder(student).withLessons(trialLesson).build());
+
+        String expectedMessage = String.format(PayCommand.MESSAGE_NO_FEES_DUE, student.getName(), NOVEMBER_2026);
+        assertCommandFailure(new PayCommand(INDEX_FIRST_PERSON, PAYMENT_NOVEMBER), model, expectedMessage);
     }
 
     @Test
