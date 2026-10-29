@@ -182,7 +182,7 @@ distinct value and the number of contacts that have it. Summaries include all sa
 regardless of the current view filter, and sort values alphabetically. Each tag is counted
 separately.
 
-Format: `view [/name | /phone | /email | /address | /tag | /lesson]`
+Format: `view [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]`
 
 Examples:
 
