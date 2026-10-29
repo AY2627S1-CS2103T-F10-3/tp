@@ -88,8 +88,8 @@ Format: `help`
 Adds a student to the address book.
 
 Format:
-`addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP
- ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON]…​`
+`addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON]…​
+gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS`
 
 All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are mandatory when adding a student.
 Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
@@ -102,10 +102,7 @@ A student can have any number of tags or lessons, including zero.
 </div>
 
 Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
-match lessons already in the lesson catalog; `addstudent` does not create new lessons. Student lesson
-references must use the five-part lesson ID without the cost:
-`l/YEAR-SUBJECT-DAY-START_TIME-END_TIME`. A cost-bearing value such as
-`l/2026-MATH-MONDAY-TEN-ELEVEN-30` is invalid; the cost is always taken from the lesson catalog.
+match lessons already in the lesson catalog; `addstudent` does not create new lessons.
 
 ### Adding a lesson: `addlesson`
 
@@ -115,11 +112,22 @@ Format: `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`
 
 Example: `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
 
-Use the resulting lesson ID when enrolling students with `addstudent` or `edit`.
+Lessons store the following data:
+1. Year (in the form yyyy eg. 2026)
+2. Subject (any of English, Math, or Science)
+3. Day (any day of the week eg. Monday)
+4. Start time (any hour between 10am to 8pm in 24h time eg. TEN for 10am)
+5. End time (same as start time)
+6. Cost (any non-negative integer)
+
+Each lesson can be referenced by an <span id="lessonID">ID</span>, which is defined as so: `{year}-{subject}-{day}-{start_time}-{end_time}`
+eg. `2026-MATH-MONDAY-TEN-ELEVEN`
+
+The lesson ID should be used when enrolling students with `addstudent` or `edit`.
 
 ### Deleting a lesson: `deletelesson`
 
-Removes a lesson from the lesson catalog and unenrols it from all students.
+Removes a lesson from the lesson catalog and removes all students from it.
 
 Format: `deletelesson LESSON_ID`
 
@@ -139,10 +147,9 @@ At least one lesson field must be supplied. Fields not supplied retain their cur
 `from/` is the first billing month the change applies to. If it is omitted, the change applies from next month, or from the latest pending change if that is later.
 The effective month must be later than the current month and cannot be earlier than the latest revision.
 Only a pending revision can be replaced using the same month. Current and past billing months cannot be edited.
-The lesson year and subject cannot be changed.
+The lesson year and subject cannot be changed because that defines the lesson.
 
-`CURRENT_ID` uses the format `YEAR-SUBJECT-DAY-START_TIME-END_TIME`, without the cost,
-for example `2026-MATH-MONDAY-TEN-ELEVEN`.
+`CURRENT_ID` uses the [lesson ID](#lessonID) format.
 
 Examples:
 * `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11` charges \$40 from November 2026. October is still
@@ -159,21 +166,6 @@ already recorded keeps the lesson ID and date it was taken under, and `viewatten
 
 Sessions before the change takes effect can still be recorded with either ID. They are checked against the old
 timing. Recorded payments are never changed. The fees due for each month use the lesson cost in effect that month.
-
-**Lessons** \
-Defined in the form `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`
-where:
-
-- year is in the form yyyy eg. 2026
-- subj (subject) is either `ENGLISH`, `MATH` or `SCIENCE`
-- day is any day of the week, eg. `MONDAY`
-- starttime and endtime are any hour between 10am to 8pm in 24h time eg. TEN for 10am and THIRTEEN for 1pm
-- cost is any non-negative integer
-
-Examples:
-
-* `addstudent n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road l/2026-ENGLISH-MONDAY-TEN-ELEVEN`
-* `addstudent n/Betsy Crowe t/friend e/betsycrowe@example.com a/Crow Street p/1234567 t/low-income gn/Jerry Crowe gp/92010200 ge/jcroww@example.com gr/Father ga/Crow Street`
 
 ### Viewing persons and contact values: `view`
 
