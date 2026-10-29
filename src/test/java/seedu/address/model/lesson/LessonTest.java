@@ -2,6 +2,7 @@ package seedu.address.model.lesson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -9,12 +10,30 @@ import java.time.Year;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.lesson.exceptions.LessonException;
+
 public class LessonTest {
     @Test
     public void isValidCost() {
         assertTrue(Lesson.isValidCost(0));
         assertTrue(Lesson.isValidCost(30));
         assertFalse(Lesson.isValidCost(-1));
+    }
+
+    @Test
+    public void isValidYear_requiresYearBetween2000And9999() {
+        assertFalse(Lesson.isValidYear("1999"));
+        assertTrue(Lesson.isValidYear("2000"));
+        assertTrue(Lesson.isValidYear("9999"));
+        assertFalse(Lesson.isValidYear("10000"));
+    }
+
+    @Test
+    public void constructor_rejectsYearOutsideAllowedRange() {
+        assertThrows(LessonException.class, () -> new Lesson(Year.of(1999), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30));
+        assertThrows(LessonException.class, () -> new Lesson(Year.of(10000), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30));
     }
 
     @Test
