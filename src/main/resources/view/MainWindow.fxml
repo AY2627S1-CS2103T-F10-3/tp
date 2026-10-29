@@ -3,16 +3,19 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Scene?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <fx:root type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-         title="Address App" minWidth="450" minHeight="600" onCloseRequest="#handleExit">
+         title="EduReg" minWidth="720" minHeight="640" onCloseRequest="#handleExit">
   <icons>
     <Image url="@/images/address_book_32.png" />
   </icons>
@@ -23,7 +26,7 @@
         <URL value="@Extensions.css" />
       </stylesheets>
 
-      <VBox>
+      <VBox styleClass="app-shell">
         <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
           <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
@@ -33,24 +36,38 @@
           </Menu>
         </MenuBar>
 
-        <StackPane VBox.vgrow="NEVER" fx:id="commandBoxPlaceholder" styleClass="pane-with-border">
+        <VBox spacing="14" styleClass="page-content" VBox.vgrow="ALWAYS">
           <padding>
-            <Insets top="5" right="10" bottom="5" left="10" />
+            <Insets top="16" right="20" bottom="16" left="20" />
           </padding>
-        </StackPane>
 
-        <StackPane VBox.vgrow="NEVER" fx:id="resultDisplayPlaceholder" styleClass="pane-with-border"
-                   minHeight="100" prefHeight="100" maxHeight="100">
-          <padding>
-            <Insets top="5" right="10" bottom="5" left="10" />
-          </padding>
-        </StackPane>
+          <VBox spacing="2" styleClass="brand-header">
+            <HBox spacing="0">
+              <Label text="Edu" styleClass="brand-title" />
+              <Label text="Reg" styleClass="brand-title, brand-accent" />
+            </HBox>
+            <Label text="Tuition centre administration" styleClass="brand-subtitle" />
+          </VBox>
 
-        <VBox fx:id="personList" styleClass="pane-with-border" minWidth="340" prefWidth="340" VBox.vgrow="ALWAYS">
-          <padding>
-            <Insets top="10" right="10" bottom="10" left="10" />
-          </padding>
-          <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+          <VBox spacing="6">
+            <Label text="COMMAND" styleClass="section-kicker" />
+            <StackPane fx:id="commandBoxPlaceholder" styleClass="command-surface" />
+          </VBox>
+
+          <VBox spacing="6">
+            <Label text="RESULTS" styleClass="section-kicker" />
+            <StackPane fx:id="resultDisplayPlaceholder" styleClass="result-surface"
+                       minHeight="104" prefHeight="104" maxHeight="104" />
+          </VBox>
+
+          <VBox fx:id="personList" spacing="7" minWidth="340" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT">
+              <Label text="DIRECTORY" styleClass="section-title" />
+              <Region HBox.hgrow="ALWAYS" />
+              <Label text="Student, lesson, fee and guardian records" styleClass="section-note" />
+            </HBox>
+            <StackPane fx:id="personListPanelPlaceholder" styleClass="list-surface" VBox.vgrow="ALWAYS" />
+          </VBox>
         </VBox>
 
         <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />

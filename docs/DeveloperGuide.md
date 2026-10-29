@@ -170,10 +170,20 @@ The `Model` component,
 * stores each distinct `Lesson` once in a `LessonBook`. Students who take the same lesson refer to the same `Lesson` definition.
 * creates and deletes lesson definitions through `AddLessonCommand` and `DeleteLessonCommand`. Student creation and
   editing may only reference lessons already present in the `LessonBook`; they cannot create lesson definitions.
-* edits lesson definitions through `EditLessonCommand`, replacing lesson references in every `Person` and migrating
-  matching attendance lesson IDs. `EditLessonCommandParser` accepts any non-empty subset of lesson fields and the
-  command preserves omitted fields from the current definition. Payment records remain student-owned; fee calculations
-  consequently use the edited cost.
+* versions lessons instead of overwriting them. A new `Lesson` has a random UUID as its stable internal `uid` and an immutable, non-empty list of `LessonRevision`s, each holding the year, subject, day, times, cost and the
+  `effectiveFrom` billing month. The plain getters (`getId()`, `getCost()`, ...) describe the latest revision.
+  `getRevisionFor(month)` and `getRevisionOn(date)` return the revision in effect at that time.
+* edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
+  `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
+  `from/` sets the revision's `effectiveFrom` and defaults to next month, or the latest pending month if later.
+  A revision must take effect after the current billing month and no earlier than the latest revision.
+  Only a future revision can be replaced in the same month. Year and subject cannot be edited.
+  `LessonBook#addLesson` rejects duplicate UIDs without rewriting them. Enrolments and CSV imports reuse the
+  catalog's canonical lesson objects, including their identities and revision histories. Legacy lessons without
+  a UID use their earliest saved lesson ID as a migration UID; saving persists it for subsequent loads.
+* computes fees per month: `Person#getFeesDue(month)` sums `Lesson#getCostFor(month)`, the cost of the revision in
+  effect that month (zero if that revision is for another year). Payments store their own amount and month and are
+  never rewritten, so editing a lesson's cost does not change whether earlier months are paid.
 * reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
 * represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
@@ -229,11 +239,24 @@ The [attendance class diagram](diagrams/AttendanceClassDiagram.puml) and
    occur before any model change. `Person` also enforces session uniqueness when constructed directly.
 4. The existing logic/storage pipeline saves the updated address book. `JsonAdaptedPerson` stores an optional
    `attendance` array using `JsonAdaptedAttendance`. Older files without it load with empty attendance history.
-   Invalid records, null entries and duplicate sessions produce a data-loading error.
+   Invalid fields, null entries and duplicate sessions produce a data-loading error. Loading validates calendar
+   dates but does not compare historical dates with the current lesson schedule, since lessons can be edited.
 
-`viewattendance` displays numbered records without changing the model. `deleteattendance` removes a record by
-its displayed attendance number. Both use the currently filtered student list, as payment commands do.
+`viewattendance` displays numbered records from earliest to latest date without changing the model.
+Both it and `deleteattendance` use `Person#getAttendanceInDateOrder()`, a stable date sort that retains recording
+order for records on the same date. Deletion resolves the displayed number to the record and removes it from
+the stored list. Both commands use the currently filtered student list, as payment commands do.
 `withPayments`, `withAttendance` and `EditCommand` preserve the other history when copying a person.
+
+Each `Attendance` stores the ID of the lesson revision in effect on its date (so the original timing is kept) and the
+lesson's `uid`. `AttendanceCommand` accepts the lesson's current ID or any earlier one, validates the date against
+`Lesson#getRevisionOn(date)`, and records the revision's ID and the `uid`. Linked records are compared for duplicates
+by `uid` and date, so a session cannot be recorded twice under the old and new IDs. `AddressBook#editLesson` does not
+modify attendance. `viewattendance` looks up the record's lesson by `uid` and, if its current ID differs, adds a
+`Schedule changed to ...` line. `JsonAdaptedAttendance` stores `lessonUid`. Records from older files that have no
+`lessonUid` are linked on load only when exactly one lesson has (or had) that lesson ID. Unresolvable or ambiguous
+legacy records retain their original ID and date. Records with a known UID but an unrelated lesson ID are rejected;
+unknown UIDs are retained because their lessons may have been deleted.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
 
 ### Finding students
@@ -465,15 +488,15 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Use cases
 
-### Use cases
-
 (For all use cases below, the **System** is `EduReg` and the **Actor** is the `user`, unless specified otherwise)
 
 **Use case: UC01 - Add a student contact**
 
 **MSS**
 
-1. User requests to add a new student contact by specifying their details (e.g., name, phone number, email, address, and optional tags).
+1. User requests to add a new student contact by specifying the student's name, phone number, email and address,
+   together with the guardian's name, phone number, email, relationship and address. The user may also specify tags
+   and existing lessons.
 2. EduReg validates the input format of the provided details.
 3. EduReg adds the new student to the student directory.
 4. EduReg displays a success message showing the newly added student's details.
@@ -482,13 +505,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **Extensions**
 
-* 2a. The provided details do not follow the required format (e.g., missing mandatory fields, invalid phone number, malformed email).
+* 2a. The provided details do not follow the required format (e.g., a missing or blank guardian field,
+  invalid phone number, or malformed email).
 
     * 2a1. EduReg displays an error message specifying the formatting error and required command usage.
 
       Use case resumes at step 1.
 
-* 2b. EduReg detects a duplicate student entry (a student with the same name and phone number already exists).
+* 2b. EduReg detects a duplicate student entry (a student with the same name already exists).
 
     * 2b1. EduReg displays an error message rejecting the duplicate entry.
 
@@ -568,16 +592,16 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-**Use case: UC05 - Add parent contact to a student record**
+**Use case: UC05 - Add or edit guardian details**
 
 **MSS**
 
 1. User requests to list students.
 2. EduReg shows a list of students.
-3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
+3. User requests to add or edit the guardian details of a student at a specific index by providing one or more guardian fields.
 4. EduReg validates the index and guardian details.
-5. EduReg attaches the parent contact to the specified student record.
-6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
+5. EduReg attaches the guardian details to the specified student record, preserving any guardian fields that were not edited.
+6. EduReg refreshes the display panel and shows a success message confirming the updated guardian details.
 
    Use case ends.
 
@@ -601,15 +625,9 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-* 4c. The parent contact is a duplicate for that student (matching phone or email).
+* 4c. The student has no guardian and only some guardian fields are provided.
 
-    * 4c1. EduReg displays an error message indicating that this parent contact already exists for the student.
-
-      Use case resumes at step 2.
-
-* 4d. The student already has the maximum allowable number of guardian contacts (1).
-
-    * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
+    * 4c1. EduReg displays an error message requiring all five guardian fields to add a guardian.
 
       Use case resumes at step 2.
 
@@ -764,8 +782,6 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases …​ }_
-
 ### Displaying guardian details with a student
 
 1. Add a student in a disposable test address book:
@@ -793,7 +809,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting a person while all persons are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: Show all students using the `view` command, with multiple students in the directory.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
@@ -803,13 +819,3 @@ testers are expected to do more *exploratory* testing.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
-
-1. _{ more test cases …​ }_
-
-### Saving data
-
-1. Dealing with missing/corrupted data files
-
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
-
-1. _{ more test cases …​ }_
