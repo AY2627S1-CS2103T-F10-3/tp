@@ -5,6 +5,8 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,42 @@ public class JsonSerializableAddressBookTest {
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_PERSON,
                 dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullPerson_throwsIllegalValueException() {
+        JsonSerializableAddressBook addressBook =
+                new JsonSerializableAddressBook(Collections.singletonList(null), null);
+        assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_NULL_PERSON,
+                addressBook::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullLesson_throwsIllegalValueException() {
+        JsonSerializableAddressBook addressBook =
+                new JsonSerializableAddressBook(null, Collections.singletonList(null));
+        assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_NULL_LESSON,
+                addressBook::toModelType);
+    }
+
+
+    @Test
+    public void toModelType_duplicateLessonUid_throwsIllegalValueException() {
+        JsonAdaptedLesson monday = new JsonAdaptedLesson("shared-uid", "2026", "MATH", "MONDAY",
+                "TEN", "ELEVEN", 30, null);
+        JsonAdaptedLesson tuesday = new JsonAdaptedLesson("shared-uid", "2026", "MATH", "TUESDAY",
+                "TEN", "ELEVEN", 30, null);
+        JsonSerializableAddressBook book = new JsonSerializableAddressBook(List.of(), List.of(monday, tuesday));
+
+        assertThrows(IllegalValueException.class, book::toModelType);
+    }
+
+    @Test
+    public void toModelType_blankLessonUid_throwsIllegalValueException() {
+        JsonAdaptedLesson lesson = new JsonAdaptedLesson(" ", "2026", "MATH", "MONDAY", "TEN", "ELEVEN", 30, null);
+        JsonSerializableAddressBook book = new JsonSerializableAddressBook(List.of(), List.of(lesson));
+
+        assertThrows(IllegalValueException.class, book::toModelType);
     }
 
 }

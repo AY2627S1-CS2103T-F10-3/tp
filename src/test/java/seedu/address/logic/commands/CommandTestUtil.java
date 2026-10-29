@@ -56,9 +56,9 @@ public class CommandTestUtil {
     public static final Lesson VALID_LESSON_ENGLISH = new Lesson(Year.of(2026), Subject.ENGLISH, Day.WEDNESDAY,
             Time.THIRTEEN, Time.FOURTEEN, 40);
     public static final Lesson VALID_LESSON_MATH_REFERENCE = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY,
-            Time.TEN, Time.ELEVEN, 0);
+            Time.TEN, Time.ELEVEN, 0).withUid("reference:" + VALID_LESSON_MATH.getId());
     public static final Lesson VALID_LESSON_ENGLISH_REFERENCE = new Lesson(Year.of(2026), Subject.ENGLISH,
-            Day.WEDNESDAY, Time.THIRTEEN, Time.FOURTEEN, 0);
+            Day.WEDNESDAY, Time.THIRTEEN, Time.FOURTEEN, 0).withUid("reference:" + VALID_LESSON_ENGLISH.getId());
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;

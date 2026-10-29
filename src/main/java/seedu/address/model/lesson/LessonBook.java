@@ -4,10 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.lesson.exceptions.LessonException;
 
 /**
  * Repository of lesson definitions, independent of students.
@@ -16,9 +18,8 @@ public class LessonBook {
     private final Map<String, Lesson> lessons = new LinkedHashMap<>();
 
     /**
-     * Adds a lesson definition if its ID is not already present. If another lesson already uses its stable
-     * internal ID (eg. a lesson that was later moved away from this slot), the added lesson is given a fresh
-     * stable ID so that historical attendance of the two lessons is never mixed up.
+     * Adds a lesson definition if its current ID is not already present.
+     * Rejects duplicate stable IDs instead of silently changing an identity held by student references.
      *
      * @param lesson lesson definition to add
      * @return {@code true} if the lesson was added, or {@code false} if it already exists
@@ -28,15 +29,10 @@ public class LessonBook {
         if (lessons.containsKey(lesson.getId())) {
             return false;
         }
-        Lesson toAdd = lesson;
         if (getLessonByUid(lesson.getUid()) != null) {
-            int suffix = 2;
-            while (getLessonByUid(lesson.getUid() + "#" + suffix) != null) {
-                suffix++;
-            }
-            toAdd = lesson.withUid(lesson.getUid() + "#" + suffix);
+            throw new LessonException("Duplicate lesson UID: " + lesson.getUid());
         }
-        lessons.put(toAdd.getId(), toAdd);
+        lessons.put(lesson.getId(), lesson);
         return true;
     }
 
@@ -89,18 +85,13 @@ public class LessonBook {
     }
 
     /**
-     * Returns the lesson that had a revision with the given ID, preferring a lesson whose current ID matches.
-     * Used to link attendance saved by older versions, which stored only the lesson ID, to a lesson.
+     * Returns the only lesson that has a revision with the given ID, or null if absent or ambiguous.
+     * Legacy attendance has no UID; a reused slot must not silently link it to the wrong lesson.
      */
     public Lesson findLessonWithRevisionId(String id) {
-        Lesson current = lessons.get(id);
-        if (current != null) {
-            return current;
-        }
-        return lessons.values().stream()
-                .filter(candidate -> candidate.hasRevisionId(id))
-                .findFirst()
-                .orElse(null);
+        List<Lesson> matches = lessons.values().stream()
+                .filter(candidate -> candidate.hasRevisionId(id)).limit(2).toList();
+        return matches.size() == 1 ? matches.getFirst() : null;
     }
 
     public boolean removeLesson(String id) {

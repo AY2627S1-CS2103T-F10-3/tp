@@ -35,6 +35,9 @@ public final class LessonRevision {
         requireNonNull(startTime);
         requireNonNull(endTime);
         requireNonNull(effectiveFrom);
+        if (!Lesson.isValidYear(year.toString())) {
+            throw new LessonException(Lesson.YEAR_CONSTRAINT);
+        }
         if (!Lesson.isValidTimeRange(startTime, endTime)) {
             throw new LessonException(Lesson.TIME_ORDER_CONSTRAINT);
         }

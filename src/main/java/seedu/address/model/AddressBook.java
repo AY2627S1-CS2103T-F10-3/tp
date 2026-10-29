@@ -40,9 +40,12 @@ public class AddressBook implements ReadOnlyAddressBook {
      * {@code persons} must not contain duplicate persons.
      */
     public void setPersons(List<Person> persons) {
-        this.persons.setPersons(persons);
+        LessonBook canonicalBook = new LessonBook();
+        List<Person> canonicalPersons = persons.stream()
+                .map(person -> canonicalizeLessons(person, canonicalBook)).toList();
+        this.persons.setPersons(canonicalPersons);
         lessonBook.clear();
-        persons.stream().flatMap(person -> person.getLessons().stream()).forEach(lessonBook::addLesson);
+        canonicalBook.getLessons().values().forEach(lessonBook::addLesson);
     }
 
     /**
@@ -70,8 +73,24 @@ public class AddressBook implements ReadOnlyAddressBook {
      * The person must not already exist in the address book.
      */
     public void addPerson(Person p) {
-        persons.add(p);
-        p.getLessons().forEach(lessonBook::addLesson);
+        LessonBook updatedBook = copyLessonBook();
+        persons.add(canonicalizeLessons(p, updatedBook));
+        updatedBook.getLessons().values().forEach(lessonBook::addLesson);
+    }
+
+    private LessonBook copyLessonBook() {
+        LessonBook copy = new LessonBook();
+        lessonBook.getLessons().values().forEach(copy::addLesson);
+        return copy;
+    }
+
+    /** Ensures every enrolment shares the catalog's lesson identity and revision history. */
+    private static Person canonicalizeLessons(Person person, LessonBook catalog) {
+        Set<Lesson> canonical = person.getLessons().stream().map(lesson -> {
+            catalog.addLesson(lesson);
+            return catalog.getLessonByCurrentId(lesson.getId());
+        }).collect(Collectors.toSet());
+        return person.withLessons(canonical);
     }
 
     /** Adds a shared lesson definition if it is not already present. */
@@ -140,8 +159,9 @@ public class AddressBook implements ReadOnlyAddressBook {
     public void setPerson(Person target, Person editedPerson) {
         requireNonNull(editedPerson);
 
-        persons.setPerson(target, editedPerson);
-        editedPerson.getLessons().forEach(lessonBook::addLesson);
+        LessonBook updatedBook = copyLessonBook();
+        persons.setPerson(target, canonicalizeLessons(editedPerson, updatedBook));
+        updatedBook.getLessons().values().forEach(lessonBook::addLesson);
     }
 
     /**

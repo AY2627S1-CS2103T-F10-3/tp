@@ -67,6 +67,9 @@ class JsonAdaptedAttendance {
         if (lessonId.isBlank()) {
             throw new IllegalValueException(Attendance.MESSAGE_LESSON_CONSTRAINTS);
         }
+        if (lessonUid != null && lessonUid.isBlank()) {
+            throw new IllegalValueException("Attendance lessonUid must not be blank.");
+        }
         LocalDate modelDate;
         try {
             modelDate = LocalDate.parse(date);

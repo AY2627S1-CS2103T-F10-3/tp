@@ -11,7 +11,9 @@ public class AddLessonCommand extends Command {
     public static final String COMMAND_WORD = "addlesson";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a lesson. Parameters: "
             + "y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST\n"
-            + "where the start and end time are in 24h format from TEN to TWENTY \n"
+            + "1. Start and end time are in 24h format from TEN to TWENTY \n"
+            + "2. Subject can be any of 'ENGLISH', 'MATH' and 'SCIENCE' \n"
+            + "3. Day can be any day of the week eg. 'TUESDAY' \n"
             + "Example: " + COMMAND_WORD + " y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30";
     public static final String MESSAGE_SUCCESS = "New lesson added: %1$s";
     public static final String MESSAGE_DUPLICATE_LESSON = "This lesson already exists.";
@@ -33,6 +35,7 @@ public class AddLessonCommand extends Command {
 
     @Override
     public boolean equals(Object other) {
-        return other == this || other instanceof AddLessonCommand command && toAdd.equals(command.toAdd);
+        return other == this || other instanceof AddLessonCommand command
+                && toAdd.getRevisions().equals(command.toAdd.getRevisions());
     }
 }

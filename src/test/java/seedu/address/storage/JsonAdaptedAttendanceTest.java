@@ -36,4 +36,12 @@ public class JsonAdaptedAttendanceTest {
                     new JsonAdaptedAttendance(MATH_LESSON.getId(), "2026-10-19", status).toModelType());
         }
     }
+
+    @Test
+    public void toModelType_blankUid_throwsIllegalValueException() {
+        JsonAdaptedAttendance record = new JsonAdaptedAttendance("2026-MATH-MONDAY-TEN-ELEVEN", " ",
+                "2026-10-19", "PRESENT");
+        assertThrows(IllegalValueException.class, record::toModelType);
+    }
+
 }

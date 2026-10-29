@@ -2,6 +2,7 @@ package seedu.address.model.lesson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
@@ -20,6 +21,22 @@ public class LessonTest {
         assertTrue(Lesson.isValidCost(0));
         assertTrue(Lesson.isValidCost(30));
         assertFalse(Lesson.isValidCost(-1));
+    }
+
+    @Test
+    public void isValidYear_requiresYearBetween2000And9999() {
+        assertFalse(Lesson.isValidYear("1999"));
+        assertTrue(Lesson.isValidYear("2000"));
+        assertTrue(Lesson.isValidYear("9999"));
+        assertFalse(Lesson.isValidYear("10000"));
+    }
+
+    @Test
+    public void constructor_rejectsYearOutsideAllowedRange() {
+        assertThrows(LessonException.class, () -> new Lesson(Year.of(1999), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30));
+        assertThrows(LessonException.class, () -> new Lesson(Year.of(10000), Subject.MATH, Day.MONDAY,
+                Time.TEN, Time.ELEVEN, 30));
     }
 
     @Test
@@ -62,9 +79,10 @@ public class LessonTest {
 
     @Test
     public void getCostFor_usesRevisionInEffectThatMonth() {
-        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
-                .withRevision(new LessonRevision(Year.of(2026), Subject.MATH, Day.TUESDAY, Time.TEN, Time.ELEVEN,
-                        40, YearMonth.of(2026, 11)));
+        Lesson original = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+        Lesson lesson = original.withRevision(new LessonRevision(Year.of(2026), Subject.MATH,
+                Day.TUESDAY, Time.TEN, Time.ELEVEN,
+                        40, YearMonth.of(2026, 11)), YearMonth.of(2026, 10));
 
         assertEquals(0, lesson.getCostFor(YearMonth.of(2025, 12)));
         assertEquals(30, lesson.getCostFor(YearMonth.of(2026, 10)));
@@ -73,18 +91,19 @@ public class LessonTest {
         assertEquals(Day.MONDAY, lesson.getRevisionOn(LocalDate.of(2026, 10, 31)).getDay());
         assertEquals(Day.TUESDAY, lesson.getRevisionOn(LocalDate.of(2026, 11, 1)).getDay());
         assertEquals("2026-MATH-TUESDAY-TEN-ELEVEN", lesson.getId());
-        assertEquals("2026-MATH-MONDAY-TEN-ELEVEN", lesson.getUid());
+        assertEquals(original.getUid(), lesson.getUid());
         assertTrue(lesson.hasRevisionId("2026-MATH-MONDAY-TEN-ELEVEN"));
     }
 
     @Test
     public void withRevision_earlierThanLatest_throwsLessonException() {
-        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
-                .withRevision(new LessonRevision(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN,
-                        40, YearMonth.of(2026, 11)));
+        Lesson original = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+        Lesson lesson = original.withRevision(new LessonRevision(Year.of(2026), Subject.MATH,
+                Day.MONDAY, Time.TEN, Time.ELEVEN,
+                        40, YearMonth.of(2026, 11)), YearMonth.of(2026, 10));
 
         assertThrows(LessonException.class, () -> lesson.withRevision(new LessonRevision(Year.of(2026),
-                Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 50, YearMonth.of(2026, 10))));
+                Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 50, YearMonth.of(2026, 10)), YearMonth.of(2026, 9)));
     }
 
     @Test

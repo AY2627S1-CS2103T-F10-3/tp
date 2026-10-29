@@ -14,6 +14,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
@@ -29,6 +30,7 @@ class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
     public static final String UNKNOWN_LESSON_ID_MESSAGE = "Person references an unknown lesson ID: %s";
+    public static final String NULL_ENTRY_MESSAGE_FORMAT = "%s records must not be null.";
 
     private final String name;
     private final String phone;
@@ -124,9 +126,16 @@ class JsonAdaptedPerson {
     public Person toModelType(LessonBook lessonBook) throws IllegalValueException {
         final List<Tag> personTags = new ArrayList<>();
         for (JsonAdaptedTag tag : tags) {
+            if (tag == null) {
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Tags"));
+            }
             personTags.add(tag.toModelType());
         }
 
+        // Check legacy lessons even when lessonIds takes precedence, so a null entry is never ignored.
+        if (legacyLessons.contains(null)) {
+            throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Lessons"));
+        }
         final List<Lesson> personLessons = new ArrayList<>();
         if (lessonBook != null && !lessonIds.isEmpty()) {
             for (String lessonId : lessonIds) {
@@ -141,20 +150,27 @@ class JsonAdaptedPerson {
             // into the shared lesson book so the next save can normalize the format.
             for (JsonAdaptedLesson legacyLesson : legacyLessons) {
                 Lesson lesson = legacyLesson.toModelType();
-                lessonBook.addLesson(lesson);
+                try {
+                    lessonBook.addLesson(lesson);
+                } catch (LessonException exception) {
+                    throw new IllegalValueException(exception.getMessage(), exception);
+                }
                 personLessons.add(lessonBook.getLesson(lesson.getId()));
             }
         }
 
         final List<Payment> personPayments = new ArrayList<>();
         for (JsonAdaptedPayment payment : payments) {
+            if (payment == null) {
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Payment"));
+            }
             personPayments.add(payment.toModelType());
         }
 
         final List<Attendance> personAttendance = new ArrayList<>();
         for (JsonAdaptedAttendance record : attendance) {
             if (record == null) {
-                throw new IllegalValueException("Attendance records must not be null.");
+                throw new IllegalValueException(String.format(NULL_ENTRY_MESSAGE_FORMAT, "Attendance"));
             }
             Attendance modelAttendance = linkToLesson(record.toModelType(), lessonBook);
             if (personAttendance.stream().anyMatch(modelAttendance::isSameSession)) {
@@ -205,8 +221,17 @@ class JsonAdaptedPerson {
     /**
      * Links attendance saved by older versions, which stored only a lesson ID, to the lesson that had that ID.
      */
-    private static Attendance linkToLesson(Attendance attendance, LessonBook lessonBook) {
-        if (attendance.getLessonUid().isPresent() || lessonBook == null) {
+    private static Attendance linkToLesson(Attendance attendance, LessonBook lessonBook) throws IllegalValueException {
+        if (lessonBook == null) {
+            return attendance;
+        }
+        if (attendance.getLessonUid().isPresent()) {
+            Lesson linked = lessonBook.getLessonByUid(attendance.getLessonUid().get());
+            if (linked != null && !linked.hasRevisionId(attendance.getLessonId())) {
+                throw new IllegalValueException("Attendance lessonId does not belong to lessonUid: "
+                        + attendance.getLessonId());
+            }
+            // An unknown UID may refer to a deleted lesson; retain its historical attendance.
             return attendance;
         }
         Lesson lesson = lessonBook.findLessonWithRevisionId(attendance.getLessonId());

@@ -127,6 +127,37 @@ The importer classes used by the `importcsv` command are shown below:
 
 The `ImportCsvCommand` coordinates the import by using `LessonCsvImporter` to read lesson definitions and `StudentCsvImporter` to read student records. Both importers use `CsvParser` and `CsvRow` to parse and access CSV data, and use `ParserUtil` to validate values before creating model objects of Person, Guardian and Lesson.
 
+#### CSV import format
+
+The `importcsv` command reads `data/importlessons.csv` and `data/importstudents.csv`.
+The lesson CSV must have the following columns:
+
+```csv
+year,subject,day,start_time,end_time,cost
+```
+
+Lesson IDs are not stored in the CSV. `LessonCsvImporter` derives each ID from the
+parsed fields using `{year}-{subject}-{day}-{start_time}-{end_time}`. It validates
+the lesson fields and rejects duplicate derived IDs.
+
+The student CSV must have the following required columns:
+
+```csv
+name,phone,email,address
+```
+
+The optional columns are `tags`, `lessons`, and the complete set of guardian columns:
+`guardian_name`, `guardian_phone`, `guardian_email`, `guardian_relationship`, and
+`guardian_address`. Lesson references in the student CSV must match a lesson ID
+derived from `importlessons.csv`.
+
+Validation errors identify the source file and physical CSV row, including the
+header row. For example:
+
+```text
+Unable to import data/importlessons.csv: Lesson CSV row 2: Day is any day of the week eg. MONDAY
+```
+
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
@@ -139,15 +170,17 @@ The `Model` component,
 * stores each distinct `Lesson` once in a `LessonBook`. Students who take the same lesson refer to the same `Lesson` definition.
 * creates and deletes lesson definitions through `AddLessonCommand` and `DeleteLessonCommand`. Student creation and
   editing may only reference lessons already present in the `LessonBook`; they cannot create lesson definitions.
-* versions lessons instead of overwriting them. A `Lesson` has a stable internal `uid` (by default its first lesson
-  ID) and an immutable, non-empty list of `LessonRevision`s, each holding the year, subject, day, times, cost and the
+* versions lessons instead of overwriting them. A new `Lesson` has a random UUID as its stable internal `uid` and an immutable, non-empty list of `LessonRevision`s, each holding the year, subject, day, times, cost and the
   `effectiveFrom` billing month. The plain getters (`getId()`, `getCost()`, ...) describe the latest revision.
   `getRevisionFor(month)` and `getRevisionOn(date)` return the revision in effect at that time.
 * edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
   `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
-  `from/` sets the revision's `effectiveFrom` and defaults to next month. A revision may not take effect before
-  the latest one, and a revision in the same month replaces it. `LessonBook#addLesson` gives a new lesson a fresh
-  `uid` if an earlier lesson that has since moved away from this ID already uses it.
+  `from/` sets the revision's `effectiveFrom` and defaults to next month, or the latest pending month if later.
+  A revision must take effect after the current billing month and no earlier than the latest revision.
+  Only a future revision can be replaced in the same month. Year and subject cannot be edited.
+  `LessonBook#addLesson` rejects duplicate UIDs without rewriting them. Enrolments and CSV imports reuse the
+  catalog's canonical lesson objects, including their identities and revision histories. Legacy lessons without
+  a UID use their earliest saved lesson ID as a migration UID; saving persists it for subsequent loads.
 * computes fees per month: `Person#getFeesDue(month)` sums `Lesson#getCostFor(month)`, the cost of the revision in
   effect that month (zero if that revision is for another year). Payments store their own amount and month and are
   never rewritten, so editing a lesson's cost does not change whether earlier months are paid.
@@ -221,7 +254,9 @@ lesson's `uid`. `AttendanceCommand` accepts the lesson's current ID or any earli
 by `uid` and date, so a session cannot be recorded twice under the old and new IDs. `AddressBook#editLesson` does not
 modify attendance. `viewattendance` looks up the record's lesson by `uid` and, if its current ID differs, adds a
 `Schedule changed to ...` line. `JsonAdaptedAttendance` stores `lessonUid`. Records from older files that have no
-`lessonUid` are linked on load to the lesson that has (or had) that lesson ID.
+`lessonUid` are linked on load only when exactly one lesson has (or had) that lesson ID. Unresolvable or ambiguous
+legacy records retain their original ID and date. Records with a known UID but an unrelated lesson ID are rejected;
+unknown UIDs are retained because their lessons may have been deleted.
 Attendance participates in `Person#equals` and `hashCode`, but does not change student identity (`isSamePerson`).
 
 ### Finding students
@@ -479,7 +514,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 1.
 
-* 2b. EduReg detects a duplicate student entry (a student with the same name and phone number already exists).
+* 2b. EduReg detects a duplicate student entry (a student with the same name already exists).
 
     * 2b1. EduReg displays an error message rejecting the duplicate entry.
 
@@ -559,16 +594,16 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-**Use case: UC05 - Add parent contact to a student record**
+**Use case: UC05 - Add or edit guardian details**
 
 **MSS**
 
 1. User requests to list students.
 2. EduReg shows a list of students.
-3. User requests to add a parent contact to a student at a specific index by providing guardian details (name, phone, relationship, address and email).
+3. User requests to add or edit the guardian details of a student at a specific index by providing one or more guardian fields.
 4. EduReg validates the index and guardian details.
-5. EduReg attaches the parent contact to the specified student record.
-6. EduReg refreshes the display panel and shows a success message confirming the added parent contact.
+5. EduReg attaches the guardian details to the specified student record, preserving any guardian fields that were not edited.
+6. EduReg refreshes the display panel and shows a success message confirming the updated guardian details.
 
    Use case ends.
 
@@ -592,15 +627,9 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 2.
 
-* 4c. The parent contact is a duplicate for that student (matching phone or email).
+* 4c. The student has no guardian and only some guardian fields are provided.
 
-    * 4c1. EduReg displays an error message indicating that this parent contact already exists for the student.
-
-      Use case resumes at step 2.
-
-* 4d. The student already has the maximum allowable number of guardian contacts (1).
-
-    * 4d1. EduReg displays an error message indicating that the contact limit for this student has been reached.
+    * 4c1. EduReg displays an error message requiring all five guardian fields to add a guardian.
 
       Use case resumes at step 2.
 

@@ -5,12 +5,12 @@ import static java.util.Objects.requireNonNull;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import seedu.address.model.lesson.exceptions.LessonException;
 
@@ -24,16 +24,18 @@ public class Lesson {
             Lessons are defined as `{year}-{subj}-{day}-{starttime}-{endtime}-{cost}`;
             student lesson references must use `{year}-{subj}-{day}-{starttime}-{endtime}` without a cost,
             where:
-            year is of the form yyyy eg. 2026
+            year is a four-digit year from 2000 to 9999 eg. 2026
             subject is one of the allowed subjects
             day is any day of the week
             startTime and endTime are any allowed hour
             cost is any non negative integer
             """;
-    public static final String YEAR_CONSTRAINT = "Year must be of the form yyyy eg. 2026";
+    public static final int MIN_YEAR = 2000;
+    public static final int MAX_YEAR = 9999;
+    public static final String YEAR_CONSTRAINT = "Year must be a four-digit year from 2000 to 9999 eg. 2026";
     public static final String SUBJECT_CONSTRAINT = "Subject must be one of the allowed subjects eg. ENGLISH";
     public static final String DAY_CONSTRAINT = "Day is any day of the week eg. MONDAY";
-    public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to nineteen";
+    public static final String TIME_CONSTRAINT = "Time must be one of the allowed hours between ten to twenty";
     public static final String TIME_ORDER_CONSTRAINT = "Start time must be before end time";
     public static final String COST_CONSTRAINT = "Cost must be a non negative integer";
     public static final String STUDENT_REFERENCE_CONSTRAINT = "Student lesson references must be in the form "
@@ -41,16 +43,20 @@ public class Lesson {
     public static final String MESSAGE_REVISION_TOO_EARLY = "A lesson change must take effect on or after %s, "
             + "the month its latest change takes effect.";
 
+    public static final String MESSAGE_REVISION_NOT_FUTURE = "A lesson change must take effect after %s, "
+            + "the current billing month.";
+
     private final String uid;
     /** Revisions sorted by the month they take effect, earliest first. Never empty. */
     private final List<LessonRevision> revisions;
 
     /**
      * Creates a new lesson whose only revision applies from January of its year.
-     * Its stable ID defaults to its initial lesson ID.
+     * Its stable ID is independent of its schedule, so a vacated slot can be reused safely.
      */
     public Lesson(Year year, Subject subject, Day day, Time startTime, Time endTime, int cost) {
-        this(null, List.of(new LessonRevision(requireNonNull(year), subject, day, startTime, endTime, cost,
+        this(UUID.randomUUID().toString(), List.of(new LessonRevision(requireNonNull(year), subject, day,
+                startTime, endTime, cost,
                 YearMonth.of(year.getValue(), 1))));
     }
 
@@ -92,12 +98,12 @@ public class Lesson {
         if (year == null) {
             return false;
         }
-        try {
-            Year.parse(year.trim());
-            return true;
-        } catch (DateTimeParseException exception) {
+        String trimmedYear = year.trim();
+        if (!trimmedYear.matches("[0-9]{4}")) {
             return false;
         }
+        int yearValue = Integer.parseInt(trimmedYear);
+        return yearValue >= MIN_YEAR && yearValue <= MAX_YEAR;
     }
 
     /** Returns the stable internal ID, which does not change when the lesson is edited. */
@@ -157,10 +163,19 @@ public class Lesson {
      * Returns a copy of this lesson with {@code revision} added. A revision taking effect in the same month as the
      * latest revision replaces it, so a change can be corrected before it takes effect.
      *
-     * @throws LessonException if {@code revision} would take effect before the latest revision
+     * @throws LessonException if the revision is not in a future month or precedes the latest revision
      */
     public Lesson withRevision(LessonRevision revision) {
+        return withRevision(revision, YearMonth.now());
+    }
+
+    /** Adds or replaces a future revision, using the supplied current billing month. */
+    public Lesson withRevision(LessonRevision revision, YearMonth currentMonth) {
         requireNonNull(revision);
+        requireNonNull(currentMonth);
+        if (!revision.getEffectiveFrom().isAfter(currentMonth)) {
+            throw new LessonException(String.format(MESSAGE_REVISION_NOT_FUTURE, currentMonth));
+        }
         YearMonth latestMonth = getLatestRevision().getEffectiveFrom();
         if (revision.getEffectiveFrom().isBefore(latestMonth)) {
             throw new LessonException(String.format(MESSAGE_REVISION_TOO_EARLY, latestMonth));

@@ -67,6 +67,9 @@ class JsonAdaptedLesson {
 
     /** Converts this JSON-adapted lesson into a model lesson. */
     public Lesson toModelType() throws IllegalValueException {
+        if (uid != null && uid.isBlank()) {
+            throw new IllegalValueException("Lesson uid must not be blank.");
+        }
         List<LessonRevision> modelRevisions = new ArrayList<>();
         if (revisions.isEmpty()) {
             modelRevisions.add(new JsonAdaptedLessonRevision(year, subject, day, startTime, endTime, cost, null)

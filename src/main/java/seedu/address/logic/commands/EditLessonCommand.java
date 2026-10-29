@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Clock;
-import java.time.Year;
 import java.time.YearMonth;
 import java.util.Objects;
 
@@ -12,7 +11,6 @@ import seedu.address.model.Model;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonRevision;
-import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.model.lesson.exceptions.LessonException;
 
@@ -25,19 +23,18 @@ public class EditLessonCommand extends Command {
     public static final String COMMAND_WORD = "editlesson";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits supplied lesson fields from a billing month "
             + "onwards (default: next month). Parameters: CURRENT_ID "
-            + "[y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]";
+            + "[d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]";
     public static final String MESSAGE_SUCCESS = "Lesson updated: %1$s (effective from %2$s)";
     public static final String MESSAGE_NOT_FOUND = "Lesson with CURRENT_ID '%s' was not found. "
             + "CURRENT_ID must contain these fields in order: YEAR-SUBJECT-DAY-START_TIME-END_TIME "
             + "(year, subject, day, start time and end time; no cost), "
             + "for example, 2026-MATH-MONDAY-TEN-ELEVEN. "
-            + "Command format: editlesson CURRENT_ID [y/YEAR] [s/SUBJECT] [d/DAY] [st/START_TIME] "
+            + "Command format: editlesson CURRENT_ID [d/DAY] [st/START_TIME] "
             + "[et/END_TIME] [c/COST] [from/YYYY-MM] (at least one lesson field required).";
+    public static final String MESSAGE_IMMUTABLE_FIELDS = "Year and subject cannot be changed.";
     public static final String MESSAGE_DUPLICATE = "A lesson with the edited ID already exists.";
     public static final String MESSAGE_INVALID_TIME_RANGE = "Start time must be before end time.";
     private final String currentId;
-    private final Year year;
-    private final Subject subject;
     private final Day day;
     private final Time startTime;
     private final Time endTime;
@@ -48,38 +45,34 @@ public class EditLessonCommand extends Command {
     /**
      * Creates an {@code EditLessonCommand} that takes effect from next month.
      *
-     * @see #EditLessonCommand(String, Year, Subject, Day, Time, Time, Integer, YearMonth)
+     * @see #EditLessonCommand(String, Day, Time, Time, Integer, YearMonth)
      */
-    public EditLessonCommand(String currentId, Year year, Subject subject, Day day, Time startTime,
+    public EditLessonCommand(String currentId, Day day, Time startTime,
             Time endTime, Integer cost) {
-        this(currentId, year, subject, day, startTime, endTime, cost, null);
+        this(currentId, day, startTime, endTime, cost, null);
     }
 
     /**
      * Creates an {@code EditLessonCommand} with the specified lesson identifier and updated fields.
      *
      * @param currentId identifier of the lesson to edit
-     * @param year updated year, or {@code null} to retain the existing value
-     * @param subject updated subject, or {@code null} to retain the existing value
      * @param day updated day, or {@code null} to retain the existing value
      * @param startTime updated start time, or {@code null} to retain the existing value
      * @param endTime updated end time, or {@code null} to retain the existing value
      * @param cost updated cost, or {@code null} to retain the existing value
      * @param effectiveFrom first billing month the change applies to, or {@code null} for next month
      */
-    public EditLessonCommand(String currentId, Year year, Subject subject, Day day, Time startTime,
+    public EditLessonCommand(String currentId, Day day, Time startTime,
             Time endTime, Integer cost, YearMonth effectiveFrom) {
-        this(currentId, year, subject, day, startTime, endTime, cost, effectiveFrom, Clock.systemDefaultZone());
+        this(currentId, day, startTime, endTime, cost, effectiveFrom, Clock.systemDefaultZone());
     }
 
     /**
      * Creates an {@code EditLessonCommand} that uses {@code clock} to work out the default billing month.
      */
-    EditLessonCommand(String currentId, Year year, Subject subject, Day day, Time startTime,
+    EditLessonCommand(String currentId, Day day, Time startTime,
             Time endTime, Integer cost, YearMonth effectiveFrom, Clock clock) {
         this.currentId = requireNonNull(currentId);
-        this.year = year;
-        this.subject = subject;
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -103,13 +96,13 @@ public class EditLessonCommand extends Command {
         Lesson editedLesson;
         try {
             editedLesson = currentLesson.withRevision(new LessonRevision(
-                    year == null ? currentLesson.getYear() : year,
-                    subject == null ? currentLesson.getSubject() : subject,
+                    currentLesson.getYear(),
+                    currentLesson.getSubject(),
                     day == null ? currentLesson.getDay() : day,
                     editedStartTime,
                     editedEndTime,
                     cost == null ? currentLesson.getCost() : cost,
-                    month));
+                    month), YearMonth.now(clock));
         } catch (LessonException e) {
             throw new CommandException(e.getMessage(), e);
         }
@@ -141,8 +134,6 @@ public class EditLessonCommand extends Command {
             return false;
         }
         return currentId.equals(otherCommand.currentId)
-                && Objects.equals(year, otherCommand.year)
-                && Objects.equals(subject, otherCommand.subject)
                 && Objects.equals(day, otherCommand.day)
                 && Objects.equals(startTime, otherCommand.startTime)
                 && Objects.equals(endTime, otherCommand.endTime)
@@ -152,7 +143,7 @@ public class EditLessonCommand extends Command {
 
     @Override
     public int hashCode() {
-        return Objects.hash(currentId, year, subject, day, startTime, endTime, cost, effectiveFrom);
+        return Objects.hash(currentId, day, startTime, endTime, cost, effectiveFrom);
     }
 
 }
