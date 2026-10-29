@@ -59,18 +59,21 @@ public class FindCommandParser implements Parser<FindCommand> {
                 Map.entry(PREFIX_GUARDIAN_ADDRESS, Field.GUARDIAN_ADDRESS),
                 Map.entry(PREFIX_GUARDIAN_RELATIONSHIP, Field.GUARDIAN_RELATIONSHIP),
                 Map.entry(PREFIX_LESSON, Field.LESSON));
-        Matcher prefixMatcher = Pattern.compile("(?:^|\\s)([^\\s/]+/)").matcher(trimmedArgs);
+        Prefix[] supportedPrefixes = Stream.concat(fields.keySet().stream(), Stream.of(PREFIX_UNPAID, PREFIX_PAID))
+                .toArray(Prefix[]::new);
+        Matcher prefixMatcher = Pattern.compile("(?:^|\\s)([A-Za-z]+/)").matcher(trimmedArgs);
         boolean hasPrefixes = false;
+        Prefix activePrefix = null;
         while (prefixMatcher.find()) {
-            hasPrefixes = true;
             Prefix prefix = new Prefix(prefixMatcher.group(1));
-            if (!fields.containsKey(prefix) && !PREFIX_UNPAID.equals(prefix) && !PREFIX_PAID.equals(prefix)) {
+            if (fields.containsKey(prefix) || PREFIX_UNPAID.equals(prefix) || PREFIX_PAID.equals(prefix)) {
+                hasPrefixes = true;
+                activePrefix = prefix;
+            } else if (!PREFIX_ADDRESS.equals(activePrefix) && !PREFIX_GUARDIAN_ADDRESS.equals(activePrefix)) {
                 throw invalidFormat();
             }
         }
         if (hasPrefixes) {
-            Prefix[] supportedPrefixes = Stream.concat(fields.keySet().stream(), Stream.of(PREFIX_UNPAID, PREFIX_PAID))
-                    .toArray(Prefix[]::new);
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(" " + trimmedArgs.replaceAll("\\s+", " "),
                     supportedPrefixes);
             if (!arguments.getPreamble().isEmpty()) {
