@@ -1,8 +1,9 @@
 package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
+import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalGuardians.GUARDIAN_DETAILS;
 import static seedu.address.testutil.TypicalGuardians.MARY;
 
@@ -12,13 +13,13 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddStudentCommand;
-import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.guardian.Relationship;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.testutil.PersonBuilder;
 
 public class AddGuardianParserTest {
     private static final String STUDENT = " n/Alice Tan p/87654321 e/alice@example.com a/456 Student Road";
@@ -27,11 +28,17 @@ public class AddGuardianParserTest {
     private final AddStudentCommandParser parser = new AddStudentCommandParser();
 
     @Test
-    public void parse_missingGuardianField_failure() {
-        String message = String.format(Messages.MESSAGE_INVALID_COMMAND_FORMAT, AddStudentCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, STUDENT, message);
+    public void parse_withoutGuardian_success() {
+        assertParseSuccess(parser, STUDENT, new AddStudentCommand(new PersonBuilder()
+                .withName("Alice Tan").withPhone("87654321").withEmail("alice@example.com")
+                .withAddress("456 Student Road").build()));
+    }
+
+    @Test
+    public void parse_partialGuardianFields_failure() {
         for (String field : FIELDS) {
-            assertParseFailure(parser, STUDENT + GUARDIAN_DETAILS.replace(field, ""), message);
+            assertParseFailure(parser, STUDENT + GUARDIAN_DETAILS.replace(field, ""),
+                    AddStudentCommand.MESSAGE_INCOMPLETE_GUARDIAN_DETAILS);
         }
     }
 
@@ -75,10 +82,11 @@ public class AddGuardianParserTest {
     }
 
     @Test
-    public void parse_invalidInput_doesNotAddStudent() {
+    public void parse_withoutGuardian_addsStudent() throws Exception {
         ModelManager model = new ModelManager();
-        assertThrows(ParseException.class, () -> parser.parse(STUDENT).execute(model));
-        assertEquals(0, model.getAddressBook().getPersonList().size());
+        parser.parse(STUDENT).execute(model);
+        assertEquals(1, model.getAddressBook().getPersonList().size());
+        assertFalse(model.getAddressBook().getPersonList().getFirst().getGuardian().isPresent());
     }
 
     @Test
