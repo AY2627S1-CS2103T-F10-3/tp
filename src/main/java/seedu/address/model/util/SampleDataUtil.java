@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.guardian.Guardian;
+import seedu.address.model.guardian.Relationship;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
@@ -30,31 +32,41 @@ import seedu.address.model.tag.Tag;
 public class SampleDataUtil {
     public static Person[] getSamplePersons() {
         return new Person[] {
-            new Person(new Name("Alex Yeoh"), new Phone("87438807"), new Email("alexyeoh@example.com"),
-                new Address("Blk 30 Geylang Street 29, #06-40"),
-                getTagSet("friends"), getLessonSet(2026, Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30),
-                Optional.empty(), List.of(new Payment(new Amount("30"), YearMonth.of(2026, 10),
+            new Person(new Name("Ethan Tan"), new Phone("81234567"), new Email("ethan.tan@example.com"),
+                new Address("Blk 123 Bukit Batok Street 11"),
+                    getTagSet("Primary5", "Princess Elizabeth Primary School"),
+                getLessonSet(2026, Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30),
+                Optional.of(new Guardian(new Name("Michelle Tan"), new Phone("98830021"),
+                        new Email("michelle.tan@example.com"), new Relationship("Mother"),
+                        new Address("Blk 123 Bukit Batok Street 11"))),
+                List.of(new Payment(new Amount("30"), YearMonth.of(2026, 10),
                         LocalDate.of(2026, 10, 3)))),
-            new Person(new Name("Bernice Yu"), new Phone("99272758"), new Email("berniceyu@example.com"),
-                new Address("Blk 30 Lorong 3 Serangoon Gardens, #07-18"),
-                getTagSet("colleagues", "friends"), getLessonSet(2026, Subject.MATH, Day.TUESDAY,
-                        Time.ELEVEN, Time.TWELVE, 35), Optional.empty()),
-            new Person(new Name("Charlotte Oliveiro"), new Phone("93210283"), new Email("charlotte@example.com"),
-                new Address("Blk 11 Ang Mo Kio Street 74, #11-04"),
-                getTagSet("neighbours"), getLessonSet(2026, Subject.SCIENCE, Day.WEDNESDAY,
-                        Time.THIRTEEN, Time.FOURTEEN, 40), Optional.empty()),
-            new Person(new Name("David Li"), new Phone("91031282"), new Email("lidavid@example.com"),
-                new Address("Blk 436 Serangoon Gardens Street 26, #16-43"),
-                getTagSet("family"), getLessonSet(2026, Subject.ENGLISH, Day.THURSDAY,
-                        Time.FOURTEEN, Time.FIFTEEN, 30), Optional.empty()),
-            new Person(new Name("Irfan Ibrahim"), new Phone("92492021"), new Email("irfan@example.com"),
-                new Address("Blk 47 Tampines Street 20, #17-35"),
-                getTagSet("classmates"), getLessonSet(2026, Subject.MATH, Day.FRIDAY,
-                        Time.FIFTEEN, Time.SIXTEEN, 35), Optional.empty()),
-            new Person(new Name("Roy Balakrishnan"), new Phone("92624417"), new Email("royb@example.com"),
-                new Address("Blk 45 Aljunied Street 85, #11-31"),
-                getTagSet("colleagues"), getLessonSet(2026, Subject.SCIENCE, Day.SATURDAY,
-                        Time.SIXTEEN, Time.SEVENTEEN, 40), Optional.empty())
+            new Person(new Name("Priya Nair"), new Phone("82345678"), new Email("priya.nair@example.com"),
+                new Address("Blk 45 Tampines Street 42"), getTagSet("Primary6"),
+                getLessonSet(2026, Subject.MATH, Day.TUESDAY, Time.ELEVEN, Time.TWELVE, 35),
+                Optional.of(new Guardian(new Name("Raj Nair"), new Phone("98830022"),
+                        new Email("raj.nair@example.com"), new Relationship("Father"),
+                        new Address("Blk 45 Tampines Street 42")))),
+            new Person(new Name("Marcus Lim"), new Phone("83456789"), new Email("marcus.lim@example.com"),
+                new Address("Blk 78 Ang Mo Kio Avenue 4"), getTagSet("Secondary1"),
+                getLessonSet(2026, Subject.SCIENCE, Day.WEDNESDAY, Time.THIRTEEN, Time.FOURTEEN, 40),
+                Optional.of(new Guardian(new Name("Grace Lim"), new Phone("98830023"),
+                        new Email("grace.lim@example.com"), new Relationship("Mother"),
+                        new Address("Blk 78 Ang Mo Kio Avenue 4")))),
+            new Person(new Name("Nur Aisyah Rahman"), new Phone("84567890"),
+                new Email("aisyah.rahman@example.com"), new Address("Blk 210 Pasir Ris Street 21"),
+                getTagSet("Secondary2"),
+                getLessonSet(2026, Subject.ENGLISH, Day.THURSDAY, Time.FOURTEEN, Time.FIFTEEN, 30),
+                Optional.of(new Guardian(new Name("Hafiz Rahman"), new Phone("98830024"),
+                        new Email("hafiz.rahman@example.com"), new Relationship("Father"),
+                        new Address("Blk 210 Pasir Ris Street 21")))),
+            new Person(new Name("Lucas Wong"), new Phone("85678901"), new Email("lucas.wong@example.com"),
+                new Address("Blk 9 Clementi Avenue 3"), getTagSet("Primary4"),
+                getLessonSet(2026, Subject.MATH, Day.FRIDAY, Time.FIFTEEN, Time.SIXTEEN, 35),
+                    Optional.empty()),
+            new Person(new Name("Ryan Koh"), new Phone("87890123"), new Email("ryan.koh@example.com"),
+                new Address("Blk 31 Jurong West Street 81"), getTagSet("Primary6"),
+                Set.of(), Optional.empty()),
         };
     }
 
