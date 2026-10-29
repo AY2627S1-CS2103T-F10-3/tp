@@ -37,12 +37,25 @@ public class AttendanceTest {
 
     @Test
     public void equals_sameValues_sameHashCode() {
-        Attendance copy = new Attendance(ATTENDANCE_PRESENT.getLessonId(), ATTENDANCE_PRESENT.getDate(),
+        Attendance copy = new Attendance(ATTENDANCE_PRESENT.getLessonId(),
+                ATTENDANCE_PRESENT.getLessonUid().orElseThrow(), ATTENDANCE_PRESENT.getDate(),
                 AttendanceStatus.PRESENT);
         assertEquals(ATTENDANCE_PRESENT, copy);
+        assertNotEquals(ATTENDANCE_PRESENT, ATTENDANCE_PRESENT.withLessonUid(null));
         assertEquals(ATTENDANCE_PRESENT.hashCode(), copy.hashCode());
         assertNotEquals(ATTENDANCE_PRESENT, null);
         assertNotEquals(ATTENDANCE_PRESENT, "attendance");
         assertEquals("2026-MATH-MONDAY-TEN-ELEVEN on 2026-10-19: PRESENT", copy.toString());
+    }
+
+    @Test
+    public void isSameSession_linkedRecords_comparedByStableLessonId() {
+        LocalDate date = ATTENDANCE_PRESENT.getDate();
+        Attendance oldId = new Attendance("2026-MATH-MONDAY-TEN-ELEVEN", "lesson-1", date, AttendanceStatus.PRESENT);
+        Attendance newId = new Attendance("2026-MATH-TUESDAY-TEN-ELEVEN", "lesson-1", date, AttendanceStatus.ABSENT);
+        Attendance otherLesson = new Attendance("2026-MATH-MONDAY-TEN-ELEVEN", "lesson-2", date,
+                AttendanceStatus.PRESENT);
+        assertTrue(oldId.isSameSession(newId));
+        assertFalse(oldId.isSameSession(otherLesson));
     }
 }

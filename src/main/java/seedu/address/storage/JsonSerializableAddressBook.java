@@ -13,6 +13,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.LessonBook;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.person.Person;
 
 /**
@@ -22,6 +23,8 @@ import seedu.address.model.person.Person;
 class JsonSerializableAddressBook {
 
     public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
+    public static final String MESSAGE_NULL_PERSON = "Persons list must not contain null entries.";
+    public static final String MESSAGE_NULL_LESSON = "Lessons list must not contain null entries.";
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
     private final List<JsonAdaptedLesson> lessons = new ArrayList<>();
@@ -60,12 +63,22 @@ class JsonSerializableAddressBook {
         AddressBook addressBook = new AddressBook();
         LessonBook lessonBook = new LessonBook();
         for (JsonAdaptedLesson lesson : lessons) {
+            if (lesson == null) {
+                throw new IllegalValueException(MESSAGE_NULL_LESSON);
+            }
             Lesson modelLesson = lesson.toModelType();
             // Lesson definitions are shared across students. Keep the first definition when
             // malformed or manually edited JSON contains the same definition more than once.
-            lessonBook.addLesson(modelLesson);
+            try {
+                lessonBook.addLesson(modelLesson);
+            } catch (LessonException exception) {
+                throw new IllegalValueException(exception.getMessage(), exception);
+            }
         }
         for (JsonAdaptedPerson jsonAdaptedPerson : persons) {
+            if (jsonAdaptedPerson == null) {
+                throw new IllegalValueException(MESSAGE_NULL_PERSON);
+            }
             Person person = jsonAdaptedPerson.toModelType(lessonBook);
             if (addressBook.hasPerson(person)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_PERSON);

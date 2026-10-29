@@ -95,7 +95,9 @@ public class AddressBookTest {
         addressBook.editLesson(VALID_LESSON_MATH.getId(), editedLesson);
 
         assertTrue(addressBook.getLessonList().contains(unrelatedLesson));
-        assertTrue(addressBook.getLessonList().contains(editedLesson));
+        assertTrue(addressBook.getLessonList().stream()
+                .anyMatch(lesson -> lesson.getId().equals(editedLesson.getId())
+                        && lesson.getUid().equals(VALID_LESSON_MATH.getUid())));
     }
 
     @Test

@@ -26,6 +26,7 @@ public class CliSyntax {
     public static final Prefix PREFIX_START_TIME = new Prefix("st/");
     public static final Prefix PREFIX_END_TIME = new Prefix("et/");
     public static final Prefix PREFIX_COST = new Prefix("c/");
+    public static final Prefix PREFIX_FROM = new Prefix("from/");
 
     public static final Prefix PREFIX_AMOUNT = new Prefix("amt/");
     public static final Prefix PREFIX_MONTH = new Prefix("m/");
