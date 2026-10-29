@@ -81,6 +81,13 @@ public class FindCommandParserTest {
         assertParseSuccess(parser, "n/Alice e/example ge/parent",
                 new FindCommand(new FieldsContainKeywordsPredicate(Map.of(Field.NAME, List.of("Alice"),
                         Field.EMAIL, List.of("example"), Field.GUARDIAN_EMAIL, List.of("parent")))));
+        assertParseSuccess(parser, "a/Block A/10 12/34 ga/Unit B/20 56/78",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.ADDRESS, List.of("Block", "A/10", "12/34"),
+                        Field.GUARDIAN_ADDRESS, List.of("Unit", "B/20", "56/78")))));
+        assertParseSuccess(parser, "a/Block A/10 n/Alice",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.ADDRESS, List.of("Block", "A/10"), Field.NAME, List.of("Alice")))));
     }
 
     @Test
@@ -100,7 +107,8 @@ public class FindCommandParserTest {
     @Test
     public void parse_invalidFields_throwsParseException() {
         String message = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE);
-        for (String input : List.of("n/", "p/", "gn/", "gp/", "n/Alice gp/", "x/test", "Alice n/Bob")) {
+        for (String input : List.of("n/", "p/", "gn/", "gp/", "n/Alice gp/", "x/test", "n/Alice x/test",
+                "Alice n/Bob")) {
             assertParseFailure(parser, input, message);
         }
         assertParseFailure(parser, "n/Alice n/Bob",
