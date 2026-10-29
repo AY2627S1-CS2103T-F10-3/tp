@@ -145,7 +145,7 @@ The lesson year and subject cannot be changed.
 for example `2026-MATH-MONDAY-TEN-ELEVEN`.
 
 Examples:
-* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11` charges $40 from November 2026. October is still
+* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11` charges \$40 from November 2026. October is still
   charged at the old cost, so a student who already paid for October stays fully paid.
 * `editlesson 2026-MATH-MONDAY-TEN-ELEVEN d/TUESDAY` moves the lesson to Tuesdays from next month.
 
@@ -250,15 +250,15 @@ Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
 * A student can make more than one payment for the same month, for example when paying in parts.
 * The student must have fees due for `MONTH`, that is, at least one lesson with a cost in that month's year. Otherwise
   the payment is rejected.
-* `AMOUNT` can't be more than the amount still outstanding for `MONTH`. For example, if $30 is due and $10 has been
-  paid, the largest payment accepted is $20.
+* `AMOUNT` can't be more than the amount still outstanding for `MONTH`. For example, if \$30 is due and \$10 has been
+  paid, the largest payment accepted is \$20.
 * After recording the payment, EduReg shows the fees due, the total paid and the amount still outstanding for that
   month.
 
 **How monthly fees are calculated** \
 A lesson's cost is its monthly fee. The fees due for a month are the sum of the costs of the student's lessons in
 that month's year. For example, a student taking `2026-MATH-MONDAY-TEN-ELEVEN-30` and
-`2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` owes $70 for each month of 2026.
+`2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN-40` owes \$70 for each month of 2026.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 Fees are calculated from the student's current lessons. Editing a lesson's cost also changes the fees due for
@@ -268,12 +268,12 @@ earlier months.
 Each student card shows the fees for the current month, either **Paid** or the amount outstanding. Students with no
 lessons in the current year don't show a fees line.
 
-Examples (using the sample data, where the 2nd student owes $35 and the 3rd student owes $40 for October 2026):
+Examples (using the sample data, where the 2nd student owes \$35 and the 3rd student owes \$40 for October 2026):
 
-* `pay 2 amt/35 m/2026-10` records a $35 payment for October 2026 from the 2nd student, received today. October is
+* `pay 2 amt/35 m/2026-10` records a \$35 payment for October 2026 from the 2nd student, received today. October is
   now fully paid.
-* `pay 3 amt/20 m/2026-10 d/2026-10-03` records a $20 part payment for October 2026 from the 3rd student, received
-  on 3 October 2026. $20 is still outstanding.
+* `pay 3 amt/20 m/2026-10 d/2026-10-03` records a \$20 part payment for October 2026 from the 3rd student, received
+  on 3 October 2026. \$20 is still outstanding.
 
 ### Viewing a student's payments: `viewpayments`
 
