@@ -106,8 +106,12 @@ public class EditLessonCommand extends Command {
         } catch (LessonException e) {
             throw new CommandException(e.getMessage(), e);
         }
-        if (!model.editLesson(currentId, editedLesson)) {
-            throw new CommandException(MESSAGE_DUPLICATE);
+        try {
+            if (!model.editLesson(currentId, editedLesson)) {
+                throw new CommandException(MESSAGE_DUPLICATE);
+            }
+        } catch (LessonException e) {
+            throw new CommandException(e.getMessage(), e);
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, editedLesson, month));
     }

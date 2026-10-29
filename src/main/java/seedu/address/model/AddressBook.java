@@ -90,6 +90,7 @@ public class AddressBook implements ReadOnlyAddressBook {
             catalog.addLesson(lesson);
             return catalog.getLessonByCurrentId(lesson.getId());
         }).collect(Collectors.toSet());
+        Lesson.validateEnrolments(canonical);
         return person.withLessons(canonical);
     }
 
@@ -121,6 +122,7 @@ public class AddressBook implements ReadOnlyAddressBook {
             Set<Lesson> lessons = person.getLessons().stream()
                     .map(lesson -> lesson.getUid().equals(existing.getUid()) ? replacement : lesson)
                     .collect(Collectors.toSet());
+            Lesson.validateEnrolments(lessons);
             return person.withLessons(lessons);
         }).toList();
         lessonBook.removeLesson(existing.getId());

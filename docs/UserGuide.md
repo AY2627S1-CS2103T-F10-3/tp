@@ -93,7 +93,7 @@ Format:
 All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are optional when adding a student, but if any field is supplied the rest must be too.
 Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
 validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
-`Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`. 
+`Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`.
 
 Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
 match lessons already in the lesson catalog; `addstudent` does not create new lessons.
@@ -102,6 +102,12 @@ match lessons already in the lesson catalog; `addstudent` does not create new le
 A student can have any number of tags or lessons, including zero.
 </div>
 
+
+A student cannot enrol in two lessons that have the same year, subject, day, start time and end time
+in the same billing month. This check includes earlier schedules and pending changes, even when the lessons'
+latest IDs differ. Student enrolment changes, CSV imports and lesson edits that create such an overlap are rejected.
+Separate catalog lessons may reuse a slot, and a student may take both if their use of that slot does not overlap
+in any billing month.
 
 ### Viewing students and contact values: `view`
 
@@ -220,15 +226,15 @@ Months before that keep the lesson's earlier timing and cost.
 
 Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`
 
-* At least one lesson field must be supplied. 
+* At least one lesson field must be supplied.
 * Fields not supplied retain their current values.
 * `from/` is the first billing month the change applies to. If it is omitted, the change applies from next month, or from the latest pending change if that is later.
 The effective month must be later than the current month and cannot be earlier than the latest revision.
-* Only a pending revision can be replaced using the same month. 
+* Only a pending revision can be replaced using the same month.
 * Current and past billing months cannot be edited.
 * The lesson year and subject cannot be changed because that defines the lesson.
 * After the edit, refer to the lesson by its new ID.
-* Sessions before the change takes effect can still be recorded with either ID. 
+* Sessions before the change takes effect can still be recorded with either ID.
 * Recorded payments are never changed. The fees due for each month use the lesson cost in effect that month.
 
 `CURRENT_ID` uses the [lesson ID](#adding-a-lesson-addlesson) format.
@@ -256,7 +262,7 @@ Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
   paid, the largest payment accepted is \$20.
 * After recording the payment, EduReg shows the fees due, the total paid and the amount still outstanding for that
   month.
- 
+
 Examples:
 * `pay 2 amt/35 m/2026-10` records a \$35 payment for October 2026 from the 2nd student, received today.
 * `pay 3 amt/20 m/2026-10 d/2026-10-03` records a \$20 part payment for October 2026 from the 3rd student, received
@@ -372,7 +378,7 @@ Before running the command, create these files:
 
 * The student file may also contain `tags`, `lessons`, and all five guardian columns:
 `guardian_name`, `guardian_phone`, `guardian_email`, `guardian_relationship`, and `guardian_address`.
-If any guardian column is included, all five must be included. 
+If any guardian column is included, all five must be included.
 * [Lesson IDs](#adding-a-lesson-addlesson) in the `lessons` column must refer to lessons in `importlessons.csv`
 * Separate multiple tags or lessons with commas or semicolons.
 * Lesson IDs are generated from the lesson fields automatically. Do not include an ID or cost
