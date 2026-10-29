@@ -91,18 +91,18 @@ Format:
 `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON]…​
 gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS`
 
-All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are mandatory when adding a student.
+All five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) are optional when adding a student, but if any field is supplied the rest must be too.
 Each must be non-blank and supplied once. Guardian name, phone, email, and address follow the same
 validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
 `Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`. Existing
 records without guardian information remain readable.
 
+Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
+match lessons already in the lesson catalog; `addstudent` does not create new lessons.
+
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A student can have any number of tags or lessons, including zero.
 </div>
-
-Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
-match lessons already in the lesson catalog; `addstudent` does not create new lessons.
 
 ### Adding a lesson: `addlesson`
 
