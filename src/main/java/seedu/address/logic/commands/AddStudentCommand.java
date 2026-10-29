@@ -30,36 +30,38 @@ public class AddStudentCommand extends Command {
 
     public static final String COMMAND_WORD = "addstudent";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. \n"
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
             + PREFIX_EMAIL + "EMAIL "
             + PREFIX_ADDRESS + "ADDRESS "
-            + PREFIX_GUARDIAN_NAME + "GUARDIAN_NAME "
+            + "[" + PREFIX_TAG + "TAG]..."
+            + "[" + PREFIX_LESSON + "LESSON]...\n"
+            + "[" + PREFIX_GUARDIAN_NAME + "GUARDIAN_NAME "
             + PREFIX_GUARDIAN_PHONE + "GUARDIAN_PHONE "
             + PREFIX_GUARDIAN_EMAIL + "GUARDIAN_EMAIL "
             + PREFIX_GUARDIAN_RELATIONSHIP + "GUARDIAN_RELATIONSHIP "
-            + PREFIX_GUARDIAN_ADDRESS + "GUARDIAN_ADDRESS "
-            + "[" + PREFIX_TAG + "TAG]..."
-            + "[" + PREFIX_LESSON + "LESSON]...\n"
+            + PREFIX_GUARDIAN_ADDRESS + "GUARDIAN_ADDRESS] \n "
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
             + PREFIX_PHONE + "98765432 "
             + PREFIX_EMAIL + "johnd@example.com "
             + PREFIX_ADDRESS + "311, Clementi Ave 2, #02-25 "
+            + PREFIX_TAG + "friends "
+            + PREFIX_TAG + "owesMoney "
+            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN "
+            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN "
             + PREFIX_GUARDIAN_NAME + "Mary Doe "
             + PREFIX_GUARDIAN_PHONE + "91234567 "
             + PREFIX_GUARDIAN_EMAIL + "mary@example.com "
             + PREFIX_GUARDIAN_RELATIONSHIP + "Mother "
-            + PREFIX_GUARDIAN_ADDRESS + "311, Clementi Ave 2, #02-25 "
-            + PREFIX_TAG + "friends "
-            + PREFIX_TAG + "owesMoney "
-            + PREFIX_LESSON + "2026-ENGLISH-MONDAY-TEN-NINETEEN "
-            + PREFIX_LESSON + "2026-MATH-MONDAY-TEN-NINETEEN";
+            + PREFIX_GUARDIAN_ADDRESS + "311, Clementi Ave 2, #02-25";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_INCOMPLETE_GUARDIAN_DETAILS = "Guardian details must be provided together. "
+            + "Include gn/, gp/, ge/, gr/, and ga/, or omit all guardian fields.";
     public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. "
             + "Add them with addlesson first.";
 
