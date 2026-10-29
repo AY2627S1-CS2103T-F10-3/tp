@@ -34,7 +34,7 @@ public class SampleDataUtil {
         return new Person[] {
             new Person(new Name("Ethan Tan"), new Phone("81234567"), new Email("ethan.tan@example.com"),
                 new Address("Blk 123 Bukit Batok Street 11"),
-                    getTagSet("Primary5", "Princess Elizabeth Primary School"),
+                    getTagSet("Primary5", "PrincessElizabethPrimarySchool"),
                 getLessonSet(2026, Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30),
                 Optional.of(new Guardian(new Name("Michelle Tan"), new Phone("98830021"),
                         new Email("michelle.tan@example.com"), new Relationship("Mother"),
