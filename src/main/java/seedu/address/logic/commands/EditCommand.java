@@ -31,6 +31,7 @@ import seedu.address.model.Model;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.exceptions.LessonException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -117,7 +118,12 @@ public class EditCommand extends Command {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
-        model.setPerson(personToEdit, editedPerson);
+        try {
+            Lesson.validateEnrolments(canonicalLessons);
+            model.setPerson(personToEdit, editedPerson);
+        } catch (LessonException e) {
+            throw new CommandException(e.getMessage(), e);
+        }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
     }

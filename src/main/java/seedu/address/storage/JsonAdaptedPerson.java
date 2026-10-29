@@ -213,6 +213,11 @@ class JsonAdaptedPerson {
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
         final Set<Lesson> modelLessons = new HashSet<>(personLessons);
+        try {
+            Lesson.validateEnrolments(modelLessons);
+        } catch (LessonException exception) {
+            throw new IllegalValueException(exception.getMessage(), exception);
+        }
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelLessons,
                 guardian == null ? Optional.empty() : Optional.of(guardian.toModelType()), personPayments,
                 personAttendance);

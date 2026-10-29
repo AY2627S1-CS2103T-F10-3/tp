@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -45,6 +46,9 @@ public class Lesson {
 
     public static final String MESSAGE_REVISION_NOT_FUTURE = "A lesson change must take effect after %s, "
             + "the current billing month.";
+
+    public static final String MESSAGE_OVERLAPPING_ENROLMENTS = "A student cannot be enrolled in lessons with "
+            + "the same year, subject, day and time during the same billing month.";
 
     private final String uid;
     /** Revisions sorted by the month they take effect, earliest first. Never empty. */
@@ -157,6 +161,54 @@ public class Lesson {
     /** Returns true if any revision of this lesson, past or current, has the given lesson ID. */
     public boolean hasRevisionId(String id) {
         return revisions.stream().anyMatch(revision -> revision.getId().equals(id));
+    }
+
+    /**
+     * Rejects enrolments that occupy the same lesson slot in any billing month, including historical and
+     * pending revisions. Different students may still enrol in separate lessons that reuse a catalog slot.
+     */
+    public static void validateEnrolments(Collection<Lesson> lessons) {
+        List<Lesson> enrolled = new ArrayList<>(requireNonNull(lessons));
+        for (int i = 0; i < enrolled.size(); i++) {
+            for (int j = i + 1; j < enrolled.size(); j++) {
+                if (enrolled.get(i).overlapsSchedule(enrolled.get(j))) {
+                    throw new LessonException(MESSAGE_OVERLAPPING_ENROLMENTS);
+                }
+            }
+        }
+    }
+
+    /** Returns whether equal revision slots apply during intersecting billing-month intervals. */
+    private boolean overlapsSchedule(Lesson other) {
+        for (int i = 0; i < revisions.size(); i++) {
+            LessonRevision revision = revisions.get(i);
+            YearMonth start = revision.getEffectiveFrom();
+            YearMonth yearStart = YearMonth.of(revision.getYear().getValue(), 1);
+            if (start.isBefore(yearStart)) {
+                start = yearStart;
+            }
+            YearMonth end = yearStart.plusYears(1);
+            if (i + 1 < revisions.size() && revisions.get(i + 1).getEffectiveFrom().isBefore(end)) {
+                end = revisions.get(i + 1).getEffectiveFrom();
+            }
+            for (int j = 0; j < other.revisions.size(); j++) {
+                LessonRevision candidate = other.revisions.get(j);
+                if (!revision.getId().equals(candidate.getId())) {
+                    continue;
+                }
+                YearMonth candidateStart = candidate.getEffectiveFrom();
+                YearMonth candidateEnd = yearStart.plusYears(1);
+                if (j + 1 < other.revisions.size()
+                        && other.revisions.get(j + 1).getEffectiveFrom().isBefore(candidateEnd)) {
+                    candidateEnd = other.revisions.get(j + 1).getEffectiveFrom();
+                }
+                if (start.isBefore(end) && candidateStart.isBefore(candidateEnd)
+                        && start.isBefore(candidateEnd) && candidateStart.isBefore(end)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

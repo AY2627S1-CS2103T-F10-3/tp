@@ -47,6 +47,22 @@ public class JsonAdaptedPersonTest {
             .collect(Collectors.toList());
 
     @Test
+    public void toModelType_overlappingHistoricalEnrolments_throwsIllegalValueException() {
+        YearMonth october = YearMonth.of(2026, 10);
+        Lesson moved = MATH_LESSON.withRevision(new LessonRevision(MATH_LESSON.getYear(),
+                MATH_LESSON.getSubject(), Day.TUESDAY, Time.TEN, Time.ELEVEN, 30, october.plusMonths(1)), october);
+        Lesson replacement = new Lesson(MATH_LESSON.getYear(), MATH_LESSON.getSubject(), MATH_LESSON.getDay(),
+                MATH_LESSON.getStartTime(), MATH_LESSON.getEndTime(), 30);
+        LessonBook catalog = new LessonBook();
+        catalog.addLesson(moved);
+        catalog.addLesson(replacement);
+        Person overlapping = new PersonBuilder(BENSON).withLessons(moved, replacement).build();
+
+        assertThrows(IllegalValueException.class, Lesson.MESSAGE_OVERLAPPING_ENROLMENTS, () ->
+                new JsonAdaptedPerson(overlapping).toModelType(catalog));
+    }
+
+    @Test
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());
