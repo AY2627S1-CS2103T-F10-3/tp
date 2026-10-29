@@ -76,11 +76,10 @@ public class FindCommandTest {
 
     @Test
     public void execute_zeroKeywords_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
         NameContainsKeywordsPredicate predicate = preparePredicate(" ");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertCommandSuccess(command, model, FindCommand.MESSAGE_NO_RESULTS, expectedModel);
         assertEquals(List.of(), model.getFilteredPersonList());
     }
 
@@ -252,7 +251,10 @@ public class FindCommandTest {
 
     private void assertSearchResults(Model searchModel, String input, List<Person> expected) throws Exception {
         CommandResult result = new AddressBookParser().parseCommand(input).execute(searchModel);
-        assertEquals(new CommandResult(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, expected.size())), result, input);
+        String expectedMessage = expected.isEmpty()
+                ? FindCommand.MESSAGE_NO_RESULTS
+                : String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, expected.size());
+        assertEquals(new CommandResult(expectedMessage), result, input);
         assertEquals(expected, searchModel.getFilteredPersonList(), input);
     }
 }

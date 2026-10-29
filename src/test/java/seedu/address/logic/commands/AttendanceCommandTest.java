@@ -23,6 +23,8 @@ import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceStatus;
 import seedu.address.model.lesson.Lesson;
 import seedu.address.model.lesson.Subject;
+import seedu.address.model.payment.Amount;
+import seedu.address.model.payment.Payment;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
@@ -113,9 +115,10 @@ public class AttendanceCommandTest {
     @Test
     public void execute_editAndPaymentCommands_preserveAttendance() throws Exception {
         model.addPerson(student.withAttendance(List.of(ATTENDANCE_PRESENT)));
-        new PayCommand(INDEX_FIRST_PERSON, PAYMENT_NOVEMBER).execute(model);
+        Payment balance = new Payment(new Amount("20"), PAYMENT_NOVEMBER.getMonth(), PAYMENT_NOVEMBER.getDate());
+        new PayCommand(INDEX_FIRST_PERSON, balance).execute(model);
         assertEquals(List.of(ATTENDANCE_PRESENT), model.getFilteredPersonList().getFirst().getAttendance());
-        new DeletePaymentCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON).execute(model);
+        new DeletePaymentCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON).execute(model);
         EditCommand.EditPersonDescriptor edits = new EditCommand.EditPersonDescriptor();
         edits.setName(new Name("Renamed Student"));
         edits.setLessons(Set.of());
