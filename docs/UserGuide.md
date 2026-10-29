@@ -194,7 +194,7 @@ Lessons store the following data:
 2. Subject (any of English, Math, or Science)
 3. Day (any day of the week eg. Monday)
 4. Start time (any hour between 10am to 8pm in 24h time eg. TEN for 10am)
-5. End time (same as start time)
+5. End time (same format as start time)
 6. Cost (any non-negative integer)
 
 Each lesson can be referenced by an ID, which is defined as so: `{year}-{subject}-{day}-{start_time}-{end_time}`
