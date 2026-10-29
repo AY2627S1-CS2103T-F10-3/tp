@@ -488,18 +488,16 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Use cases
 
-### Use cases
-
 (For all use cases below, the **System** is `EduReg` and the **Actor** is the `user`, unless specified otherwise)
 
 **Use case: UC01 - Add a student contact**
 
 **MSS**
 
-1. User requests to add a new student using `addstudent`, specifying the student's name, phone number, email and
-   address, and all five mandatory guardian fields: name (`gn/`), phone (`gp/`), email (`ge/`), relationship (`gr/`)
-   and address (`ga/`). Tags (`t/`) and existing lesson IDs (`l/`) are optional.
-2. EduReg validates the input format, including the presence of all five non-blank guardian fields.
+1. User requests to add a new student contact by specifying the student's name, phone number, email and address,
+   together with the guardian's name, phone number, email, relationship and address. The user may also specify tags
+   and existing lessons.
+2. EduReg validates the input format of the provided details.
 3. EduReg adds the new student to the student directory.
 4. EduReg displays a success message showing the newly added student's details.
 
@@ -784,8 +782,6 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases …​ }_
-
 ### Displaying guardian details with a student
 
 1. Add a student in a disposable test address book:
@@ -813,7 +809,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting a person while all persons are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: Show all students using the `view` command, with multiple students in the directory.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
@@ -823,13 +819,3 @@ testers are expected to do more *exploratory* testing.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
-
-1. _{ more test cases …​ }_
-
-### Saving data
-
-1. Dealing with missing/corrupted data files
-
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
-
-1. _{ more test cases …​ }_

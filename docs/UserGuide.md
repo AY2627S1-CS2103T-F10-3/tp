@@ -501,7 +501,7 @@ Action | Format, Examples
 **Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
 **Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11`
 **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS [t/TAG]…​ [l/LESSON_ID]…​`
-\<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
+<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
