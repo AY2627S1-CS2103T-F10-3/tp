@@ -11,6 +11,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import seedu.address.model.lesson.Lesson;
 import seedu.address.model.person.Person;
 
 /**
@@ -89,10 +90,7 @@ public class PersonCard extends UiPart<Region> {
         });
         YearMonth currentMonth = YearMonth.now();
         lessons.setText(person.getLessons().stream()
-                .map(lesson -> String.format("%s-%s-%s-%s-%s-%d%s", lesson.getYear(), lesson.getSubject(),
-                        lesson.getDay(), lesson.getStartTime(), lesson.getEndTime(), lesson.getCost(),
-                        lesson.getLatestRevision().getEffectiveFrom().isAfter(currentMonth)
-                                ? " (from " + lesson.getLatestRevision().getEffectiveFrom() + ")" : ""))
+                .map(Lesson::getId)
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
         long feesDue = person.getFeesDue(currentMonth);
