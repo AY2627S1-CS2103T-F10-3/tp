@@ -34,6 +34,7 @@ public class EditLessonCommandTest {
     private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-29T12:00:00Z"), ZoneOffset.UTC);
     private static final YearMonth OCTOBER = YearMonth.of(2026, 10);
     private static final YearMonth NOVEMBER = YearMonth.of(2026, 11);
+    private static final YearMonth DECEMBER = YearMonth.of(2026, 12);
 
     @Test
     public void execute_partialEdit_updatesLesson() throws Exception {
@@ -179,14 +180,35 @@ public class EditLessonCommandTest {
     }
 
     @Test
-    public void execute_effectiveMonthBeforeLatestChange_throwsCommandException() throws Exception {
+    public void execute_effectiveMonthBeforeLatestChange_allowsFutureRevision() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
-        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40, NOVEMBER, CLOCK)
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40, DECEMBER, CLOCK)
+                .execute(model);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 35, NOVEMBER, CLOCK)
                 .execute(model);
 
-        assertCommandFailure(new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 50,
-                OCTOBER, CLOCK), model, String.format(Lesson.MESSAGE_REVISION_NOT_FUTURE, OCTOBER));
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(35, lesson.getCostFor(NOVEMBER));
+        assertEquals(40, lesson.getCostFor(DECEMBER));
+        assertEquals(3, lesson.getRevisions().size());
+    }
+
+    @Test
+    public void execute_effectiveMonthOutsideLessonYear_throwsAndAllowsValidRevision() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+
+        assertCommandFailure(new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40,
+                YearMonth.of(2027, 1), CLOCK), model,
+                String.format(Lesson.MESSAGE_REVISION_OUTSIDE_YEAR, VALID_LESSON_MATH.getYear()));
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 35, NOVEMBER, CLOCK)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(35, lesson.getCostFor(NOVEMBER));
+        assertEquals(2, lesson.getRevisions().size());
     }
 
     @Test
