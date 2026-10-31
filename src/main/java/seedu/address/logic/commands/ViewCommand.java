@@ -49,16 +49,17 @@ public class ViewCommand extends Command {
         }
         Map<String, Integer> frequencies = new TreeMap<>();
         if (field.equals("lesson")) {
-            model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(lesson.toString(), 0));
+            model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(formatLesson(lesson), 0));
         }
         for (Person person : model.getAddressBook().getPersonList()) {
             valuesOf(person).distinct().forEach(value -> frequencies.merge(value, 1, Integer::sum));
         }
-        StringBuilder feedback = new StringBuilder("Distinct " + field + " values (frequency):");
+        StringBuilder feedback = new StringBuilder("Distinct " + field + " values: (frequency)");
         if (frequencies.isEmpty()) {
             feedback.append("\nNo values found.");
         } else {
-            frequencies.forEach((value, count) -> feedback.append("\n").append(value).append(" : ").append(count));
+            frequencies.forEach((value, count) -> feedback.append("\n").append(value)
+                    .append(field.equals("lesson") ? ": " : " : ").append(count));
         }
         return new CommandResult(feedback.toString());
     }
@@ -70,7 +71,7 @@ public class ViewCommand extends Command {
             case "email" -> Stream.of(person.getEmail().toString());
             case "address" -> Stream.of(person.getAddress().toString());
             case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
-            case "lesson" -> person.getLessons().stream().map(Lesson::toString);
+            case "lesson" -> person.getLessons().stream().map(ViewCommand::formatLesson);
             case "guardian" -> person.getGuardian().stream().map(ViewCommand::formatGuardian);
             case "payment" -> person.getPayments().stream().map(Object::toString);
             case "attendance" -> person.getAttendance().stream().map(Object::toString);
@@ -82,6 +83,10 @@ public class ViewCommand extends Command {
         return String.format("Name: %s | Phone: %s | Email: %s | Relationship: %s | Address: %s",
                 guardian.getName(), guardian.getPhone(), guardian.getEmail(),
                 guardian.getRelationship(), guardian.getAddress());
+    }
+
+    private static String formatLesson(Lesson lesson) {
+        return String.format("%s (cost: %d)", lesson.getId(), lesson.getCost());
     }
 
     @Override
