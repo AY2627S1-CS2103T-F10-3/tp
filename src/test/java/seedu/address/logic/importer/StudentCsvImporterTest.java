@@ -157,4 +157,18 @@ public class StudentCsvImporterTest {
         assertTrue(exception.getMessage().startsWith(
                 "Student CSV row 3 (Bob Tan): Emails should be of the format"));
     }
+
+    @Test
+    public void read_extraValues_rejectsRowAndSuggestsQuotingAddress() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address\n"
+                + "CSV Tester,91234567,csv@example.com,123, Clementi Road\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertEquals("Student CSV row 2 (CSV Tester): CSV row has 5 values but only 4 headers. "
+                + "If a value contains a comma, enclose it in double quotes, for example \"123, Clementi Road\".",
+                exception.getMessage());
+    }
 }

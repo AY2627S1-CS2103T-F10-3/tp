@@ -54,9 +54,6 @@ public class StudentCsvImporter {
                         List<String> values = List.of();
                         try {
                             values = CsvParser.parseLine(record.toString());
-                            while (values.size() < headers.size()) {
-                                values.add("");
-                            }
                             students.add(createPerson(headers, values, lessonsById));
                         } catch (ParseException exception) {
                             String studentName = valueForError(headers, values, "name");
@@ -72,9 +69,6 @@ public class StudentCsvImporter {
                 List<String> values = List.of();
                 try {
                     values = CsvParser.parseLine(record.toString());
-                    while (values.size() < headers.size()) {
-                        values.add("");
-                    }
                     students.add(createPerson(headers, values, lessonsById));
                 } catch (ParseException exception) {
                     String studentName = valueForError(headers, values, "name");
