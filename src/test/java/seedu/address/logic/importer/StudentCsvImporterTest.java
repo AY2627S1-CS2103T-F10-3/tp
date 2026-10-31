@@ -138,7 +138,7 @@ public class StudentCsvImporterTest {
         ParseException exception = assertThrows(ParseException.class, () ->
                 new StudentCsvImporter().read(file, Map.of()));
 
-        assertEquals("Student CSV row 3 (Bob Tan): "
+        assertEquals("Student CSV row 3: "
                 + "Phone numbers should only contain digits, and should be at least 3 digits long",
                 exception.getMessage());
     }
@@ -155,7 +155,7 @@ public class StudentCsvImporterTest {
                 new StudentCsvImporter().read(file, Map.of()));
 
         assertTrue(exception.getMessage().startsWith(
-                "Student CSV row 3 (Bob Tan): Emails should be of the format"));
+                "Student CSV row 3: Emails should be of the format"));
     }
 
     @Test
@@ -167,7 +167,7 @@ public class StudentCsvImporterTest {
         ParseException exception = assertThrows(ParseException.class, () ->
                 new StudentCsvImporter().read(file, Map.of()));
 
-        assertEquals("Student CSV row 2 (CSV Tester): CSV row has 5 values but only 4 headers. "
+        assertEquals("Student CSV row 2: CSV row has 5 values but only 4 headers. "
                 + "If a value contains a comma, enclose it in double quotes, for example \"123, Clementi Road\".",
                 exception.getMessage());
     }
