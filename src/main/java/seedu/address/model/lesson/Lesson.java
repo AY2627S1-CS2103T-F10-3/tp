@@ -41,9 +41,6 @@ public class Lesson {
     public static final String COST_CONSTRAINT = "Cost must be a non negative integer";
     public static final String STUDENT_REFERENCE_CONSTRAINT = "Student lesson references must be in the form "
             + "{year}-{subj}-{day}-{starttime}-{endtime}, without a cost.";
-    public static final String MESSAGE_REVISION_TOO_EARLY = "A lesson change must take effect on or after %s, "
-            + "the month its latest change takes effect.";
-
     public static final String MESSAGE_REVISION_NOT_FUTURE = "A lesson change must take effect after %s, "
             + "the current billing month.";
 
@@ -215,11 +212,10 @@ public class Lesson {
     }
 
     /**
-     * Returns a copy of this lesson with {@code revision} added. A revision taking effect in the same month as the
-     * latest revision replaces it, so a change can be corrected before it takes effect.
+     * Returns a copy of this lesson with {@code revision} added. A revision taking effect in the same month as an
+     * existing revision replaces it, so a change can be corrected before it takes effect.
      *
-     * @throws LessonException if the revision is outside the lesson year, not in a future month, or precedes the
-     *         latest revision
+     * @throws LessonException if the revision is outside the lesson year or not in a future month
      */
     public Lesson withRevision(LessonRevision revision) {
         return withRevision(revision, YearMonth.now());
@@ -234,10 +230,6 @@ public class Lesson {
         }
         if (!revision.getEffectiveFrom().isAfter(currentMonth)) {
             throw new LessonException(String.format(MESSAGE_REVISION_NOT_FUTURE, currentMonth));
-        }
-        YearMonth latestMonth = getLatestRevision().getEffectiveFrom();
-        if (revision.getEffectiveFrom().isBefore(latestMonth)) {
-            throw new LessonException(String.format(MESSAGE_REVISION_TOO_EARLY, latestMonth));
         }
         List<LessonRevision> updated = new ArrayList<>(revisions);
         updated.removeIf(existing -> existing.getEffectiveFrom().equals(revision.getEffectiveFrom()));
