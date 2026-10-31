@@ -190,6 +190,23 @@ public class EditLessonCommandTest {
     }
 
     @Test
+    public void execute_effectiveMonthOutsideLessonYear_throwsAndAllowsValidRevision() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+
+        assertCommandFailure(new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 40,
+                YearMonth.of(2027, 1), CLOCK), model,
+                String.format(Lesson.MESSAGE_REVISION_OUTSIDE_YEAR, VALID_LESSON_MATH.getYear()));
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 35, NOVEMBER, CLOCK)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(35, lesson.getCostFor(NOVEMBER));
+        assertEquals(2, lesson.getRevisions().size());
+    }
+
+    @Test
     public void execute_sameEffectiveMonth_replacesPendingChange() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);

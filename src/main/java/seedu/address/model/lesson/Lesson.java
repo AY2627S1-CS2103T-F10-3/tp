@@ -47,6 +47,9 @@ public class Lesson {
     public static final String MESSAGE_REVISION_NOT_FUTURE = "A lesson change must take effect after %s, "
             + "the current billing month.";
 
+    public static final String MESSAGE_REVISION_OUTSIDE_YEAR = "A lesson change must take effect within lesson year "
+            + "%s.";
+
     public static final String MESSAGE_OVERLAPPING_ENROLMENTS = "A student cannot be enrolled in lessons with "
             + "the same year, subject, day and time during the same billing month.";
 
@@ -215,7 +218,8 @@ public class Lesson {
      * Returns a copy of this lesson with {@code revision} added. A revision taking effect in the same month as the
      * latest revision replaces it, so a change can be corrected before it takes effect.
      *
-     * @throws LessonException if the revision is not in a future month or precedes the latest revision
+     * @throws LessonException if the revision is outside the lesson year, not in a future month, or precedes the
+     *         latest revision
      */
     public Lesson withRevision(LessonRevision revision) {
         return withRevision(revision, YearMonth.now());
@@ -225,6 +229,9 @@ public class Lesson {
     public Lesson withRevision(LessonRevision revision, YearMonth currentMonth) {
         requireNonNull(revision);
         requireNonNull(currentMonth);
+        if (revision.getEffectiveFrom().getYear() != getYear().getValue()) {
+            throw new LessonException(String.format(MESSAGE_REVISION_OUTSIDE_YEAR, getYear()));
+        }
         if (!revision.getEffectiveFrom().isAfter(currentMonth)) {
             throw new LessonException(String.format(MESSAGE_REVISION_NOT_FUTURE, currentMonth));
         }

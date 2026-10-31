@@ -176,7 +176,7 @@ The `Model` component,
 * edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
   `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
   `from/` sets the revision's `effectiveFrom` and defaults to next month, or the latest pending month if later.
-  A revision must take effect after the current billing month and no earlier than the latest revision.
+  A revision must take effect within the lesson year, after the current billing month and no earlier than the latest revision.
   Only a future revision can be replaced in the same month. Year and subject cannot be edited.
   `LessonBook#addLesson` rejects duplicate UIDs without rewriting them. Enrolments and CSV imports reuse the
   catalog's canonical lesson objects, including their identities and revision histories. Legacy lessons without
