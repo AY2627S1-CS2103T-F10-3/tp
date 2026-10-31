@@ -79,4 +79,14 @@ public class LessonCsvImporterTest {
 
         assertThrows(ParseException.class, () -> new LessonCsvImporter().read(file));
     }
+
+    @Test
+    public void read_extraValues_rejectsRow() throws Exception {
+        Path file = temporaryDirectory.resolve("importlessons.csv");
+        Files.writeString(file, HEADER + "2026,ENGLISH,MONDAY,TEN,ELEVEN,30,extra\n");
+
+        ParseException exception = assertThrows(ParseException.class, () -> new LessonCsvImporter().read(file));
+
+        assertTrue(exception.getMessage().startsWith("Lesson CSV row 2: CSV row has 7 values but only 6 headers."));
+    }
 }
