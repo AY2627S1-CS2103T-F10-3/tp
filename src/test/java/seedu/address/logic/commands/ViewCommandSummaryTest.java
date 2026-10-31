@@ -95,7 +95,7 @@ public class ViewCommandSummaryTest {
     }
 
     private void assertSummary(Model model, String field, String rows) {
-        assertEquals(new CommandResult("Distinct " + field + " values (frequency):\n" + rows),
+        assertEquals(new CommandResult("Distinct " + field + " values: (frequency)\n" + rows),
                 new ViewCommand(field).execute(model));
     }
 
