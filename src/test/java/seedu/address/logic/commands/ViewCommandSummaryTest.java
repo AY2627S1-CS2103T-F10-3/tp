@@ -37,7 +37,7 @@ public class ViewCommandSummaryTest {
         assertSummary(model, "phone", "12345678 : 2");
         assertSummary(model, "name", "Alice : 1\nBob : 1");
         assertSummary(model, "tag", "friends : 2\nteam : 1");
-        assertSummary(model, "lesson", VALID_LESSON_MATH + " : 2");
+        assertSummary(model, "lesson", formatLesson(VALID_LESSON_MATH) + ": 2");
         assertEquals(1, model.getFilteredPersonList().size());
         assertEquals(book, model.getAddressBook());
     }
@@ -57,7 +57,8 @@ public class ViewCommandSummaryTest {
         book.addPerson(new PersonBuilder().withName("Charlie").build());
         Model model = new ModelManager(book, new UserPrefs());
 
-        assertSummary(model, "lesson", VALID_LESSON_ENGLISH + " : 1\n" + VALID_LESSON_MATH + " : 2");
+        assertSummary(model, "lesson", formatLesson(VALID_LESSON_ENGLISH) + ": 1\n"
+                + formatLesson(VALID_LESSON_MATH) + ": 2");
     }
 
     @Test
@@ -94,8 +95,12 @@ public class ViewCommandSummaryTest {
     }
 
     private void assertSummary(Model model, String field, String rows) {
-        assertEquals(new CommandResult("Distinct " + field + " values (frequency):\n" + rows),
+        assertEquals(new CommandResult("Distinct " + field + " values: (frequency)\n" + rows),
                 new ViewCommand(field).execute(model));
+    }
+
+    private String formatLesson(seedu.address.model.lesson.Lesson lesson) {
+        return lesson.getId() + " (cost: " + lesson.getCost() + ")";
     }
 
 }
