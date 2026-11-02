@@ -26,6 +26,7 @@ public class EditLessonCommand extends Command {
             + "[d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]";
     public static final String MESSAGE_SUCCESS = "Lesson updated: %1$s (effective from %2$s)";
     public static final String MESSAGE_NOT_FOUND = "Lesson with CURRENT_ID '%s' was not found. "
+            + "CURRENT_ID refers to the lesson ID effective in the current month. "
             + "CURRENT_ID must contain these fields in order: YEAR-SUBJECT-DAY-START_TIME-END_TIME "
             + "(year, subject, day, start time and end time; no cost), "
             + "for example, 2026-MATH-MONDAY-TEN-ELEVEN. "
@@ -85,10 +86,11 @@ public class EditLessonCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         YearMonth currentMonth = YearMonth.now(clock);
-        Lesson currentLesson = model.getAddressBook().getLessonList().stream()
-                .filter(lesson -> lesson.getId().equals(currentId)).findFirst()
-                .orElse(null);
-        if (currentLesson == null) {
+        Lesson currentLesson = model.getLesson(currentId).orElse(null);
+        if (currentLesson != null && !currentLesson.getRevisionFor(currentMonth).getId().equals(currentId)) {
+            // A lesson can have a pending latest revision, but only its current-month ID is editable.
+            currentLesson = null;
+        } else if (currentLesson == null) {
             currentLesson = model.getAddressBook().getLessonList().stream()
                     .filter(lesson -> lesson.getRevisionFor(currentMonth).getId().equals(currentId)).findFirst()
                     .orElse(null);
@@ -97,8 +99,7 @@ public class EditLessonCommand extends Command {
             throw new CommandException(String.format(MESSAGE_NOT_FOUND, currentId));
         }
         LessonRevision currentRevision = currentLesson.getRevisionFor(currentMonth);
-        LessonRevision sourceRevision = currentLesson.getId().equals(currentId)
-                ? currentLesson.getLatestRevision() : currentRevision;
+        LessonRevision sourceRevision = currentRevision;
         Time editedStartTime = startTime == null ? sourceRevision.getStartTime() : startTime;
         Time editedEndTime = endTime == null ? sourceRevision.getEndTime() : endTime;
         if (!Lesson.isValidTimeRange(editedStartTime, editedEndTime)) {
