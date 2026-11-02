@@ -186,7 +186,9 @@ The `Model` component,
 * computes fees per month: `Person#getFeesDue(month)` sums `Lesson#getCostFor(month)`, the cost of the revision in
   effect that month (zero if that revision is for another year). Payments store their own amount and month and are
   never rewritten, so editing a lesson's cost does not change whether earlier months are paid.
-* reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
+* reports all catalog lessons in `view /lesson`. Each lesson's main row uses the revision effective in the current
+  billing month and shows the number of enrolled students, which may be zero. Revisions effective in future months
+  are rendered as separate bullet points below that row, including their lesson ID, cost and effective month.
 * represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.

@@ -122,7 +122,14 @@ Examples:
 
 * `view` shows all students
 * `view /email` shows each distinct email and its frequency.
-* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
+* `view /lesson` shows each lesson using the revision effective in the current month and how many students are
+  enrolled in it. Future revisions are shown as bullet points beneath their lesson, with their cost and effective
+  month. For example:
+
+  ```text
+  2026-MATH-MONDAY-TEN-ELEVEN (cost: 30): 2
+  - 2026-MATH-TUESDAY-TEN-ELEVEN (cost: 40) (effective from 2026-12)
+  ```
 
 ### Editing a student: `edit`
 
