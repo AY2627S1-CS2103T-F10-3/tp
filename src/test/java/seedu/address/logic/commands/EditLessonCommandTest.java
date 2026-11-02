@@ -239,7 +239,7 @@ public class EditLessonCommandTest {
     }
 
     @Test
-    public void execute_currentMonthIdWithPendingRevision_recordsEachDefaultEditSeparately() throws Exception {
+    public void execute_currentMonthIdWithPendingRevision_usesNextMonthForEachDefaultEdit() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
 
@@ -249,11 +249,10 @@ public class EditLessonCommandTest {
                 .execute(model);
 
         Lesson lesson = model.getAddressBook().getLessonList().getFirst();
-        assertEquals(3, lesson.getRevisions().size());
-        assertEquals(40, lesson.getCostFor(NOVEMBER));
+        assertEquals(2, lesson.getRevisions().size());
+        assertEquals(50, lesson.getCostFor(NOVEMBER));
         assertEquals(50, lesson.getCostFor(DECEMBER));
-        assertEquals(Day.TUESDAY, lesson.getRevisionFor(NOVEMBER).getDay());
-        assertEquals(Day.WEDNESDAY, lesson.getRevisionFor(DECEMBER).getDay());
+        assertEquals(Day.WEDNESDAY, lesson.getRevisionFor(NOVEMBER).getDay());
     }
 
     @Test

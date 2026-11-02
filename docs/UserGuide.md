@@ -235,8 +235,7 @@ Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [f
 
 * At least one lesson field must be supplied.
 * Fields not supplied retain their current values.
-* `from/` is the first billing month the change applies to. If it is omitted, the change applies from the next
-  available future month, so consecutive edits are recorded as separate revisions.
+* `from/` is the first billing month the change applies to. If it is omitted, the change applies from the next month.
 The effective month must be later than the current month and within the lesson year. It may be earlier than another
 pending revision; revisions are applied in effective-month order.
 * Only a pending revision can be replaced using the same month.

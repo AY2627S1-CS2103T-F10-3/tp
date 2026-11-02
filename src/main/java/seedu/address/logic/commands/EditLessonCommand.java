@@ -129,23 +129,13 @@ public class EditLessonCommand extends Command {
     }
 
     /**
-     * Returns the explicit billing month if given; otherwise the earliest future month without an existing
-     * revision, so consecutive edits are recorded as separate changes.
+     * Returns the explicit billing month if given; otherwise the month immediately after the current billing month.
      */
     private YearMonth resolveEffectiveMonth(Lesson lesson, YearMonth currentMonth) {
         if (effectiveFrom != null) {
             return effectiveFrom;
         }
-        YearMonth nextMonth = currentMonth.plusMonths(1);
-        while (hasRevisionAt(lesson, nextMonth)) {
-            nextMonth = nextMonth.plusMonths(1);
-        }
-        return nextMonth;
-    }
-
-    private static boolean hasRevisionAt(Lesson lesson, YearMonth month) {
-        return lesson.getRevisions().stream()
-                .anyMatch(revision -> revision.getEffectiveFrom().equals(month));
+        return currentMonth.plusMonths(1);
     }
 
     @Override
