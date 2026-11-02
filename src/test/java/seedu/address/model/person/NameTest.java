@@ -29,6 +29,9 @@ public class NameTest {
         assertFalse(Name.isValidName(" ")); // spaces only
         assertFalse(Name.isValidName("^")); // only non-alphanumeric characters
         assertFalse(Name.isValidName("peter*")); // contains non-alphanumeric characters
+        assertFalse(Name.isValidName("-Anne")); // starts with punctuation
+        assertFalse(Name.isValidName("'")); // punctuation only
+        assertFalse(Name.isValidName("Ravi s/o Kumar")); // slash
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
@@ -36,6 +39,8 @@ public class NameTest {
         assertTrue(Name.isValidName("peter the 2nd")); // alphanumeric characters
         assertTrue(Name.isValidName("Capital Tan")); // with capital letters
         assertTrue(Name.isValidName("David Roger Jackson Ray Jr 2nd")); // long names
+        assertTrue(Name.isValidName("Anne-Marie O'Neil")); // hyphen and apostrophe
+        assertTrue(Name.isValidName("Martin Luther King Jr.")); // full stop
     }
 
     @Test
@@ -56,5 +61,18 @@ public class NameTest {
 
         // different values -> returns false
         assertFalse(name.equals(new Name("Other Valid Name")));
+    }
+
+    @Test
+    public void isSameName() {
+        Name name = new Name("Amy Lee");
+
+        assertTrue(name.isSameName(new Name("Amy Lee")));
+        assertTrue(name.isSameName(new Name("amy lee")));
+        assertTrue(name.isSameName(new Name("AMY  LEE")));
+
+        assertFalse(name.isSameName(new Name("Amy Leee")));
+        assertFalse(name.isSameName(new Name("AmyLee")));
+        assertFalse(name.isSameName(null));
     }
 }

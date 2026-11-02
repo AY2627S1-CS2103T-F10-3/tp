@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -51,17 +52,10 @@ public class StudentCsvImporter {
                 record.append(line);
                 if (!CsvParser.hasUnclosedQuote(record.toString())) {
                     if (!record.toString().isBlank()) {
-                        List<String> values = List.of();
                         try {
-                            values = CsvParser.parseLine(record.toString());
-                            while (values.size() < headers.size()) {
-                                values.add("");
-                            }
-                            students.add(createPerson(headers, values, lessonsById));
+                            students.add(createPerson(headers, CsvParser.parseLine(record.toString()), lessonsById));
                         } catch (ParseException exception) {
-                            String studentName = valueForError(headers, values, "name");
-                            String context = studentName.isBlank() ? "" : " (" + studentName + ")";
-                            throw new ParseException("Student CSV row " + recordStartRow + context + ": "
+                            throw new ParseException("Student CSV row " + recordStartRow + ": "
                                     + exception.getMessage(), exception);
                         }
                     }
@@ -69,17 +63,10 @@ public class StudentCsvImporter {
                 }
             }
             if (record.length() > 0) {
-                List<String> values = List.of();
                 try {
-                    values = CsvParser.parseLine(record.toString());
-                    while (values.size() < headers.size()) {
-                        values.add("");
-                    }
-                    students.add(createPerson(headers, values, lessonsById));
+                    students.add(createPerson(headers, CsvParser.parseLine(record.toString()), lessonsById));
                 } catch (ParseException exception) {
-                    String studentName = valueForError(headers, values, "name");
-                    String context = studentName.isBlank() ? "" : " (" + studentName + ")";
-                    throw new ParseException("Student CSV row " + recordStartRow + context + ": "
+                    throw new ParseException("Student CSV row " + recordStartRow + ": "
                             + exception.getMessage(), exception);
                 }
             }
@@ -95,9 +82,10 @@ public class StudentCsvImporter {
         Set<Lesson> lessons = new HashSet<>();
         for (String id : valueOrEmpty(row, "lessons").split("[,;]")) {
             if (!id.isBlank()) {
-                Lesson lesson = lessonsById.get(id.trim());
+                String lessonId = id.trim().toUpperCase(Locale.ROOT);
+                Lesson lesson = lessonsById.get(lessonId);
                 if (lesson == null) {
-                    throw new ParseException("Unknown lesson id: " + id.trim());
+                    throw new ParseException("Unknown lesson id: " + lessonId);
                 }
                 lessons.add(lesson);
             }
@@ -120,23 +108,33 @@ public class StudentCsvImporter {
                 throw new ParseException("Missing required column: " + field);
             }
         }
-        Guardian guardian = new Guardian(ParserUtil.parseName(row.get("guardian_name")),
-                ParserUtil.parsePhone(row.get("guardian_phone")), ParserUtil.parseEmail(row.get("guardian_email")),
-                ParserUtil.parseRelationship(row.get("guardian_relationship")),
-                ParserUtil.parseAddress(row.get("guardian_address")));
-        return Optional.of(guardian);
+        String guardianName = row.get("guardian_name");
+        String guardianPhone = row.get("guardian_phone");
+        String guardianEmail = row.get("guardian_email");
+        String guardianRelationship = row.get("guardian_relationship");
+        String guardianAddress = row.get("guardian_address");
+        String[] values = {guardianName, guardianPhone, guardianEmail, guardianRelationship, guardianAddress};
+        if (Arrays.stream(values).allMatch(String::isBlank)) {
+            return Optional.empty();
+        }
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].isBlank()) {
+                throw new ParseException("Guardian columns must either all be blank or all contain values; column '"
+                        + fields[i] + "' is blank.");
+            }
+        }
+        try {
+            Guardian guardian = new Guardian(ParserUtil.parseName(guardianName),
+                    ParserUtil.parsePhone(guardianPhone), ParserUtil.parseEmail(guardianEmail),
+                    ParserUtil.parseRelationship(guardianRelationship), ParserUtil.parseAddress(guardianAddress));
+            return Optional.of(guardian);
+        } catch (ParseException exception) {
+            throw new ParseException("Invalid guardian details: " + exception.getMessage(), exception);
+        }
     }
 
     private static String valueOrEmpty(CsvRow row, String field) throws ParseException {
         return row.hasField(field) ? row.get(field) : "";
     }
 
-    private static String valueForError(List<String> headers, List<String> values, String field) {
-        for (int i = 0; i < headers.size(); i++) {
-            if (headers.get(i).trim().equalsIgnoreCase(field)) {
-                return i < values.size() ? values.get(i).trim() : "";
-            }
-        }
-        return "";
-    }
 }

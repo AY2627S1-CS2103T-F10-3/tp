@@ -39,6 +39,18 @@ public class PayCommandParserTest {
     }
 
     @Test
+    public void parse_dateToday_success() {
+        assertParseSuccess(parser, "1 amt/100 m/2026-11 d/2026-11-20", new PayCommand(INDEX_FIRST_PERSON,
+                new Payment(new Amount("100"), PAYMENT_NOVEMBER.getMonth(), LocalDate.of(2026, 11, 20))));
+    }
+
+    @Test
+    public void parse_futureDate_failure() {
+        assertParseFailure(parser, "1 amt/100 m/2026-11 d/2026-11-21", PayCommandParser.MESSAGE_FUTURE_DATE);
+        assertParseFailure(parser, "1 amt/100 m/2026-12 d/2030-01-01", PayCommandParser.MESSAGE_FUTURE_DATE);
+    }
+
+    @Test
     public void parse_dateMissing_defaultsToToday() {
         Payment paidToday = new Payment(new Amount("100"), PAYMENT_NOVEMBER.getMonth(), LocalDate.of(2026, 11, 20));
         assertParseSuccess(parser, "1 amt/100 m/2026-11", new PayCommand(INDEX_FIRST_PERSON, paidToday));

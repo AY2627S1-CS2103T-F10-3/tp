@@ -16,7 +16,12 @@ public class CsvRow {
      * @param headers column headers
      * @param values cell values
      */
-    public CsvRow(List<String> headers, List<String> values) {
+    public CsvRow(List<String> headers, List<String> values) throws ParseException {
+        if (values.size() > headers.size()) {
+            throw new ParseException("CSV row has " + values.size() + " values but only " + headers.size()
+                    + " headers. If a value contains a comma, enclose it in double quotes, for example "
+                    + "\"123, Clementi Road\".");
+        }
         this.headers = headers;
         this.values = values;
     }

@@ -3,6 +3,10 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
+import java.time.YearMonth;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -10,6 +14,7 @@ import java.util.stream.Stream;
 import seedu.address.model.Model;
 import seedu.address.model.guardian.Guardian;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.person.Person;
 
 /**
@@ -20,7 +25,7 @@ public class ViewCommand extends Command {
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_SUCCESS = "Viewing all students.";
-    public static final String MESSAGE_USAGE = "view: Lists contacts or distinct values and their frequencies.\n"
+    public static final String MESSAGE_USAGE = "view: Lists students or distinct values and their frequencies.\n"
             + "Parameters: [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]\n"
             + "Example: view /email";
 
@@ -47,18 +52,19 @@ public class ViewCommand extends Command {
             model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
             return new CommandResult(MESSAGE_SUCCESS);
         }
-        Map<String, Integer> frequencies = new TreeMap<>();
         if (field.equals("lesson")) {
-            model.getAddressBook().getLessonList().forEach(lesson -> frequencies.put(lesson.toString(), 0));
+            return new CommandResult(formatLessonSummary(model, YearMonth.now()));
         }
+        Map<String, Integer> frequencies = new TreeMap<>();
         for (Person person : model.getAddressBook().getPersonList()) {
             valuesOf(person).distinct().forEach(value -> frequencies.merge(value, 1, Integer::sum));
         }
-        StringBuilder feedback = new StringBuilder("Distinct " + field + " values (frequency):");
+        StringBuilder feedback = new StringBuilder("Distinct " + field + " values: (frequency)");
         if (frequencies.isEmpty()) {
             feedback.append("\nNo values found.");
         } else {
-            frequencies.forEach((value, count) -> feedback.append("\n").append(value).append(" : ").append(count));
+            frequencies.forEach((value, count) -> feedback.append("\n").append(value)
+                    .append(field.equals("lesson") ? ": " : " : ").append(count));
         }
         return new CommandResult(feedback.toString());
     }
@@ -70,7 +76,7 @@ public class ViewCommand extends Command {
             case "email" -> Stream.of(person.getEmail().toString());
             case "address" -> Stream.of(person.getAddress().toString());
             case "tag" -> person.getTags().stream().map(tag -> tag.tagName);
-            case "lesson" -> person.getLessons().stream().map(Lesson::toString);
+            case "lesson" -> throw new IllegalStateException("Lesson summaries are handled separately");
             case "guardian" -> person.getGuardian().stream().map(ViewCommand::formatGuardian);
             case "payment" -> person.getPayments().stream().map(Object::toString);
             case "attendance" -> person.getAttendance().stream().map(Object::toString);
@@ -82,6 +88,38 @@ public class ViewCommand extends Command {
         return String.format("Name: %s | Phone: %s | Email: %s | Relationship: %s | Address: %s",
                 guardian.getName(), guardian.getPhone(), guardian.getEmail(),
                 guardian.getRelationship(), guardian.getAddress());
+    }
+
+    private static String formatLessonSummary(Model model, YearMonth currentMonth) {
+        List<Lesson> lessons = model.getAddressBook().getLessonList().stream()
+                .sorted(Comparator.comparing(lesson -> formatCurrentLesson(lesson, currentMonth)))
+                .toList();
+        Map<String, Integer> frequencies = new HashMap<>();
+        lessons.forEach(lesson -> frequencies.put(lesson.getUid(), 0));
+        for (Person person : model.getAddressBook().getPersonList()) {
+            person.getLessons().stream().map(Lesson::getUid).distinct()
+                    .forEach(uid -> frequencies.merge(uid, 1, Integer::sum));
+        }
+
+        StringBuilder feedback = new StringBuilder("Distinct lesson values: (frequency)");
+        if (lessons.isEmpty()) {
+            return feedback.append("\nNo values found.").toString();
+        }
+        for (Lesson lesson : lessons) {
+            feedback.append("\n").append(formatCurrentLesson(lesson, currentMonth))
+                    .append(": ").append(frequencies.getOrDefault(lesson.getUid(), 0));
+            lesson.getRevisions().stream()
+                    .filter(revision -> revision.getEffectiveFrom().isAfter(currentMonth))
+                    .forEach(revision -> feedback.append("\n- ").append(revision.getId())
+                            .append(" (cost: ").append(revision.getCost()).append(")")
+                            .append(" (effective from ").append(revision.getEffectiveFrom()).append(")"));
+        }
+        return feedback.toString();
+    }
+
+    private static String formatCurrentLesson(Lesson lesson, YearMonth currentMonth) {
+        LessonRevision current = lesson.getRevisionFor(currentMonth);
+        return String.format("%s (cost: %d)", current.getId(), current.getCost());
     }
 
     @Override
