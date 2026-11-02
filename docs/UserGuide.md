@@ -10,7 +10,7 @@ educational records into a unified CLI tool, enabling tuition centre admins to u
 track assignment submissions significantly faster than multi-step GUI systems.
 
 * Table of Contents
-  {:toc}
+{:toc}
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
     * `delete 3` : Deletes the 3rd student shown in the current directory.
 
-    * `clear` : Deletes all students and lessons.
+    * `clear` : Deletes all students and the entire lesson catalog, including unassigned lessons.
 
     * `exit` : Exits the app.
 
@@ -48,6 +48,11 @@ track assignment submissions significantly faster than multi-step GUI systems.
 --------------------------------------------------------------------------------------------------------------------
 
 ## Features
+
+Unless stated otherwise, examples assume a fresh copy of the sample data and are independent of one another.
+Commands that change or delete data can affect later examples. Run `view` or `find` to check the displayed student
+index before using an index-based command, and `view /lesson` to check the available lesson IDs.
+If you have cleared or changed the sample data, create the required lessons and students first.
 
 <div markdown="block" class="alert alert-info">
 
@@ -65,9 +70,10 @@ track assignment submissions significantly faster than multi-step GUI systems.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `view`, `exit`, and `clear`, are
+* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are
   ignored.<br>
   For example, `help 123` is interpreted as `help`.
+  `view` accepts only the optional selectors listed in its format; other arguments such as `view extra` are rejected.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines
   as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -168,9 +174,24 @@ Examples:
 * `edit 2 n/Betsy Crower t/` Edits the name of the 2nd student to be `Betsy Crower` and clears all existing tags.
 * `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd student to be `98765432` and
   `Father` respectively. (Note: this example requires the student to already have guardian information stored)
-* `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN` Replaces the lessons of the
+* `edit 1 l/2026-ENGLISH-MONDAY-TEN-ELEVEN l/2026-SCIENCE-WEDNESDAY-THIRTEEN-FOURTEEN` Replaces the lessons of the
   1st student with the two given lessons.
 * `edit 2 l/` Removes all lessons of the 2nd student.
+
+### Deleting a person: `delete`
+
+Deletes the specified person from the address book.
+
+Format: `delete INDEX`
+
+* Deletes the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+
+Examples:
+
+* `view` followed by `delete 2` deletes the 2nd person in the address book.
+* `find Marcus` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
 ### Locating students by student or guardian details: `find`
 
@@ -186,7 +207,7 @@ Format:
 * Searches are partial and case-insensitive.
 * A syntactically complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. Text with an incomplete or
   invalid component remains a partial search. A complete lesson search can therefore be used to show a class roster,
-  for example, `find l/2026-MATH-MONDAY-TEN-ELEVEN`.
+  for example, `find l/2026-ENGLISH-MONDAY-TEN-ELEVEN`.
 * Lesson searches use the revision effective in the current billing month. Pending and historical lesson IDs do not
   match until or unless they are current.
 * `paid/MONTH` and `unpaid/MONTH` search the student's total fees for that month. Students with no fees due are excluded,
@@ -201,9 +222,9 @@ Format:
 
 Examples:
 
-* `find alex david` finds students whose names contain `alex` or `david`.
-* `find n/Alice gp/9876` requires both the student name and guardian phone number to match.
-* `find e/school.com a/Tampines` requires both email and address to match.
+* `find ethan priya` finds Ethan Tan and Priya Nair in the sample data.
+* `find n/Priya gp/9883` requires both the student name and guardian phone number to match.
+* `find e/example.com a/Tampines` requires both email and address to match.
 * `find a/Block paid/10` searches for the literal address text `Block paid/10`.
 * `find a/"Block n/10"` searches for the literal address text `Block n/10` instead of treating `n/10` as a name filter.
 * `find l/math unpaid/2026-10` finds Maths students with outstanding October fees.
@@ -211,7 +232,6 @@ Examples:
 * `find t/secondary1 secondary2` matches either tag fragment.
 * `find unpaid/2026-10` finds students with no payment or only partial payment for October 2026.
 
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
 
 ### Adding a lesson: `addlesson`
 
@@ -240,7 +260,7 @@ Removes a lesson from the lesson catalog and removes all students from it.
 
 Format: `deletelesson LESSON_ID`
 
-Example: `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
+Example: `deletelesson 2026-ENGLISH-MONDAY-TEN-ELEVEN`
 
 The student's recorded attendance and payments are retained, but the deleted lesson no longer
 contributes to enrolled-class fee summaries.
@@ -269,10 +289,14 @@ pending revision; revisions are applied in effective-month order.
 
 `CURRENT_ID` uses the [lesson ID](#adding-a-lesson-addlesson) format.
 
-Examples:
-* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11` charges \$40 from November 2026. October is still
-  charged at the old cost, so a student who already paid for October stays fully paid.
-* `editlesson 2026-MATH-MONDAY-TEN-ELEVEN d/TUESDAY` moves the lesson to Tuesdays from next month.
+Examples (run independently on the sample data during November 2026):
+
+* `editlesson 2026-ENGLISH-MONDAY-TEN-ELEVEN c/40 from/2026-12` charges \$40 from December 2026. November
+  retains its original cost, so payments for November are not affected.
+* `editlesson 2026-ENGLISH-MONDAY-TEN-ELEVEN d/TUESDAY` moves the lesson to Tuesdays from next month.
+
+When trying these examples at a later date, use an existing lesson whose year contains a future billing month,
+and choose that future month for `from/`. For example, do not reuse `from/2026-12` once December 2026 has begun.
 
 ### Recording a fee payment: `pay`
 
@@ -342,20 +366,20 @@ Format: `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
 
 * `INDEX` is the student's positive integer index in the currently displayed list, including after `find`.
 * The student must be enrolled in the specified lesson. `LESSON_ID` is the lesson's year, subject, weekday,
-  start time and end time, **without the cost**. For a displayed lesson `2026-MATH-MONDAY-TEN-ELEVEN-120`,
-  use `l/2026-MATH-MONDAY-TEN-ELEVEN`. Lesson IDs are case-sensitive.
+  start time and end time, **without the cost**. For a displayed lesson `2026-ENGLISH-MONDAY-TEN-ELEVEN-30`,
+  use `l/2026-ENGLISH-MONDAY-TEN-ELEVEN`. Lesson IDs are case-insensitive; lowercase input is accepted.
 * `DATE` is required in `yyyy-MM-dd` form and must match the lesson's year and weekday.
 * `STATUS` is `present` or `absent`, case-insensitive. A session without a record is **not automatically absent**.
 * Only one record is allowed for a student, lesson and date, even if the status differs. To correct a mistake,
   use `viewattendance` and `deleteattendance`, then record the corrected status.
 * Attendance is saved with the student. Editing student details or changing lesson enrolments preserves the history.
   Payment commands also preserve attendance records.
-* The alpha version accepts future session dates and only supports the lesson's regular weekday, not rescheduled sessions.
+* Future session dates are accepted. Only the lesson's scheduled weekday on that date is supported, not individually rescheduled sessions.
 
-Examples (assuming student 1 is enrolled in the Monday Math lesson above):
+Examples (on fresh sample data, student 1 is Ethan Tan, enrolled in the Monday English lesson):
 
-* `attendance 1 l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`
-* `attendance 1 l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-26 s/absent`
+* `attendance 1 l/2026-ENGLISH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`
+* `attendance 1 l/2026-ENGLISH-MONDAY-TEN-ELEVEN d/2026-10-26 s/absent`
 
 ### Viewing attendance: `viewattendance`
 
@@ -377,21 +401,6 @@ before deleting another record, especially after adding a backdated entry.
 Historical records can still be viewed and deleted after the student leaves the lesson.
 
 Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.
-
-### Deleting a student: `delete`
-
-Deletes the specified student from EduReg.
-
-Format: `delete INDEX`
-
-* Deletes the student at the specified `INDEX`.
-* The index refers to the index number shown in the displayed student list.
-* The index **must be a positive integer** 1, 2, 3, …​
-
-Examples:
-
-* `view` followed by `delete 2` deletes the 2nd student in EduReg.
-* `find Betsy` followed by `delete 1` deletes the 1st student in the results of the `find` command.
 
 ### Importing students and lessons: `importcsv`
 
@@ -434,7 +443,9 @@ James Ho,91234567,james@example.com,"123, Clementi Road",friend,2026-MATH-MONDAY
 
 ### Clearing all entries: `clear`
 
-Deletes all students and lessons from EduReg. Use this with care: it cannot be undone.
+Deletes all students, their guardian details, payments and attendance records, and the entire lesson catalog
+(including lessons with no enrolled students). This clears the saved data, not just the current filtered view.
+Back up `data/addressbook.json` before running this command if you need to keep any records.
 
 Format: `clear`
 
@@ -450,7 +461,7 @@ EduReg automatically saves data after every command. You do not need to save man
 
 ### Editing the data file
 
-EduReg data is saved automatically as a JSON file `[JAR file location]/data/edureg.json`. Advanced users are
+EduReg data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are
 welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
@@ -492,12 +503,13 @@ previous EduReg home folder.
 Action | Format, Examples
 --------|------------------
 **Add Student** | `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME gp/GUARDIAN_PHONE ge/GUARDIAN_EMAIL gr/RELATIONSHIP ga/GUARDIAN_ADDRESS]`<br> e.g., `addstudent n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend gn/Mary Tan gp/91234567 ge/mary@example.com gr/Mother ga/123 Example Road`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find n/Alice gp/9876`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find n/Priya gp/9883`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]`
+**Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
-**Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
-**Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11`
+**Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-ENGLISH-MONDAY-TEN-ELEVEN`
+**Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`<br> e.g., `editlesson 2026-ENGLISH-MONDAY-TEN-ELEVEN c/40 from/2026-12` (during November 2026; see the `editlesson` examples)
 **Pay** | `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`<br> e.g., `pay 2 amt/35 m/2026-10 d/2026-10-03`
 **View Payments** | `viewpayments INDEX`<br> e.g., `viewpayments 1`
 **Delete Payment** | `deletepayment INDEX i/PAYMENT_INDEX`<br> e.g., `deletepayment 1 i/2`
@@ -506,6 +518,5 @@ Action | Format, Examples
 **Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
 **Import CSV** | `importcsv`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Help** | `help`
 **Exit** | `exit`

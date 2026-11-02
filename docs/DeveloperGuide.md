@@ -325,13 +325,14 @@ Design decisions:
 * Reject duplicate sessions instead of silently overwriting them. Corrections require deleting the old record
   and recording the replacement, with both operations visible to the admin.
 * Use an explicit date instead of defaulting to today to avoid accidentally recording the wrong session.
-* Keep the alpha scope to present/absent on the lesson's regular weekday. Future dates are accepted;
+* Record present/absent on the lesson's scheduled weekday on the given date. Future dates are accepted;
   rescheduled sessions, bulk marking and attendance filtering are not implemented here.
 
 Manual verification (use a disposable address book):
 
-1. Enrol a student in `2026-MATH-MONDAY-TEN-ELEVEN-120`. Note their currently displayed index.
-2. Run `attendance INDEX l/2026-MATH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`, then `viewattendance INDEX`.
+1. On fresh sample data, run `find Ethan Tan`. Ethan is enrolled in `2026-ENGLISH-MONDAY-TEN-ELEVEN`.
+   Note his currently displayed index.
+2. Run `attendance INDEX l/2026-ENGLISH-MONDAY-TEN-ELEVEN d/2026-10-19 s/present`, then `viewattendance INDEX`.
    Expect one numbered `PRESENT` record.
 3. Repeat with `s/absent` for the same date. Expect a duplicate warning and the original record unchanged.
 4. Try `d/2026-10-20` (Tuesday), an invalid calendar date, or a lesson the student has not joined.
@@ -504,9 +505,9 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **MSS**
 
-1. User requests to add a new student contact by specifying the student's name, phone number, email and address,
-   together with the guardian's name, phone number, email, relationship and address. The user may also specify tags
-   and existing lessons.
+1. User requests to add a new student contact by specifying the student's name, phone number, email and address.
+   The user may also specify tags, existing lessons and guardian details. Guardian details are optional; if supplied,
+   all five fields (name, phone, email, relationship and address) must be provided together.
 2. EduReg validates the input format of the provided details.
 3. EduReg adds the new student to the student directory.
 4. EduReg displays a success message showing the newly added student's details.
@@ -515,8 +516,9 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **Extensions**
 
-* 2a. The provided details do not follow the required format (e.g., a missing or blank guardian field,
-  invalid phone number, or malformed email).
+* 2a. The provided details do not follow the required format (e.g., only some of the five guardian fields are supplied,
+  a supplied guardian field is blank, a phone number is invalid, or an email is malformed). Omitting all guardian
+  fields is valid.
 
     * 2a1. EduReg displays an error message specifying the formatting error and required command usage.
 
@@ -683,13 +685,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 3.
 
-**Use case: UC07 - Clear all student and lesson records**
+**Use case: UC07 - Clear all student records and lessons**
 
 **MSS**
 
-1. User requests to clear all student and lesson records.
-2. EduReg removes all student records and the lesson catalog.
-3. EduReg displays an empty student list and a success message confirming that all students and lessons have been cleared.
+1. User requests to clear all student records and lessons.
+2. EduReg removes all students, their guardian details, payments and attendance records, and every lesson
+   in the catalog, including lessons with no enrolled students. The operation is not limited by the current filter.
+3. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
 
    Use case ends.
 
@@ -697,7 +700,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 1a. The student directory is already empty.
 
-    * 1a1. EduReg displays an empty student list and a success message confirming that all students and lessons have been cleared.
+    * 1a1. EduReg still clears any lessons remaining in the catalog and displays an empty student list
+      and a success message confirming that the directory has been cleared.
 
       Use case ends.
 
