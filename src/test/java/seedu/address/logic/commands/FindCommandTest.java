@@ -155,10 +155,20 @@ public class FindCommandTest {
     @Test
     public void execute_lessonWithPendingRevision_findsOnlyActiveId() throws Exception {
         YearMonth currentMonth = YearMonth.now();
-        Lesson revisedLesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH,
-                Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
-                .withRevision(new LessonRevision(Year.of(currentMonth.plusMonths(1).getYear()), Subject.MATH,
-                        Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, currentMonth.plusMonths(1)), currentMonth);
+        Lesson originalLesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH,
+                Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+        Lesson revisedLesson;
+        String nonActiveId;
+        if (currentMonth.getMonthValue() == 12) {
+            nonActiveId = originalLesson.getId();
+            revisedLesson = originalLesson.withRevision(new LessonRevision(Year.of(currentMonth.getYear()),
+                    Subject.MATH, Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, currentMonth),
+                    currentMonth.minusMonths(1));
+        } else {
+            revisedLesson = originalLesson.withRevision(new LessonRevision(Year.of(currentMonth.getYear()),
+                    Subject.MATH, Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, currentMonth.plusMonths(1)), currentMonth);
+            nonActiveId = revisedLesson.getLatestRevision().getId();
+        }
         Person enrolledStudent = new PersonBuilder().withName("Alice Tan").withLessons(revisedLesson).build();
         AddressBook book = new AddressBook();
         book.setPersons(List.of(enrolledStudent));
@@ -166,7 +176,7 @@ public class FindCommandTest {
 
         assertSearchResults(searchModel, "find l/" + revisedLesson.getRevisionFor(currentMonth).getId(),
                 List.of(enrolledStudent));
-        assertSearchResults(searchModel, "find l/" + revisedLesson.getLatestRevision().getId(), List.of());
+        assertSearchResults(searchModel, "find l/" + nonActiveId, List.of());
     }
 
     /**
