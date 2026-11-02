@@ -140,6 +140,43 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_blankGuardianField_reportsGuardianColumn() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,,81234567,"
+                + "mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertEquals("Student CSV row 2: Guardian columns must either all be blank or all contain values; "
+                + "column 'guardian_name' is blank.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void read_allGuardianFieldsBlank_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,,,,,,\n");
+
+        Person student = new StudentCsvImporter().read(file, Map.of()).get(0);
+
+        assertFalse(student.getGuardian().isPresent());
+    }
+
+    @Test
+    public void read_invalidGuardianField_reportsGuardianContext() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,12,"
+                + "mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertTrue(exception.getMessage().startsWith("Student CSV row 2: Invalid guardian details: "
+                + "Phone numbers should only contain digits"));
+    }
+
+    @Test
     public void read_invalidRow_reportsRowNumberAndStudentName() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,81234567,"
