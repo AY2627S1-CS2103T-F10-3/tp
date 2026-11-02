@@ -122,7 +122,14 @@ Examples:
 
 * `view` shows all students
 * `view /email` shows each distinct email and its frequency.
-* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
+* `view /lesson` shows each lesson using the revision effective in the current month and how many students are
+  enrolled in it. Future revisions are shown as bullet points beneath their lesson, with their cost and effective
+  month. For example:
+
+  ```text
+  2026-MATH-MONDAY-TEN-ELEVEN (cost: 30): 2
+  - 2026-MATH-TUESDAY-TEN-ELEVEN (cost: 40) (effective from 2026-12)
+  ```
 
 ### Editing a student: `edit`
 
@@ -236,8 +243,9 @@ Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [f
 
 * At least one lesson field must be supplied.
 * Fields not supplied retain their current values.
-* `from/` is the first billing month the change applies to. If it is omitted, the change applies from next month, or from the latest pending change if that is later.
-The effective month must be later than the current month and cannot be earlier than the latest revision.
+* `from/` is the first billing month the change applies to. If it is omitted, the change applies from the next month.
+The effective month must be later than the current month and within the lesson year. It may be earlier than another
+pending revision; revisions are applied in effective-month order.
 * Only a pending revision can be replaced using the same month.
 * Current and past billing months cannot be edited.
 * The lesson year and subject cannot be changed because that defines the lesson.
