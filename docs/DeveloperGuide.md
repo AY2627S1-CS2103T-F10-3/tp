@@ -288,9 +288,9 @@ Source: [Find command sequence diagram](diagrams/find-command-sequence.puml).
 1. `FindCommandParser` validates the arguments and builds a `Predicate<Person>`. Without prefixes,
    it searches student names. With prefixes, it combines the selected fields and optional monthly
    payment status. Invalid arguments produce a parse error before the displayed filter changes.
-2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList` and returns the
-   number of matching students. The UI observes the filtered list; no matching students gives an
-   empty list and a count of zero, not an error. Each search filters the full student list.
+2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList`. It returns the
+   number of matching students, or `No students found.` when the filtered list is empty. The UI
+   observes the filtered list, and each search filters the full student list.
 3. After command execution, `LogicManager` saves the address book through the shared command
    pipeline. Searching changes the displayed filter, not the stored student records. The diagram
    assumes saving succeeds; a storage failure is reported as a command error after filtering.
@@ -537,14 +537,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case ends.
 
-**Use case: UC03 - Search student by name**
+**Use case: UC03 - Find students**
 
 **MSS**
 
-1. User requests to search for students by providing a name keyword or partial name.
-2. EduReg searches for students whose names match the provided keyword(s).
+1. User requests to find students by providing one or more search criteria.
+2. EduReg searches for students who match the provided criteria.
 3. EduReg updates the displayed list to show only matching students.
-4. EduReg displays a summary message showing the number of matching students found.
+4. EduReg displays the number of matching students, or `No students found.` if there are no matches.
 
    Use case ends.
 
@@ -552,19 +552,19 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 1a. The search keyword is missing or empty (e.g., `find n/`).
 
-    * 1a1. EduReg displays an error message specifying that the name parameter cannot be empty and shows correct usage.
+    * 1a1. EduReg displays an error message specifying that the search value cannot be empty and shows correct usage.
 
       Use case resumes at step 1.
 
-* 1b. The search term contains invalid special characters.
+* 1b. The search criteria have an invalid format, such as an unsupported or duplicate prefix.
 
-    * 1b1. EduReg displays an error message stating acceptable name character formats.
+    * 1b1. EduReg displays an error message explaining the valid command format.
 
       Use case resumes at step 1.
 
 * 2a. No students match the search criteria.
 
-    * 2a1. EduReg displays an empty list and indicates that 0 students were found.
+    * 2a1. EduReg displays an empty list and the message `No students found.`.
 
       Use case ends.
 
