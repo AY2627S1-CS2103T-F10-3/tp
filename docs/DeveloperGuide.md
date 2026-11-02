@@ -297,7 +297,7 @@ Source: [Find command sequence diagram](diagrams/find-command-sequence.puml).
 
 Field matching is case-insensitive, with OR across keywords within a field and AND across fields.
 Syntactically valid five-component lesson IDs match exactly. Incomplete or invalid components remain partial search
-terms even when the input contains five components.
+terms even when the input contains five components. Lesson criteria are matched against every saved revision ID.
 `unpaid/` matches positive outstanding fees. `paid/` requires positive fees with no outstanding
 balance, including overpayments. Payment status covers all lessons in the billing year, not just
 the lesson matched by `l/`; the two payment-status prefixes cannot be combined. In `a/` or `ga/`, an invalid payment

@@ -41,8 +41,9 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     public boolean test(Person person) {
         return keywords.entrySet().stream().allMatch(entry -> {
             if (entry.getKey() == Field.LESSON) {
-                return person.getLessons().stream().anyMatch(lesson -> entry.getValue().stream()
-                        .anyMatch(keyword -> matchesLessonId(lesson.getId(), keyword)));
+                return person.getLessons().stream().flatMap(lesson -> lesson.getRevisions().stream())
+                        .anyMatch(revision -> entry.getValue().stream()
+                                .anyMatch(keyword -> matchesLessonId(revision.getId(), keyword)));
             }
             if (entry.getKey() == Field.TAG) {
                 return person.getTags().stream().anyMatch(tag -> entry.getValue().stream()

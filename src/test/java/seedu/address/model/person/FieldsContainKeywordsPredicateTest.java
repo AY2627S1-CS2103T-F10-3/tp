@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.model.person.FieldsContainKeywordsPredicate.Field;
@@ -89,6 +91,18 @@ public class FieldsContainKeywordsPredicateTest {
                 Field.GUARDIAN_NAME, List.of("Mary"))).test(enrolledStudent));
         assertFalse(new FieldsContainKeywordsPredicate(Map.of(Field.LESSON, List.of("math"),
                 Field.GUARDIAN_NAME, List.of("John"))).test(enrolledStudent));
+    }
+
+    @Test
+    public void test_lessonWithPendingRevision_matchesActiveAndPendingIds() {
+        YearMonth currentMonth = YearMonth.of(2026, 10);
+        Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
+                .withRevision(new LessonRevision(Year.of(2026), Subject.MATH, Day.TUESDAY,
+                        Time.TEN, Time.ELEVEN, 40, YearMonth.of(2026, 11)), currentMonth);
+        Person enrolledStudent = new PersonBuilder(student).withLessons(lesson).build();
+
+        assertTrue(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVEN", enrolledStudent));
+        assertTrue(matches(Field.LESSON, "2026-MATH-TUESDAY-TEN-ELEVEN", enrolledStudent));
     }
 
     @Test
