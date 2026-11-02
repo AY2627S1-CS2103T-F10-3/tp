@@ -673,12 +673,13 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 3.
 
-**Use case: UC07 - Clear all student records**
+**Use case: UC07 - Clear all student records and lessons**
 
 **MSS**
 
-1. User requests to clear all student records.
-2. EduReg removes all student records from the student directory.
+1. User requests to clear all student records and lessons.
+2. EduReg removes all students, their guardian details, payments and attendance records, and every lesson
+   in the catalog, including lessons with no enrolled students. The operation is not limited by the current filter.
 3. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
 
    Use case ends.
@@ -687,7 +688,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 1a. The student directory is already empty.
 
-    * 1a1. EduReg displays an empty student list and a success message confirming that the directory has been cleared.
+    * 1a1. EduReg still clears any lessons remaining in the catalog and displays an empty student list
+      and a success message confirming that the directory has been cleared.
 
       Use case ends.
 

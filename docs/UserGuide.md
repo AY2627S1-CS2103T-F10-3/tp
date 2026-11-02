@@ -39,7 +39,7 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
     * `delete 3` : Deletes the 3rd student shown in the current directory.
 
-    * `clear` : Deletes all students.
+    * `clear` : Deletes all students and the entire lesson catalog, including unassigned lessons.
 
     * `exit` : Exits the app.
 
@@ -403,7 +403,9 @@ James Ho,91234567,james@example.com,"123, Clementi Road",friend,2026-MATH-MONDAY
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Deletes all students, their guardian details, payments and attendance records, and the entire lesson catalog
+(including lessons with no enrolled students). This clears the saved data, not just the current filtered view.
+Back up `data/addressbook.json` before running this command if you need to keep any records.
 
 Format: `clear`
 
