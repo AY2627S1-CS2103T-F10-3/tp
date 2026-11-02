@@ -157,6 +157,21 @@ Examples:
   1st person with the two given lessons.
 * `edit 2 l/` Removes all lessons of the 2nd person.
 
+### Deleting a person: `delete`
+
+Deletes the specified person from the address book.
+
+Format: `delete INDEX`
+
+* Deletes the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+
+Examples:
+
+* `view` followed by `delete 2` deletes the 2nd person in the address book.
+* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+
 ### Locating students by student or guardian details: `find`
 
 Finds students using case-insensitive partial matches. Without a prefix, keywords match student names only.
@@ -347,21 +362,6 @@ Historical records can still be viewed and deleted after the student leaves the 
 
 Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.
 
-### Deleting a person: `delete`
-
-Deletes the specified person from the address book.
-
-Format: `delete INDEX`
-
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
-
-Examples:
-
-* `view` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
-
 ### Importing students and lessons: `importcsv`
 
 Imports students and lessons from CSV files in the `data` folder of the EduReg home folder. Existing data is kept;
@@ -463,6 +463,7 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or field-specific searches (see `find` section)<br> e.g., `find n/Alice gp/9876`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​ [l/LESSON_ID]…​ [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com gp/91234567`
 **View** | `view [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]`
+**Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Add Lesson** | `addlesson y/YEAR s/SUBJECT d/DAY st/START_TIME et/END_TIME c/COST`<br> e.g., `addlesson y/2026 s/MATH d/MONDAY st/TEN et/ELEVEN c/30`
 **Delete Lesson** | `deletelesson LESSON_ID`<br> e.g., `deletelesson 2026-MATH-MONDAY-TEN-ELEVEN`
 **Edit Lesson** | `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [from/YYYY-MM]`<br> e.g., `editlesson 2026-MATH-MONDAY-TEN-ELEVEN c/40 from/2026-11`
@@ -474,6 +475,5 @@ Action | Format, Examples
 **Delete Attendance** | `deleteattendance INDEX i/ATTENDANCE_INDEX`
 **Import CSV** | `importcsv`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Help** | `help`
 **Exit** | `exit`
