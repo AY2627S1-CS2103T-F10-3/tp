@@ -111,11 +111,6 @@ public class PersonCard extends UiPart<Region> {
         Objects.requireNonNull(lesson);
         Objects.requireNonNull(currentMonth);
         LessonRevision current = lesson.getRevisionFor(currentMonth);
-        String pending = lesson.getRevisions().stream()
-                .filter(revision -> revision.getEffectiveFrom().isAfter(currentMonth))
-                .max(Comparator.comparing(LessonRevision::getEffectiveFrom))
-                .map(revision -> " (from " + revision.getEffectiveFrom() + ")")
-                .orElse("");
-        return String.format("%s-%d%s", current.getId(), current.getCost(), pending);
+        return current.getId();
     }
 }

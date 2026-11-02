@@ -22,7 +22,7 @@ public class PersonCardTest {
                 Time.TEN, Time.ELEVEN, 30).withRevision(new LessonRevision(Year.of(2026), Subject.MATH,
                         Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, YearMonth.of(2026, 11)), CURRENT_MONTH);
 
-        assertEquals("2026-MATH-MONDAY-TEN-ELEVEN-30 (from 2026-11)",
+        assertEquals("2026-MATH-MONDAY-TEN-ELEVEN",
                 PersonCard.formatLesson(lesson, CURRENT_MONTH));
     }
 }
