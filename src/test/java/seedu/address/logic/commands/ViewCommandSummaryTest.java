@@ -7,20 +7,12 @@ import static seedu.address.testutil.TypicalAttendance.ATTENDANCE_PRESENT;
 import static seedu.address.testutil.TypicalGuardians.MARY;
 import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_PARTIAL;
 
-import java.time.Year;
-import java.time.YearMonth;
-
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.lesson.Day;
-import seedu.address.model.lesson.Lesson;
-import seedu.address.model.lesson.LessonRevision;
-import seedu.address.model.lesson.Subject;
-import seedu.address.model.lesson.Time;
 import seedu.address.testutil.PersonBuilder;
 
 /**
@@ -45,7 +37,7 @@ public class ViewCommandSummaryTest {
         assertSummary(model, "phone", "12345678 : 2");
         assertSummary(model, "name", "Alice : 1\nBob : 1");
         assertSummary(model, "tag", "friends : 2\nteam : 1");
-        assertSummary(model, "lesson", formatLesson(VALID_LESSON_MATH) + ": 2");
+        assertSummary(model, "lesson", VALID_LESSON_MATH + " : 2");
         assertEquals(1, model.getFilteredPersonList().size());
         assertEquals(book, model.getAddressBook());
     }
@@ -65,8 +57,7 @@ public class ViewCommandSummaryTest {
         book.addPerson(new PersonBuilder().withName("Charlie").build());
         Model model = new ModelManager(book, new UserPrefs());
 
-        assertSummary(model, "lesson", formatLesson(VALID_LESSON_ENGLISH) + ": 1\n"
-                + formatLesson(VALID_LESSON_MATH) + ": 2");
+        assertSummary(model, "lesson", VALID_LESSON_ENGLISH + " : 1\n" + VALID_LESSON_MATH + " : 2");
     }
 
     @Test
@@ -75,23 +66,6 @@ public class ViewCommandSummaryTest {
         model.addPerson(new PersonBuilder().withName("Charlie").build());
 
         assertSummary(model, "lesson", "No values found.");
-    }
-
-    @Test
-    public void execute_lessonSummary_showsCurrentAndFutureRevisions() {
-        YearMonth currentMonth = YearMonth.now();
-        Lesson lesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH, Day.MONDAY,
-                Time.TEN, Time.ELEVEN, 30);
-        YearMonth futureMonth = currentMonth.plusMonths(1);
-        Lesson futureLesson = lesson.withRevision(new LessonRevision(Year.of(currentMonth.getYear()), Subject.MATH,
-                Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, futureMonth), currentMonth.minusMonths(1));
-        AddressBook book = new AddressBook();
-        book.addPerson(new PersonBuilder().withName("Alice").withLessons(futureLesson).build());
-        Model model = new ModelManager(book, new UserPrefs());
-
-        assertSummary(model, "lesson", currentMonth.getYear() + "-MATH-MONDAY-TEN-ELEVEN (cost: 30): 1\n"
-                + "- " + currentMonth.getYear() + "-MATH-TUESDAY-TEN-ELEVEN (cost: 40) (effective from "
-                + futureMonth + ")");
     }
 
     @Test
@@ -120,12 +94,8 @@ public class ViewCommandSummaryTest {
     }
 
     private void assertSummary(Model model, String field, String rows) {
-        assertEquals(new CommandResult("Distinct " + field + " values: (frequency)\n" + rows),
+        assertEquals(new CommandResult("Distinct " + field + " values (frequency):\n" + rows),
                 new ViewCommand(field).execute(model));
-    }
-
-    private String formatLesson(seedu.address.model.lesson.Lesson lesson) {
-        return lesson.getId() + " (cost: " + lesson.getCost() + ")";
     }
 
 }

@@ -84,42 +84,30 @@ public class EditLessonCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        YearMonth currentMonth = YearMonth.now(clock);
         Lesson currentLesson = model.getAddressBook().getLessonList().stream()
                 .filter(lesson -> lesson.getId().equals(currentId)).findFirst()
-                .orElse(null);
-        if (currentLesson == null) {
-            currentLesson = model.getAddressBook().getLessonList().stream()
-                    .filter(lesson -> lesson.getRevisionFor(currentMonth).getId().equals(currentId)).findFirst()
-                    .orElse(null);
-        }
-        if (currentLesson == null) {
-            throw new CommandException(String.format(MESSAGE_NOT_FOUND, currentId));
-        }
-        LessonRevision currentRevision = currentLesson.getRevisionFor(currentMonth);
-        LessonRevision sourceRevision = currentLesson.getId().equals(currentId)
-                ? currentLesson.getLatestRevision() : currentRevision;
-        Time editedStartTime = startTime == null ? sourceRevision.getStartTime() : startTime;
-        Time editedEndTime = endTime == null ? sourceRevision.getEndTime() : endTime;
+                .orElseThrow(() -> new CommandException(String.format(MESSAGE_NOT_FOUND, currentId)));
+        Time editedStartTime = startTime == null ? currentLesson.getStartTime() : startTime;
+        Time editedEndTime = endTime == null ? currentLesson.getEndTime() : endTime;
         if (!Lesson.isValidTimeRange(editedStartTime, editedEndTime)) {
             throw new CommandException(MESSAGE_INVALID_TIME_RANGE);
         }
-        YearMonth month = resolveEffectiveMonth(currentLesson, currentMonth);
+        YearMonth month = resolveEffectiveMonth(currentLesson);
         Lesson editedLesson;
         try {
             editedLesson = currentLesson.withRevision(new LessonRevision(
-                    currentRevision.getYear(),
-                    currentRevision.getSubject(),
-                    day == null ? sourceRevision.getDay() : day,
+                    currentLesson.getYear(),
+                    currentLesson.getSubject(),
+                    day == null ? currentLesson.getDay() : day,
                     editedStartTime,
                     editedEndTime,
-                    cost == null ? sourceRevision.getCost() : cost,
-                    month), currentMonth);
+                    cost == null ? currentLesson.getCost() : cost,
+                    month), YearMonth.now(clock));
         } catch (LessonException e) {
             throw new CommandException(e.getMessage(), e);
         }
         try {
-            if (!model.editLesson(currentLesson.getUid(), editedLesson)) {
+            if (!model.editLesson(currentId, editedLesson)) {
                 throw new CommandException(MESSAGE_DUPLICATE);
             }
         } catch (LessonException e) {
@@ -129,13 +117,16 @@ public class EditLessonCommand extends Command {
     }
 
     /**
-     * Returns the explicit billing month if given; otherwise the month immediately after the current billing month.
+     * Returns the explicit billing month if given; otherwise next month, or the month of the lesson's latest
+     * pending change if that is later (so that a pending change is corrected rather than rejected).
      */
-    private YearMonth resolveEffectiveMonth(Lesson lesson, YearMonth currentMonth) {
+    private YearMonth resolveEffectiveMonth(Lesson lesson) {
         if (effectiveFrom != null) {
             return effectiveFrom;
         }
-        return currentMonth.plusMonths(1);
+        YearMonth nextMonth = YearMonth.now(clock).plusMonths(1);
+        YearMonth latest = lesson.getLatestRevision().getEffectiveFrom();
+        return latest.isAfter(nextMonth) ? latest : nextMonth;
     }
 
     @Override
