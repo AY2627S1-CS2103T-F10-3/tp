@@ -3,6 +3,7 @@ package seedu.address.ui;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.person.Person;
 
 /**
@@ -90,7 +92,7 @@ public class PersonCard extends UiPart<Region> {
         });
         YearMonth currentMonth = YearMonth.now();
         lessons.setText(person.getLessons().stream()
-                .map(Lesson::getId)
+                .map(lesson -> formatLesson(lesson, currentMonth))
                 .sorted()
                 .collect(Collectors.joining(", ", "Lessons: ", "")));
         long feesDue = person.getFeesDue(currentMonth);
@@ -102,5 +104,18 @@ public class PersonCard extends UiPart<Region> {
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+    }
+
+    /** Formats a lesson using the revision active in {@code currentMonth}. */
+    public static String formatLesson(Lesson lesson, YearMonth currentMonth) {
+        Objects.requireNonNull(lesson);
+        Objects.requireNonNull(currentMonth);
+        LessonRevision current = lesson.getRevisionFor(currentMonth);
+        String pending = lesson.getRevisions().stream()
+                .filter(revision -> revision.getEffectiveFrom().isAfter(currentMonth))
+                .max(Comparator.comparing(LessonRevision::getEffectiveFrom))
+                .map(revision -> " (from " + revision.getEffectiveFrom() + ")")
+                .orElse("");
+        return String.format("%s-%d%s", current.getId(), current.getCost(), pending);
     }
 }

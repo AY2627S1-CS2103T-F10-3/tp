@@ -239,6 +239,24 @@ public class EditLessonCommandTest {
     }
 
     @Test
+    public void execute_currentMonthIdWithPendingRevision_recordsEachDefaultEditSeparately() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.TUESDAY, null, null, 40, null, CLOCK)
+                .execute(model);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.WEDNESDAY, null, null, 50, null, CLOCK)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        assertEquals(3, lesson.getRevisions().size());
+        assertEquals(40, lesson.getCostFor(NOVEMBER));
+        assertEquals(50, lesson.getCostFor(DECEMBER));
+        assertEquals(Day.TUESDAY, lesson.getRevisionFor(NOVEMBER).getDay());
+        assertEquals(Day.WEDNESDAY, lesson.getRevisionFor(DECEMBER).getDay());
+    }
+
+    @Test
     public void execute_editLesson_leavesFormerStudentsAttendanceUnchanged() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
