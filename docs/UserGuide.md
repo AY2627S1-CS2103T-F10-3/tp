@@ -186,7 +186,6 @@ Examples:
 * `find t/secondary1 secondary2` matches either tag fragment.
 * `find unpaid/2026-10` finds students with no payment or only partial payment for October 2026.
 
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
 
 ### Adding a lesson: `addlesson`
 
