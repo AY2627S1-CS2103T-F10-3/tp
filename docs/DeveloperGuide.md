@@ -512,7 +512,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case resumes at step 1.
 
-* 2b. EduReg detects a duplicate student entry (a student with the same name already exists).
+* 2b. EduReg detects a duplicate student entry (a student with the same name, ignoring letter case and spacing, already exists).
 
     * 2b1. EduReg displays an error message rejecting the duplicate entry.
 
