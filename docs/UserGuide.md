@@ -173,6 +173,10 @@ Format:
   for example, `find l/2026-MATH-MONDAY-TEN-ELEVEN`.
 * `paid/MONTH` and `unpaid/MONTH` search the student's total fees for that month. Students with no fees due are excluded,
   and the two payment prefixes cannot be combined.
+* Within an `a/` or `ga/` value, `paid/` or `unpaid/` followed by text that is not a valid `yyyy-MM` month is treated
+  as literal address text. A valid value such as `paid/2026-10` remains a payment-status filter.
+* If an address contains text that looks like any supported prefix, enclose the address value in double quotes. The
+  quotes are command syntax and are not part of the search text.
 * `t/` searches explicitly assigned tags only; it does not calculate payment status.
 * Use at least one non-empty value. Repeated or unsupported prefixes, or mixing prefixed and unprefixed criteria, are
   rejected.
@@ -182,6 +186,8 @@ Examples:
 * `find alex david` finds students whose names contain `alex` or `david`.
 * `find n/Alice gp/9876` requires both the student name and guardian phone number to match.
 * `find e/school.com a/Tampines` requires both email and address to match.
+* `find a/Block paid/10` searches for the literal address text `Block paid/10`.
+* `find a/"Block n/10"` searches for the literal address text `Block n/10` instead of treating `n/10` as a name filter.
 * `find l/math unpaid/2026-10` finds Maths students with outstanding October fees.
 * `find l/2026-MATH-MONDAY-TEN-ELEV` partially matches lessons ending in `ELEVEN`.
 * `find t/secondary1 secondary2` matches either tag fragment.

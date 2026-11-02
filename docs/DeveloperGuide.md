@@ -300,7 +300,9 @@ Syntactically valid five-component lesson IDs match exactly. Incomplete or inval
 terms even when the input contains five components.
 `unpaid/` matches positive outstanding fees. `paid/` requires positive fees with no outstanding
 balance, including overpayments. Payment status covers all lessons in the billing year, not just
-the lesson matched by `l/`; the two payment-status prefixes cannot be combined.
+the lesson matched by `l/`; the two payment-status prefixes cannot be combined. In `a/` or `ga/`, an invalid payment
+month remains literal address text, e.g., `a/Block paid/10`. Other prefix-like address text can be quoted, e.g.,
+`a/"Block n/10"`; parsing resumes normally after the closing quote.
 
 ### Viewing student data
 
