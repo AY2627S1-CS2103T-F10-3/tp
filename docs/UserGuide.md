@@ -257,10 +257,13 @@ Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [f
 * `from/` is the first billing month the change applies to. If it is omitted, the change applies from the next month.
 The effective month must be later than the current month and within the lesson year. It may be earlier than another
 pending revision; revisions are applied in effective-month order.
+* `CURRENT_ID` must be the lesson ID effective in the current billing month (the main lesson row shown by
+  `view /lesson`). IDs for pending revisions, including the latest pending revision, cannot be used for editing.
 * Only a pending revision can be replaced using the same month.
 * Current and past billing months cannot be edited.
 * The lesson year and subject cannot be changed because that defines the lesson.
-* After the edit, refer to the lesson by its new ID.
+* After the edit, the new revision ID is shown under the lesson's future revisions. Continue using the current-month ID
+  for later `editlesson` commands.
 * Sessions before the change takes effect can still be recorded with either ID.
 * Recorded payments are never changed. The fees due for each month use the lesson cost in effect that month.
 

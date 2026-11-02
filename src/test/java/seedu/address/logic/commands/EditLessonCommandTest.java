@@ -256,6 +256,29 @@ public class EditLessonCommandTest {
     }
 
     @Test
+    public void execute_pendingRevisionIds_areRejectedWhileCurrentIdIsAccepted() throws Exception {
+        ModelManager model = new ModelManager();
+        model.addLesson(VALID_LESSON_MATH);
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.TUESDAY, null, null, 40, NOVEMBER, CLOCK)
+                .execute(model);
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.WEDNESDAY, null, null, 50, DECEMBER, CLOCK)
+                .execute(model);
+
+        Lesson lesson = model.getAddressBook().getLessonList().getFirst();
+        String novemberId = lesson.getRevisionFor(NOVEMBER).getId();
+        String decemberId = lesson.getRevisionFor(DECEMBER).getId();
+        String expectedMessage = String.format(EditLessonCommand.MESSAGE_NOT_FOUND, novemberId);
+        assertCommandFailure(new EditLessonCommand(novemberId, null, null, null, 45, NOVEMBER, CLOCK), model,
+                expectedMessage);
+        assertCommandFailure(new EditLessonCommand(decemberId, null, null, null, 55, DECEMBER, CLOCK), model,
+                String.format(EditLessonCommand.MESSAGE_NOT_FOUND, decemberId));
+
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), null, null, null, 45, NOVEMBER, CLOCK).execute(model);
+        assertEquals(45, model.getAddressBook().getLessonList().getFirst().getCostFor(NOVEMBER));
+    }
+
+    @Test
     public void execute_editLesson_leavesFormerStudentsAttendanceUnchanged() throws Exception {
         ModelManager model = new ModelManager();
         model.addLesson(VALID_LESSON_MATH);
@@ -311,7 +334,7 @@ public class EditLessonCommandTest {
         new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.TUESDAY, null, null, 40, NOVEMBER, CLOCK)
                 .execute(model);
         String novemberId = model.getAddressBook().getLessonList().getFirst().getId();
-        new EditLessonCommand(novemberId, Day.WEDNESDAY, null, null, 50, NOVEMBER.plusMonths(1), CLOCK)
+        new EditLessonCommand(VALID_LESSON_MATH.getId(), Day.WEDNESDAY, null, null, 50, NOVEMBER.plusMonths(1), CLOCK)
                 .execute(model);
         Lesson latest = model.getAddressBook().getLessonList().getFirst();
         List<LocalDate> dates = List.of(LocalDate.of(2026, 10, 26), LocalDate.of(2026, 11, 3),

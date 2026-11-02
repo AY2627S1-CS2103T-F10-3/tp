@@ -175,6 +175,9 @@ The `Model` component,
   `getRevisionFor(month)` and `getRevisionOn(date)` return the revision in effect at that time.
 * edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
   `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
+  `editlesson` accepts only the current-month lesson ID shown in the main `view /lesson` row. Pending revision IDs,
+  including the latest one, are rejected. A new revision ID can be used for attendance, but not for editing until it
+  becomes current.
   `from/` sets the revision's `effectiveFrom` and defaults to the month immediately after the current billing month.
   A revision must take effect within the lesson year and after the current billing month. Revisions may be added in
   any future month, including before another pending revision.
