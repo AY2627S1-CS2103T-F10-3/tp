@@ -36,4 +36,10 @@ public class ViewCommandTest {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
         assertCommandSuccess(new ViewCommand(), model, ViewCommand.MESSAGE_SUCCESS, expectedModel);
     }
+
+    @Test
+    public void execute_emptyDirectory_showsNoStudentsMessage() {
+        assertCommandSuccess(new ViewCommand(), new ModelManager(), ViewCommand.MESSAGE_NO_STUDENTS,
+                new ModelManager());
+    }
 }
