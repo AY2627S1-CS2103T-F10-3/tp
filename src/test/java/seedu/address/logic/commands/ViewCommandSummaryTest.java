@@ -7,8 +7,11 @@ import static seedu.address.testutil.TypicalAttendance.ATTENDANCE_PRESENT;
 import static seedu.address.testutil.TypicalGuardians.MARY;
 import static seedu.address.testutil.TypicalPayments.PAYMENT_OCTOBER_PARTIAL;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +30,7 @@ import seedu.address.testutil.PersonBuilder;
  * Tests the optional summary views of {@link ViewCommand}.
  */
 public class ViewCommandSummaryTest {
+    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-29T12:00:00Z"), ZoneOffset.UTC);
 
     @Test
     public void execute_summary_countsAllSavedContactsAndPreservesFilter() {
@@ -79,7 +83,7 @@ public class ViewCommandSummaryTest {
 
     @Test
     public void execute_lessonSummary_showsCurrentAndFutureRevisions() {
-        YearMonth currentMonth = YearMonth.now();
+        YearMonth currentMonth = YearMonth.now(CLOCK);
         Lesson lesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH, Day.MONDAY,
                 Time.TEN, Time.ELEVEN, 30);
         YearMonth futureMonth = currentMonth.plusMonths(1);
@@ -91,7 +95,7 @@ public class ViewCommandSummaryTest {
 
         assertSummary(model, "lesson", currentMonth.getYear() + "-MATH-MONDAY-TEN-ELEVEN (cost: 30): 1\n"
                 + "- " + currentMonth.getYear() + "-MATH-TUESDAY-TEN-ELEVEN (cost: 40) (effective from "
-                + futureMonth + ")");
+                + futureMonth + ")", CLOCK);
     }
 
     @Test
@@ -120,8 +124,12 @@ public class ViewCommandSummaryTest {
     }
 
     private void assertSummary(Model model, String field, String rows) {
+        assertSummary(model, field, rows, Clock.systemDefaultZone());
+    }
+
+    private void assertSummary(Model model, String field, String rows, Clock clock) {
         assertEquals(new CommandResult("Distinct " + field + " values: (frequency)\n" + rows),
-                new ViewCommand(field).execute(model));
+                new ViewCommand(field, clock).execute(model));
     }
 
     private String formatLesson(seedu.address.model.lesson.Lesson lesson) {

@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
+import java.time.Clock;
 import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class ViewCommand extends Command {
             + "Example: view /email";
 
     private final String field;
+    private final Clock clock;
 
     /**
      * Creates a command that lists all contacts.
@@ -42,7 +44,13 @@ public class ViewCommand extends Command {
      * Creates a view command; an empty field lists all contacts.
      */
     public ViewCommand(String field) {
+        this(field, Clock.systemDefaultZone());
+    }
+
+    /** Creates a view command using {@code clock} to determine the current billing month. */
+    ViewCommand(String field, Clock clock) {
         this.field = requireNonNull(field);
+        this.clock = requireNonNull(clock);
     }
 
     @Override
@@ -53,7 +61,7 @@ public class ViewCommand extends Command {
             return new CommandResult(MESSAGE_SUCCESS);
         }
         if (field.equals("lesson")) {
-            return new CommandResult(formatLessonSummary(model, YearMonth.now()));
+            return new CommandResult(formatLessonSummary(model, YearMonth.now(clock)));
         }
         Map<String, Integer> frequencies = new TreeMap<>();
         for (Person person : model.getAddressBook().getPersonList()) {
