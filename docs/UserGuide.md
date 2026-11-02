@@ -273,6 +273,7 @@ Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
 * `AMOUNT` is a positive whole number of dollars, for example `120`.
 * `MONTH` is the billing month that the payment is for, in the form `yyyy-MM`, for example `2026-10`.
 * `DATE` is the date the payment was received, in the form `yyyy-MM-dd`. If you leave it out, today's date is used.
+  It can't be later than today.
 * A student can make more than one payment for the same month, for example when paying in parts.
 * The student must have fees due for `MONTH`, that is, at least one lesson with a cost in that month's year. Otherwise
   the payment is rejected.
