@@ -96,14 +96,18 @@ public class LessonTest {
     }
 
     @Test
-    public void withRevision_earlierThanLatest_throwsLessonException() {
+    public void withRevision_earlierThanLatest_allowsFutureRevision() {
         Lesson original = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
         Lesson lesson = original.withRevision(new LessonRevision(Year.of(2026), Subject.MATH,
                 Day.MONDAY, Time.TEN, Time.ELEVEN,
                         40, YearMonth.of(2026, 11)), YearMonth.of(2026, 10));
 
-        assertThrows(LessonException.class, () -> lesson.withRevision(new LessonRevision(Year.of(2026),
-                Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 50, YearMonth.of(2026, 10)), YearMonth.of(2026, 9)));
+        Lesson revised = lesson.withRevision(new LessonRevision(Year.of(2026),
+                Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 50, YearMonth.of(2026, 10)), YearMonth.of(2026, 9));
+
+        assertEquals(50, revised.getCostFor(YearMonth.of(2026, 10)));
+        assertEquals(40, revised.getCostFor(YearMonth.of(2026, 11)));
+        assertEquals(3, revised.getRevisions().size());
     }
 
     @Test

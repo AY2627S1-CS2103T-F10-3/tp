@@ -128,7 +128,14 @@ Examples:
 
 * `view` shows all students
 * `view /email` shows each distinct email and its frequency.
-* `view /lesson` shows each distinct lesson and how many students are enrolled in it.
+* `view /lesson` shows each lesson using the revision effective in the current month and how many students are
+  enrolled in it. Future revisions are shown as bullet points beneath their lesson, with their cost and effective
+  month. For example:
+
+  ```text
+  2026-MATH-MONDAY-TEN-ELEVEN (cost: 30): 2
+  - 2026-MATH-TUESDAY-TEN-ELEVEN (cost: 40) (effective from 2026-12)
+  ```
 
 ### Editing a student: `edit`
 
@@ -189,10 +196,15 @@ Format:
 * Multiple keywords within one field use `OR`; different fields use `AND`.
 * Supported prefixes search the corresponding student, guardian, tag, or lesson field. Results always show students.
 * Searches are partial and case-insensitive.
-* A complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. A lesson search can therefore be used to show a class roster, for example,
-  `find l/2026-ENGLISH-MONDAY-TEN-ELEVEN`.
+* A syntactically complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. Text with an incomplete or
+  invalid component remains a partial search. A complete lesson search can therefore be used to show a class roster,
+  for example, `find l/2026-ENGLISH-MONDAY-TEN-ELEVEN`.
 * `paid/MONTH` and `unpaid/MONTH` search the student's total fees for that month. Students with no fees due are excluded,
   and the two payment prefixes cannot be combined.
+* Within an `a/` or `ga/` value, `paid/` or `unpaid/` followed by text that is not a valid `yyyy-MM` month is treated
+  as literal address text. A valid value such as `paid/2026-10` remains a payment-status filter.
+* If an address contains text that looks like any supported prefix, enclose the address value in double quotes. The
+  quotes are command syntax and are not part of the search text.
 * `t/` searches explicitly assigned tags only; it does not calculate payment status.
 * Use at least one non-empty value. Repeated or unsupported prefixes, or mixing prefixed and unprefixed criteria, are
   rejected.
@@ -202,7 +214,10 @@ Examples:
 * `find ethan priya` finds Ethan Tan and Priya Nair in the sample data.
 * `find n/Priya gp/9883` requires both the student name and guardian phone number to match.
 * `find e/example.com a/Tampines` requires both email and address to match.
+* `find a/Block paid/10` searches for the literal address text `Block paid/10`.
+* `find a/"Block n/10"` searches for the literal address text `Block n/10` instead of treating `n/10` as a name filter.
 * `find l/math unpaid/2026-10` finds Maths students with outstanding October fees.
+* `find l/2026-MATH-MONDAY-TEN-ELEV` partially matches lessons ending in `ELEVEN`.
 * `find t/secondary1 secondary2` matches either tag fragment.
 * `find unpaid/2026-10` finds students with no payment or only partial payment for October 2026.
 
@@ -248,8 +263,9 @@ Format: `editlesson CURRENT_ID [d/DAY] [st/START_TIME] [et/END_TIME] [c/COST] [f
 
 * At least one lesson field must be supplied.
 * Fields not supplied retain their current values.
-* `from/` is the first billing month the change applies to. If it is omitted, the change applies from next month, or from the latest pending change if that is later.
-The effective month must be later than the current month and cannot be earlier than the latest revision.
+* `from/` is the first billing month the change applies to. If it is omitted, the change applies from the next month.
+The effective month must be later than the current month and within the lesson year. It may be earlier than another
+pending revision; revisions are applied in effective-month order.
 * Only a pending revision can be replaced using the same month.
 * Current and past billing months cannot be edited.
 * The lesson year and subject cannot be changed because that defines the lesson.

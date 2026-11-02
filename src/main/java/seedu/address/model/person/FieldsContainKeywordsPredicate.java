@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.lesson.Day;
+import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.Subject;
+import seedu.address.model.lesson.Time;
 
 /**
  * Matches every requested field, with any keyword sufficient within a field.
@@ -67,11 +71,26 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     private boolean matchesLessonId(String lessonId, String keyword) {
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
         String normalizedId = lessonId.toLowerCase(Locale.ROOT);
-        // Complete IDs have five components; do not match truncated years or time names.
-        if (keyword.split("-", -1).length == 5) {
+        if (isCompleteLessonId(keyword)) {
             return normalizedId.equals(normalizedKeyword);
         }
         return normalizedId.contains(normalizedKeyword);
+    }
+
+    private boolean isCompleteLessonId(String keyword) {
+        String[] components = keyword.split("-", -1);
+        if (components.length != 5 || !Lesson.isValidYear(components[0])) {
+            return false;
+        }
+        try {
+            Subject.valueOf(components[1].toUpperCase(Locale.ROOT));
+            Day.valueOf(components[2].toUpperCase(Locale.ROOT));
+            Time startTime = Time.valueOf(components[3].toUpperCase(Locale.ROOT));
+            Time endTime = Time.valueOf(components[4].toUpperCase(Locale.ROOT));
+            return Lesson.isValidTimeRange(startTime, endTime);
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 
     @Override

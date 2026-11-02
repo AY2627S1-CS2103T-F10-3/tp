@@ -175,8 +175,9 @@ The `Model` component,
   `getRevisionFor(month)` and `getRevisionOn(date)` return the revision in effect at that time.
 * edits lessons through `EditLessonCommand`, which adds a revision using `Lesson#withRevision` and then calls
   `Model#editLesson` to swap the new version into the `LessonBook` and every `Person` with the same `uid`.
-  `from/` sets the revision's `effectiveFrom` and defaults to next month, or the latest pending month if later.
-  A revision must take effect after the current billing month and no earlier than the latest revision.
+  `from/` sets the revision's `effectiveFrom` and defaults to the month immediately after the current billing month.
+  A revision must take effect within the lesson year and after the current billing month. Revisions may be added in
+  any future month, including before another pending revision.
   Only a future revision can be replaced in the same month. Year and subject cannot be edited.
   `LessonBook#addLesson` rejects duplicate UIDs without rewriting them. Enrolments and CSV imports reuse the
   catalog's canonical lesson objects, including their identities and revision histories. Legacy lessons without
@@ -184,7 +185,9 @@ The `Model` component,
 * computes fees per month: `Person#getFeesDue(month)` sums `Lesson#getCostFor(month)`, the cost of the revision in
   effect that month (zero if that revision is for another year). Payments store their own amount and month and are
   never rewritten, so editing a lesson's cost does not change whether earlier months are paid.
-* reports all catalog lessons in `view /lesson`; the displayed frequency is the number of enrolled students and may be zero.
+* reports all catalog lessons in `view /lesson`. Each lesson's main row uses the revision effective in the current
+  billing month and shows the number of enrolled students, which may be zero. Revisions effective in future months
+  are rendered as separate bullet points below that row, including their lesson ID, cost and effective month.
 * represents each student as a `Person` with their contact details, tags, the lessons they take, an optional `Guardian`, and the fee `Payment`s recorded for them. A `Payment` holds an `Amount`, the billing month it is for and the date it was received.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
@@ -288,18 +291,21 @@ Source: [Find command sequence diagram](diagrams/find-command-sequence.puml).
 1. `FindCommandParser` validates the arguments and builds a `Predicate<Person>`. Without prefixes,
    it searches student names. With prefixes, it combines the selected fields and optional monthly
    payment status. Invalid arguments produce a parse error before the displayed filter changes.
-2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList` and returns the
-   number of matching students. The UI observes the filtered list; no matching students gives an
-   empty list and a count of zero, not an error. Each search filters the full student list.
+2. `FindCommand` applies the predicate through `Model#updateFilteredPersonList`. It returns the
+   number of matching students, or `No students found.` when the filtered list is empty. The UI
+   observes the filtered list, and each search filters the full student list.
 3. After command execution, `LogicManager` saves the address book through the shared command
    pipeline. Searching changes the displayed filter, not the stored student records. The diagram
    assumes saving succeeds; a storage failure is reported as a command error after filtering.
 
 Field matching is case-insensitive, with OR across keywords within a field and AND across fields.
-Complete five-component lesson IDs match exactly; shorter lesson fragments match partially.
+Syntactically valid five-component lesson IDs match exactly. Incomplete or invalid components remain partial search
+terms even when the input contains five components.
 `unpaid/` matches positive outstanding fees. `paid/` requires positive fees with no outstanding
 balance, including overpayments. Payment status covers all lessons in the billing year, not just
-the lesson matched by `l/`; the two payment-status prefixes cannot be combined.
+the lesson matched by `l/`; the two payment-status prefixes cannot be combined. In `a/` or `ga/`, an invalid payment
+month remains literal address text, e.g., `a/Block paid/10`. Other prefix-like address text can be quoted, e.g.,
+`a/"Block n/10"`; parsing resumes normally after the closing quote.
 
 ### Viewing student data
 
@@ -539,14 +545,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
       Use case ends.
 
-**Use case: UC03 - Search student by name**
+**Use case: UC03 - Find students**
 
 **MSS**
 
-1. User requests to search for students by providing a name keyword or partial name.
-2. EduReg searches for students whose names match the provided keyword(s).
+1. User requests to find students by providing one or more search criteria.
+2. EduReg searches for students who match the provided criteria.
 3. EduReg updates the displayed list to show only matching students.
-4. EduReg displays a summary message showing the number of matching students found.
+4. EduReg displays the number of matching students, or `No students found.` if there are no matches.
 
    Use case ends.
 
@@ -554,19 +560,19 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 1a. The search keyword is missing or empty (e.g., `find n/`).
 
-    * 1a1. EduReg displays an error message specifying that the name parameter cannot be empty and shows correct usage.
+    * 1a1. EduReg displays an error message specifying that the search value cannot be empty and shows correct usage.
 
       Use case resumes at step 1.
 
-* 1b. The search term contains invalid special characters.
+* 1b. The search criteria have an invalid format, such as an unsupported or duplicate prefix.
 
-    * 1b1. EduReg displays an error message stating acceptable name character formats.
+    * 1b1. EduReg displays an error message explaining the valid command format.
 
       Use case resumes at step 1.
 
 * 2a. No students match the search criteria.
 
-    * 2a1. EduReg displays an empty list and indicates that 0 students were found.
+    * 2a1. EduReg displays an empty list and the message `No students found.`.
 
       Use case ends.
 
