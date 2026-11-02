@@ -10,7 +10,7 @@ educational records into a unified CLI tool, enabling tuition centre admins to u
 track assignment submissions significantly faster than multi-step GUI systems.
 
 * Table of Contents
-  {:toc}
+{:toc}
 
 --------------------------------------------------------------------------------------------------------------------
 
