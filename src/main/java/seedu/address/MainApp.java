@@ -1,8 +1,10 @@
 package seedu.address;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -37,11 +39,17 @@ public class MainApp extends Application {
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "addressbook.json");
+    private static final String MESSAGE_DATA_FILE_BACKED_UP = "Could not load %1$s, so EduReg started with no data. "
+            + "A copy of the file was saved as %2$s. Running any command will replace %1$s.";
+    private static final String MESSAGE_DATA_FILE_NOT_BACKED_UP = "Could not load %1$s, so EduReg started with no "
+            + "data. Running any command will replace %1$s, so back it up first.";
 
     protected Ui ui;
     protected Logic logic;
     protected Storage storage;
     protected Model model;
+
+    private String startupMessage = "";
 
     @Override
     public void init() throws Exception {
@@ -57,7 +65,7 @@ public class MainApp extends Application {
 
         logic = new LogicManager(model, storage);
 
-        ui = new UiManager(logic, storage.getAddressBookFilePath());
+        ui = new UiManager(logic, storage.getAddressBookFilePath(), startupMessage);
     }
 
     /**
@@ -78,12 +86,32 @@ public class MainApp extends Application {
             }
             initialData = addressBookOptional.orElseGet(SampleDataUtil::getSampleAddressBook);
         } catch (DataLoadingException e) {
-            logger.warning("Data file at " + storage.getAddressBookFilePath() + " could not be loaded."
+            Path dataFile = storage.getAddressBookFilePath();
+            logger.warning("Data file at " + dataFile + " could not be loaded."
                     + " Will be starting with an empty AddressBook.");
             initialData = new AddressBook();
+            startupMessage = backUpDataFile(dataFile)
+                    .map(backup -> String.format(MESSAGE_DATA_FILE_BACKED_UP, dataFile, backup))
+                    .orElse(String.format(MESSAGE_DATA_FILE_NOT_BACKED_UP, dataFile));
         }
 
         return new ModelManager(initialData, userPrefs);
+    }
+
+    /**
+     * Copies {@code dataFile} to a {@code .bak} file next to it, replacing any earlier backup.
+     *
+     * @return the backup's path, or an empty {@code Optional} if the file could not be copied
+     */
+    static Optional<Path> backUpDataFile(Path dataFile) {
+        Path backup = dataFile.resolveSibling(dataFile.getFileName() + ".bak");
+        try {
+            Files.copy(dataFile, backup, StandardCopyOption.REPLACE_EXISTING);
+            return Optional.of(backup);
+        } catch (IOException e) {
+            logger.warning("Could not back up data file: " + StringUtil.getDetails(e));
+            return Optional.empty();
+        }
     }
 
     /**
