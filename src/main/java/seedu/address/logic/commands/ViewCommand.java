@@ -26,6 +26,7 @@ public class ViewCommand extends Command {
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_SUCCESS = "Viewing all students.";
+    public static final String MESSAGE_NO_STUDENTS = "There are no students in the directory.";
     public static final String MESSAGE_USAGE = "view: Lists students or distinct values and their frequencies.\n"
             + "Parameters: [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]\n"
             + "Example: view /email";
@@ -58,7 +59,7 @@ public class ViewCommand extends Command {
         requireNonNull(model);
         if (field.isEmpty()) {
             model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-            return new CommandResult(MESSAGE_SUCCESS);
+            return new CommandResult(model.getFilteredPersonList().isEmpty() ? MESSAGE_NO_STUDENTS : MESSAGE_SUCCESS);
         }
         if (field.equals("lesson")) {
             return new CommandResult(formatLessonSummary(model, YearMonth.now(clock)));

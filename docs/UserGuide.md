@@ -126,7 +126,7 @@ Format: `view [/name | /phone | /email | /address | /tag | /lesson | /guardian |
 
 Examples:
 
-* `view` shows all students
+* `view` shows all students, or says there are no students if the directory is empty.
 * `view /email` shows each distinct email and its frequency.
 * `view /lesson` shows each lesson using the revision effective in the current month and how many students are
   enrolled in it. Future revisions are shown as bullet points beneath their lesson, with their cost and effective
