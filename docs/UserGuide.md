@@ -140,6 +140,9 @@ Format:
 
 * Edits the student at the specified `INDEX`. The index refers to the index number shown in the displayed student list.
   The index **must be a positive integer** 1, 2, 3, …​
+* The displayed list stays as it was, for example after `find`, so the same indexes keep referring to the same
+  students. If the edited student no longer matches the current `find` search, they are removed from the displayed
+  list; run `view` to show all students again.
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Guardian fields can be edited individually. Guardian fields that are not provided keep their existing values.
