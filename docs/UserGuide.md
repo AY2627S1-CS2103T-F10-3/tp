@@ -39,7 +39,7 @@ track assignment submissions significantly faster than multi-step GUI systems.
 
     * `delete 3` : Deletes the 3rd student shown in the current directory.
 
-    * `clear` : Deletes all students.
+    * `clear` : Deletes all students and lessons.
 
     * `exit` : Exits the app.
 
@@ -84,7 +84,7 @@ Format: `help`
 
 ### Adding a student: `addstudent`
 
-Adds a student to the address book.
+Adds a student to EduReg.
 
 Format:
 `addstudent n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​ [l/LESSON]…​
@@ -111,8 +111,8 @@ in any billing month.
 
 ### Viewing students and contact values: `view`
 
-With no selector, shows all persons in the address book. An optional selector shows each
-distinct value and the number of contacts that have it. Summaries include all saved contacts,
+With no selector, shows all students in EduReg. An optional selector shows each
+distinct value and the number of students that have it. Summaries include all saved students,
 regardless of the current view filter, and sort values alphabetically. Each tag is counted
 separately.
 
@@ -133,35 +133,35 @@ Examples:
 
 ### Editing a student: `edit`
 
-Edits an existing person in the address book.
+Edits an existing student in EduReg.
 
 Format:
 `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [gn/GUARDIAN_NAME] [gp/GUARDIAN_PHONE] [ge/GUARDIAN_EMAIL] [gr/RELATIONSHIP] [ga/GUARDIAN_ADDRESS] [t/TAG]…​ [l/LESSON]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list.
+* Edits the student at the specified `INDEX`. The index refers to the index number shown in the displayed student list.
   The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Guardian fields can be edited individually. Guardian fields that are not provided keep their existing values.
 * If the student has no guardian (for example, a record created before guardians were required), you must provide
   all five guardian fields (`gn/`, `gp/`, `ge/`, `gr/`, `ga/`) to add one.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
-* When editing lessons, all of the person's existing lessons are replaced by the given lessons; adding lessons is not
+* When editing tags, all of the student's existing tags are removed; adding tags is not cumulative.
+* To remove all of a student's tags, enter `t/` without a tag after it.
+* When editing lessons, all of the student's existing lessons are replaced by the given lessons; adding lessons is not
   cumulative. Each lesson must already exist in the catalog; use `addlesson` first. Lesson values must be five-part
   IDs without a cost; the catalog supplies the lesson cost.
-* To remove all of a person's lessons, enter `l/` without a lesson after it.
+* To remove all of a student's lessons, enter `l/` without a lesson after it.
 
 Examples:
 
-* `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567`
+* `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st student to be `91234567`
   and `johndoe@example.com` respectively.
-* `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
-* `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd person to be `98765432` and
+* `edit 2 n/Betsy Crower t/` Edits the name of the 2nd student to be `Betsy Crower` and clears all existing tags.
+* `edit 3 gp/98765432 gr/Father` Edits the guardian phone number and relationship of the 3rd student to be `98765432` and
   `Father` respectively. (Note: this example requires the student to already have guardian information stored)
 * `edit 1 l/2026-MATH-MONDAY-TEN-ELEVEN l/2026-ENGLISH-WEDNESDAY-THIRTEEN-FOURTEEN` Replaces the lessons of the
-  1st person with the two given lessons.
-* `edit 2 l/` Removes all lessons of the 2nd person.
+  1st student with the two given lessons.
+* `edit 2 l/` Removes all lessons of the 2nd student.
 
 ### Locating students by student or guardian details: `find`
 
@@ -269,7 +269,7 @@ Records a fee payment for a student.
 Format: `pay INDEX amt/AMOUNT m/MONTH [d/DATE]`
 
 * Records the payment for the student at the specified `INDEX`. The index refers to the index number shown in the
-  displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+  displayed student list. The index **must be a positive integer** 1, 2, 3, …​
 * `AMOUNT` is a positive whole number of dollars, for example `120`.
 * `MONTH` is the billing month that the payment is for, in the form `yyyy-MM`, for example `2026-10`.
 * `DATE` is the date the payment was received, in the form `yyyy-MM-dd`. If you leave it out, today's date is used.
@@ -365,20 +365,20 @@ Historical records can still be viewed and deleted after the student leaves the 
 
 Example: `viewattendance 1` followed by `deleteattendance 1 i/2` removes the second attendance record.
 
-### Deleting a person: `delete`
+### Deleting a student: `delete`
 
-Deletes the specified person from the address book.
+Deletes the specified student from EduReg.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Deletes the student at the specified `INDEX`.
+* The index refers to the index number shown in the displayed student list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
 
-* `view` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `view` followed by `delete 2` deletes the 2nd student in EduReg.
+* `find Betsy` followed by `delete 1` deletes the 1st student in the results of the `find` command.
 
 ### Importing students and lessons: `importcsv`
 
@@ -421,7 +421,7 @@ James Ho,91234567,james@example.com,"123, Clementi Road",friend,2026-MATH-MONDAY
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Deletes all students and lessons from EduReg. Use this with care: it cannot be undone.
 
 Format: `clear`
 
@@ -441,7 +441,7 @@ EduReg data is saved automatically as a JSON file `[JAR file location]/data/edur
 welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, EduReg starts with an empty address book at the next run.
+If your changes make the data file invalid, EduReg starts with no data at the next run.
 The invalid file remains on disk until you run a command (EduReg saves after every command).
 Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the EduReg to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range).
