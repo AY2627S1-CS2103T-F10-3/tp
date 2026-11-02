@@ -44,6 +44,18 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_lowercaseLessonId_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address,lessons\n"
+                + "Alice Tan,91234567,alice@example.com,1 Main Street,2026-english-monday-ten-eleven\n");
+        Lesson lesson = new Lesson(Year.of(2026), Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+
+        Person student = new StudentCsvImporter().read(file, Map.of(lesson.getId(), lesson)).get(0);
+
+        assertEquals(1, student.getLessons().size());
+    }
+
+    @Test
     public void read_optionalColumnsMissing_success() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, "name,phone,email,address\nAlice Tan,91234567,alice@example.com,1 Main Street\n");
@@ -128,6 +140,43 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_blankGuardianField_reportsGuardianColumn() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,,81234567,"
+                + "mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertEquals("Student CSV row 2: Guardian columns must either all be blank or all contain values; "
+                + "column 'guardian_name' is blank.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void read_allGuardianFieldsBlank_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,,,,,,\n");
+
+        Person student = new StudentCsvImporter().read(file, Map.of()).get(0);
+
+        assertFalse(student.getGuardian().isPresent());
+    }
+
+    @Test
+    public void read_invalidGuardianField_reportsGuardianContext() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,12,"
+                + "mary@example.com,Mother,2 Main Street,\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertTrue(exception.getMessage().startsWith("Student CSV row 2: Invalid guardian details: "
+                + "Phone numbers should only contain digits"));
+    }
+
+    @Test
     public void read_invalidRow_reportsRowNumberAndStudentName() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, HEADER + "Alice Tan,91234567,alice@example.com,1 Main Street,,Mary Tan,81234567,"
@@ -138,7 +187,7 @@ public class StudentCsvImporterTest {
         ParseException exception = assertThrows(ParseException.class, () ->
                 new StudentCsvImporter().read(file, Map.of()));
 
-        assertEquals("Student CSV row 3 (Bob Tan): "
+        assertEquals("Student CSV row 3: "
                 + "Phone numbers should only contain digits, and should be at least 3 digits long",
                 exception.getMessage());
     }
@@ -155,6 +204,20 @@ public class StudentCsvImporterTest {
                 new StudentCsvImporter().read(file, Map.of()));
 
         assertTrue(exception.getMessage().startsWith(
-                "Student CSV row 3 (Bob Tan): Emails should be of the format"));
+                "Student CSV row 3: Emails should be of the format"));
+    }
+
+    @Test
+    public void read_extraValues_rejectsRowAndSuggestsQuotingAddress() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address\n"
+                + "CSV Tester,91234567,csv@example.com,123, Clementi Road\n");
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                new StudentCsvImporter().read(file, Map.of()));
+
+        assertEquals("Student CSV row 2: CSV row has 5 values but only 4 headers. "
+                + "If a value contains a comma, enclose it in double quotes, for example \"123, Clementi Road\".",
+                exception.getMessage());
     }
 }
