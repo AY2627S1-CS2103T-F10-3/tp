@@ -95,6 +95,9 @@ Each must be non-blank and supplied once. Guardian name, phone, email, and addre
 validation rules as the student's corresponding fields. Relationship accepts non-blank text such as
 `Mother` or `Legal guardian`. Guardian details are saved with the student and can be changed with `edit`.
 
+Student and guardian names can contain letters, digits, spaces, hyphens (`-`), apostrophes (`'`) and full stops (`.`),
+and must start with a letter or digit. For example, `Anne-Marie O'Neil` is a valid name.
+
 Lessons must first be created with `addlesson`. The `l/LESSON_ID` values in `addstudent` must
 match lessons already in the lesson catalog; `addstudent` does not create new lessons.
 
