@@ -21,6 +21,8 @@ import seedu.address.model.payment.Payment;
  */
 public class PayCommandParser implements Parser<PayCommand> {
 
+    public static final String MESSAGE_FUTURE_DATE = "Payment date cannot be later than today.";
+
     private final Clock clock;
 
     /**
@@ -60,9 +62,13 @@ public class PayCommandParser implements Parser<PayCommand> {
 
         Amount amount = ParserUtil.parseAmount(argMultimap.getValue(PREFIX_AMOUNT).get());
         YearMonth month = ParserUtil.parseMonth(argMultimap.getValue(PREFIX_MONTH).get());
+        LocalDate today = LocalDate.now(clock);
         LocalDate date = argMultimap.getValue(PREFIX_DATE).isPresent()
                 ? ParserUtil.parseDate(argMultimap.getValue(PREFIX_DATE).get())
-                : LocalDate.now(clock);
+                : today;
+        if (date.isAfter(today)) {
+            throw new ParseException(MESSAGE_FUTURE_DATE);
+        }
 
         return new PayCommand(index, new Payment(amount, month, date));
     }

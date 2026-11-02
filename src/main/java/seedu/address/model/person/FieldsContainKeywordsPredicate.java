@@ -1,5 +1,8 @@
 package seedu.address.model.person;
 
+import static java.util.Objects.requireNonNull;
+
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,6 +27,7 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     }
 
     private final Map<Field, List<String>> keywords;
+    private final YearMonth currentMonth;
 
     /**
      * Constructs a predicate for the requested fields.
@@ -31,7 +35,15 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
      * @param keywords Keywords to match within each field.
      */
     public FieldsContainKeywordsPredicate(Map<Field, List<String>> keywords) {
+        this(keywords, YearMonth.now());
+    }
+
+    /**
+     * Constructs a predicate using {@code currentMonth} to select each lesson's active revision.
+     */
+    FieldsContainKeywordsPredicate(Map<Field, List<String>> keywords, YearMonth currentMonth) {
         this.keywords = Map.copyOf(keywords);
+        this.currentMonth = requireNonNull(currentMonth);
     }
 
     /**
@@ -41,8 +53,9 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     public boolean test(Person person) {
         return keywords.entrySet().stream().allMatch(entry -> {
             if (entry.getKey() == Field.LESSON) {
-                return person.getLessons().stream().anyMatch(lesson -> entry.getValue().stream()
-                        .anyMatch(keyword -> matchesLessonId(lesson.getId(), keyword)));
+                return person.getLessons().stream().map(lesson -> lesson.getRevisionFor(currentMonth))
+                        .anyMatch(revision -> entry.getValue().stream()
+                                .anyMatch(keyword -> matchesLessonId(revision.getId(), keyword)));
             }
             if (entry.getKey() == Field.TAG) {
                 return person.getTags().stream().anyMatch(tag -> entry.getValue().stream()
@@ -96,16 +109,16 @@ public class FieldsContainKeywordsPredicate implements Predicate<Person> {
     @Override
     public boolean equals(Object other) {
         return other == this || other instanceof FieldsContainKeywordsPredicate otherPredicate
-                && keywords.equals(otherPredicate.keywords);
+                && keywords.equals(otherPredicate.keywords) && currentMonth.equals(otherPredicate.currentMonth);
     }
 
     @Override
     public int hashCode() {
-        return keywords.hashCode();
+        return java.util.Objects.hash(keywords, currentMonth);
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).add("keywords", keywords).toString();
+        return new ToStringBuilder(this).add("keywords", keywords).add("currentMonth", currentMonth).toString();
     }
 }

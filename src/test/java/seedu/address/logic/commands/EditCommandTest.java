@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -128,20 +129,32 @@ public class EditCommandTest {
     }
 
     @Test
-    public void execute_filteredList_success() {
+    public void execute_filteredList_keepsFilter() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
 
         Person personInFilteredList = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        Person editedPerson = new PersonBuilder(personInFilteredList).withName(VALID_NAME_BOB).build();
+        Person editedPerson = new PersonBuilder(personInFilteredList).withPhone(VALID_PHONE_BOB).build();
         EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON,
-                new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build());
+                new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_BOB).build());
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
-        expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
+        expectedModel.setPerson(personInFilteredList, editedPerson);
+        showPersonAtIndex(expectedModel, INDEX_FIRST_PERSON);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        assertEquals(1, model.getFilteredPersonList().size());
+    }
+
+    @Test
+    public void execute_editedPersonNoLongerMatchesFilter_leavesFilteredList() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON,
+                new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build());
+
+        assertDoesNotThrow(() -> editCommand.execute(model));
+        assertTrue(model.getFilteredPersonList().isEmpty());
     }
 
     @Test

@@ -25,7 +25,7 @@ public class ViewCommand extends Command {
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_SUCCESS = "Viewing all students.";
-    public static final String MESSAGE_USAGE = "view: Lists contacts or distinct values and their frequencies.\n"
+    public static final String MESSAGE_USAGE = "view: Lists students or distinct values and their frequencies.\n"
             + "Parameters: [/name | /phone | /email | /address | /tag | /lesson | /guardian | /payment | /attendance]\n"
             + "Example: view /email";
 
