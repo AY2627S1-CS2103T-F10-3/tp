@@ -31,7 +31,7 @@ public class AddStudentCommand extends Command {
 
     public static final String COMMAND_WORD = "addstudent";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. \n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a student to EduReg. \n"
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -59,8 +59,8 @@ public class AddStudentCommand extends Command {
             + PREFIX_GUARDIAN_RELATIONSHIP + "Mother "
             + PREFIX_GUARDIAN_ADDRESS + "311, Clementi Ave 2, #02-25";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_SUCCESS = "New student added: %1$s";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This student already exists in EduReg.";
     public static final String MESSAGE_INCOMPLETE_GUARDIAN_DETAILS = "Guardian details must be provided together. "
             + "Include gn/, gp/, ge/, gr/, and ga/, or omit all guardian fields.";
     public static final String MESSAGE_LESSON_NOT_FOUND = "All lessons must already exist. "

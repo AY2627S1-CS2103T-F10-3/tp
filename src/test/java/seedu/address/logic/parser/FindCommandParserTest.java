@@ -88,6 +88,21 @@ public class FindCommandParserTest {
         assertParseSuccess(parser, "a/Block A/10 n/Alice",
                 new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
                         Field.ADDRESS, List.of("Block", "A/10"), Field.NAME, List.of("Alice")))));
+        assertParseSuccess(parser, "a/Block paid/10 n/Alice",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.ADDRESS, List.of("Block", "paid/10"), Field.NAME, List.of("Alice")))));
+        assertParseSuccess(parser, "ga/Unit unpaid/room n/Alice",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.GUARDIAN_ADDRESS, List.of("Unit", "unpaid/room"), Field.NAME, List.of("Alice")))));
+        assertParseSuccess(parser, "a/\"Block n/10\" n/Alice",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.ADDRESS, List.of("Block", "n/10"), Field.NAME, List.of("Alice")))));
+        assertParseSuccess(parser, "ga/\"Unit paid/2026-10\" e/example",
+                new FindCommand(new FieldsContainKeywordsPredicate(Map.of(
+                        Field.GUARDIAN_ADDRESS, List.of("Unit", "paid/2026-10"),
+                        Field.EMAIL, List.of("example")))));
+        assertParseFailure(parser, "a/\"Block n/10",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
     }
 
     @Test

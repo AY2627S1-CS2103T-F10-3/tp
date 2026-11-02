@@ -134,6 +134,11 @@ public class AddressBookTest {
         public ObservableList<Person> getPersonList() {
             return persons;
         }
+
+        @Override
+        public ObservableList<Lesson> getLessonList() {
+            return FXCollections.unmodifiableObservableList(FXCollections.observableArrayList());
+        }
     }
 
 }

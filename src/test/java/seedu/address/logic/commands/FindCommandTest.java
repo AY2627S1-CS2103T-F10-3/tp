@@ -28,6 +28,7 @@ import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.model.payment.Amount;
@@ -96,11 +97,12 @@ public class FindCommandTest {
     @Test
     public void execute_prefixedSearches_filtersStudentsWithoutChangingSavedData() throws Exception {
         Guardian guardian = new Guardian(new Name("Mary Tan"), new Phone("98765432"),
-                new Email("mary@example.com"), new Relationship("Mother"), new Address("Main Street"));
+                new Email("mary@example.com"), new Relationship("Mother"),
+                new Address("Main Street unpaid/room"));
         Person alice = new PersonBuilder().withName("Alice Tan").withPhone("91234567")
-                .withGuardian(guardian).build();
+                .withAddress("Block paid/10").withGuardian(guardian).build();
         Person bob = new PersonBuilder().withName("Bob Tan").withPhone("82345678")
-                .withGuardian(guardian).build();
+                .withAddress("Unit n/10").withGuardian(guardian).build();
         Person mary = new PersonBuilder().withName("Mary Lim").withPhone("98761234").build();
         AddressBook book = new AddressBook();
         book.setPersons(List.of(alice, bob, mary));
@@ -118,6 +120,9 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find Alice Bob", List.of(alice, bob));
         assertSearchResults(searchModel, "find ge/MARY@EXAMPLE ga/main gr/MOTH", List.of(alice, bob));
         assertSearchResults(searchModel, "find ge/mary n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find a/Block paid/10", List.of(alice));
+        assertSearchResults(searchModel, "find a/\"Unit n/10\" n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find ga/Main unpaid/room", List.of(alice, bob));
         assertSearchResults(searchModel, "find ga/missing", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
     }
@@ -141,10 +146,27 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find l/math n/Bob", List.of(bob));
         assertSearchResults(searchModel, "find l/math n/Carol", List.of());
         assertSearchResults(searchModel, "find l/science", List.of());
-        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVE", List.of());
-        assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of());
+        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVE", List.of(alice));
+        assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of(alice));
         assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVEN-30", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
+    }
+
+    @Test
+    public void execute_lessonWithPendingRevision_findsOnlyActiveId() throws Exception {
+        YearMonth currentMonth = YearMonth.now();
+        Lesson revisedLesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH,
+                Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
+                .withRevision(new LessonRevision(Year.of(currentMonth.plusMonths(1).getYear()), Subject.MATH,
+                        Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, currentMonth.plusMonths(1)), currentMonth);
+        Person enrolledStudent = new PersonBuilder().withName("Alice Tan").withLessons(revisedLesson).build();
+        AddressBook book = new AddressBook();
+        book.setPersons(List.of(enrolledStudent));
+        Model searchModel = new ModelManager(book, new UserPrefs());
+
+        assertSearchResults(searchModel, "find l/" + revisedLesson.getRevisionFor(currentMonth).getId(),
+                List.of(enrolledStudent));
+        assertSearchResults(searchModel, "find l/" + revisedLesson.getLatestRevision().getId(), List.of());
     }
 
     /**
