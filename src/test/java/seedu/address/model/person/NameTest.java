@@ -57,4 +57,17 @@ public class NameTest {
         // different values -> returns false
         assertFalse(name.equals(new Name("Other Valid Name")));
     }
+
+    @Test
+    public void isSameName() {
+        Name name = new Name("Amy Lee");
+
+        assertTrue(name.isSameName(new Name("Amy Lee")));
+        assertTrue(name.isSameName(new Name("amy lee")));
+        assertTrue(name.isSameName(new Name("AMY  LEE")));
+
+        assertFalse(name.isSameName(new Name("Amy Leee")));
+        assertFalse(name.isSameName(new Name("AmyLee")));
+        assertFalse(name.isSameName(null));
+    }
 }

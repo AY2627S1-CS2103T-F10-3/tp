@@ -102,6 +102,9 @@ match lessons already in the lesson catalog; `addstudent` does not create new le
 A student can have any number of tags or lessons, including zero.
 </div>
 
+Each student must have a unique name. Names that differ only in letter case or spacing, such as `Amy Lee` and
+`amy  lee`, count as the same name, so `addstudent`, `edit` and `importcsv` reject or skip the duplicate.
+
 
 A student cannot enrol in two lessons that have the same year, subject, day, start time and end time
 in the same billing month. This check includes earlier schedules and pending changes, even when the lessons'
