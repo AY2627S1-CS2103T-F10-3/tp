@@ -171,7 +171,8 @@ Format:
 * A syntactically complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. Text with an incomplete or
   invalid component remains a partial search. A complete lesson search can therefore be used to show a class roster,
   for example, `find l/2026-MATH-MONDAY-TEN-ELEVEN`.
-* Lesson searches consider every saved revision, so an active or pending lesson ID finds enrolled students.
+* Lesson searches use the revision effective in the current billing month. Pending and historical lesson IDs do not
+  match until or unless they are current.
 * `paid/MONTH` and `unpaid/MONTH` search the student's total fees for that month. Students with no fees due are excluded,
   and the two payment prefixes cannot be combined.
 * Within an `a/` or `ga/` value, `paid/` or `unpaid/` followed by text that is not a valid `yyyy-MM` month is treated

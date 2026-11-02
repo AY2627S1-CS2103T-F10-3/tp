@@ -31,10 +31,11 @@ public class FieldsContainKeywordsPredicateTest {
 
     @Test
     public void equals_sameCriteria_returnsTrue() {
+        YearMonth currentMonth = YearMonth.of(2026, 10);
         FieldsContainKeywordsPredicate predicate = new FieldsContainKeywordsPredicate(
-                Map.of(Field.NAME, List.of("Alice", "Bob")));
+                Map.of(Field.NAME, List.of("Alice", "Bob")), currentMonth);
         FieldsContainKeywordsPredicate equalPredicate = new FieldsContainKeywordsPredicate(
-                Map.of(Field.NAME, List.of("Alice", "Bob")));
+                Map.of(Field.NAME, List.of("Alice", "Bob")), currentMonth);
 
         assertEquals(predicate, predicate);
         assertEquals(predicate, equalPredicate);
@@ -44,15 +45,18 @@ public class FieldsContainKeywordsPredicateTest {
         assertFalse(predicate.equals(new FieldsContainKeywordsPredicate(
                 Map.of(Field.NAME, List.of("Mary")))));
         assertFalse(predicate.equals(new FieldsContainKeywordsPredicate(
-                Map.of(Field.GUARDIAN_NAME, List.of("Alice", "Bob")))));
+                Map.of(Field.GUARDIAN_NAME, List.of("Alice", "Bob")), currentMonth)));
+        assertFalse(predicate.equals(new FieldsContainKeywordsPredicate(
+                Map.of(Field.NAME, List.of("Alice", "Bob")), currentMonth.plusMonths(1))));
     }
 
     @Test
     public void hashCode_equalPredicates_workAsHashSetKeys() {
+        YearMonth currentMonth = YearMonth.of(2026, 10);
         FieldsContainKeywordsPredicate predicate = new FieldsContainKeywordsPredicate(
-                Map.of(Field.NAME, List.of("Alice", "Bob"), Field.GUARDIAN_PHONE, List.of("9876")));
+                Map.of(Field.NAME, List.of("Alice", "Bob"), Field.GUARDIAN_PHONE, List.of("9876")), currentMonth);
         FieldsContainKeywordsPredicate equalPredicate = new FieldsContainKeywordsPredicate(
-                Map.of(Field.GUARDIAN_PHONE, List.of("9876"), Field.NAME, List.of("Alice", "Bob")));
+                Map.of(Field.GUARDIAN_PHONE, List.of("9876"), Field.NAME, List.of("Alice", "Bob")), currentMonth);
         Set<FieldsContainKeywordsPredicate> predicates = new HashSet<>();
         predicates.add(predicate);
 
@@ -94,15 +98,15 @@ public class FieldsContainKeywordsPredicateTest {
     }
 
     @Test
-    public void test_lessonWithPendingRevision_matchesActiveAndPendingIds() {
+    public void test_lessonWithPendingRevision_matchesOnlyActiveId() {
         YearMonth currentMonth = YearMonth.of(2026, 10);
         Lesson lesson = new Lesson(Year.of(2026), Subject.MATH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
                 .withRevision(new LessonRevision(Year.of(2026), Subject.MATH, Day.TUESDAY,
                         Time.TEN, Time.ELEVEN, 40, YearMonth.of(2026, 11)), currentMonth);
         Person enrolledStudent = new PersonBuilder(student).withLessons(lesson).build();
 
-        assertTrue(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVEN", enrolledStudent));
-        assertTrue(matches(Field.LESSON, "2026-MATH-TUESDAY-TEN-ELEVEN", enrolledStudent));
+        assertTrue(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVEN", enrolledStudent, currentMonth));
+        assertFalse(matches(Field.LESSON, "2026-MATH-TUESDAY-TEN-ELEVEN", enrolledStudent, currentMonth));
     }
 
     @Test
@@ -149,5 +153,9 @@ public class FieldsContainKeywordsPredicateTest {
 
     private boolean matches(Field field, String keyword, Person person) {
         return new FieldsContainKeywordsPredicate(Map.of(field, List.of(keyword))).test(person);
+    }
+
+    private boolean matches(Field field, String keyword, Person person, YearMonth currentMonth) {
+        return new FieldsContainKeywordsPredicate(Map.of(field, List.of(keyword)), currentMonth).test(person);
     }
 }
