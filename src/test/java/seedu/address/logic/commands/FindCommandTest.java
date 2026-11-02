@@ -28,6 +28,7 @@ import seedu.address.model.guardian.Guardian;
 import seedu.address.model.guardian.Relationship;
 import seedu.address.model.lesson.Day;
 import seedu.address.model.lesson.Lesson;
+import seedu.address.model.lesson.LessonRevision;
 import seedu.address.model.lesson.Subject;
 import seedu.address.model.lesson.Time;
 import seedu.address.model.payment.Amount;
@@ -149,6 +150,23 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of(alice));
         assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVEN-30", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
+    }
+
+    @Test
+    public void execute_lessonWithPendingRevision_findsOnlyActiveId() throws Exception {
+        YearMonth currentMonth = YearMonth.now();
+        Lesson revisedLesson = new Lesson(Year.of(currentMonth.getYear()), Subject.MATH,
+                Day.MONDAY, Time.TEN, Time.ELEVEN, 30)
+                .withRevision(new LessonRevision(Year.of(currentMonth.plusMonths(1).getYear()), Subject.MATH,
+                        Day.TUESDAY, Time.TEN, Time.ELEVEN, 40, currentMonth.plusMonths(1)), currentMonth);
+        Person enrolledStudent = new PersonBuilder().withName("Alice Tan").withLessons(revisedLesson).build();
+        AddressBook book = new AddressBook();
+        book.setPersons(List.of(enrolledStudent));
+        Model searchModel = new ModelManager(book, new UserPrefs());
+
+        assertSearchResults(searchModel, "find l/" + revisedLesson.getRevisionFor(currentMonth).getId(),
+                List.of(enrolledStudent));
+        assertSearchResults(searchModel, "find l/" + revisedLesson.getLatestRevision().getId(), List.of());
     }
 
     /**
