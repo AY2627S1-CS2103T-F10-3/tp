@@ -81,7 +81,7 @@ public class FieldsContainKeywordsPredicateTest {
         assertTrue(matches(Field.LESSON, "MaTh", enrolledStudent));
         assertTrue(matches(Field.LESSON, "monday-ten", enrolledStudent));
         assertTrue(matches(Field.LESSON, "2026-math-monday-ten-eleven", enrolledStudent));
-        assertFalse(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVE", enrolledStudent));
+        assertTrue(matches(Field.LESSON, "2026-MATH-MONDAY-TEN-ELEVE", enrolledStudent));
         assertFalse(matches(Field.LESSON, lesson.getId() + "-30", enrolledStudent));
         assertFalse(matches(Field.LESSON, "30", enrolledStudent));
         assertFalse(matches(Field.LESSON, "math", new PersonBuilder().withLessons().build()));

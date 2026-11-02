@@ -168,8 +168,9 @@ Format:
 * Multiple keywords within one field use `OR`; different fields use `AND`.
 * Supported prefixes search the corresponding student, guardian, tag, or lesson field. Results always show students.
 * Searches are partial and case-insensitive.
-* A complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. A lesson search can therefore be used to show a class roster, for example,
-  `find l/2026-MATH-MONDAY-TEN-ELEVEN`.
+* A syntactically complete [lesson ID](#adding-a-lesson-addlesson) must match exactly. Text with an incomplete or
+  invalid component remains a partial search. A complete lesson search can therefore be used to show a class roster,
+  for example, `find l/2026-MATH-MONDAY-TEN-ELEVEN`.
 * `paid/MONTH` and `unpaid/MONTH` search the student's total fees for that month. Students with no fees due are excluded,
   and the two payment prefixes cannot be combined.
 * `t/` searches explicitly assigned tags only; it does not calculate payment status.
@@ -182,6 +183,7 @@ Examples:
 * `find n/Alice gp/9876` requires both the student name and guardian phone number to match.
 * `find e/school.com a/Tampines` requires both email and address to match.
 * `find l/math unpaid/2026-10` finds Maths students with outstanding October fees.
+* `find l/2026-MATH-MONDAY-TEN-ELEV` partially matches lessons ending in `ELEVEN`.
 * `find t/secondary1 secondary2` matches either tag fragment.
 * `find unpaid/2026-10` finds students with no payment or only partial payment for October 2026.
 

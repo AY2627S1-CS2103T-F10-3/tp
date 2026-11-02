@@ -141,8 +141,8 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find l/math n/Bob", List.of(bob));
         assertSearchResults(searchModel, "find l/math n/Carol", List.of());
         assertSearchResults(searchModel, "find l/science", List.of());
-        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVE", List.of());
-        assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of());
+        assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVE", List.of(alice));
+        assertSearchResults(searchModel, "find l/026-MATH-MONDAY-TEN-ELEVEN", List.of(alice));
         assertSearchResults(searchModel, "find l/2026-MATH-MONDAY-TEN-ELEVEN-30", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
     }
