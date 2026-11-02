@@ -327,7 +327,7 @@ Format: `attendance INDEX l/LESSON_ID d/DATE s/STATUS`
 * `INDEX` is the student's positive integer index in the currently displayed list, including after `find`.
 * The student must be enrolled in the specified lesson. `LESSON_ID` is the lesson's year, subject, weekday,
   start time and end time, **without the cost**. For a displayed lesson `2026-MATH-MONDAY-TEN-ELEVEN-120`,
-  use `l/2026-MATH-MONDAY-TEN-ELEVEN`. Lesson IDs are case-sensitive.
+  use `l/2026-MATH-MONDAY-TEN-ELEVEN`. Lesson IDs are case-insensitive; lowercase input is accepted.
 * `DATE` is required in `yyyy-MM-dd` form and must match the lesson's year and weekday.
 * `STATUS` is `present` or `absent`, case-insensitive. A session without a record is **not automatically absent**.
 * Only one record is allowed for a student, lesson and date, even if the status differs. To correct a mistake,
