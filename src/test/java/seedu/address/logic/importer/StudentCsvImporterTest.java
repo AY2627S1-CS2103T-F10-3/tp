@@ -44,6 +44,18 @@ public class StudentCsvImporterTest {
     }
 
     @Test
+    public void read_lowercaseLessonId_success() throws Exception {
+        Path file = temporaryDirectory.resolve("importstudents.csv");
+        Files.writeString(file, "name,phone,email,address,lessons\n"
+                + "Alice Tan,91234567,alice@example.com,1 Main Street,2026-english-monday-ten-eleven\n");
+        Lesson lesson = new Lesson(Year.of(2026), Subject.ENGLISH, Day.MONDAY, Time.TEN, Time.ELEVEN, 30);
+
+        Person student = new StudentCsvImporter().read(file, Map.of(lesson.getId(), lesson)).get(0);
+
+        assertEquals(1, student.getLessons().size());
+    }
+
+    @Test
     public void read_optionalColumnsMissing_success() throws Exception {
         Path file = temporaryDirectory.resolve("importstudents.csv");
         Files.writeString(file, "name,phone,email,address\nAlice Tan,91234567,alice@example.com,1 Main Street\n");

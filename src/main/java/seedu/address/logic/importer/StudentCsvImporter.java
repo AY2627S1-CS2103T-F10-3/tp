@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -81,9 +82,10 @@ public class StudentCsvImporter {
         Set<Lesson> lessons = new HashSet<>();
         for (String id : valueOrEmpty(row, "lessons").split("[,;]")) {
             if (!id.isBlank()) {
-                Lesson lesson = lessonsById.get(id.trim());
+                String lessonId = id.trim().toUpperCase(Locale.ROOT);
+                Lesson lesson = lessonsById.get(lessonId);
                 if (lesson == null) {
-                    throw new ParseException("Unknown lesson id: " + id.trim());
+                    throw new ParseException("Unknown lesson id: " + lessonId);
                 }
                 lessons.add(lesson);
             }
