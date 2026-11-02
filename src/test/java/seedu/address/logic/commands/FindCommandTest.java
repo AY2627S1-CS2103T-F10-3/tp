@@ -96,11 +96,12 @@ public class FindCommandTest {
     @Test
     public void execute_prefixedSearches_filtersStudentsWithoutChangingSavedData() throws Exception {
         Guardian guardian = new Guardian(new Name("Mary Tan"), new Phone("98765432"),
-                new Email("mary@example.com"), new Relationship("Mother"), new Address("Main Street"));
+                new Email("mary@example.com"), new Relationship("Mother"),
+                new Address("Main Street unpaid/room"));
         Person alice = new PersonBuilder().withName("Alice Tan").withPhone("91234567")
-                .withGuardian(guardian).build();
+                .withAddress("Block paid/10").withGuardian(guardian).build();
         Person bob = new PersonBuilder().withName("Bob Tan").withPhone("82345678")
-                .withGuardian(guardian).build();
+                .withAddress("Unit n/10").withGuardian(guardian).build();
         Person mary = new PersonBuilder().withName("Mary Lim").withPhone("98761234").build();
         AddressBook book = new AddressBook();
         book.setPersons(List.of(alice, bob, mary));
@@ -118,6 +119,9 @@ public class FindCommandTest {
         assertSearchResults(searchModel, "find Alice Bob", List.of(alice, bob));
         assertSearchResults(searchModel, "find ge/MARY@EXAMPLE ga/main gr/MOTH", List.of(alice, bob));
         assertSearchResults(searchModel, "find ge/mary n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find a/Block paid/10", List.of(alice));
+        assertSearchResults(searchModel, "find a/\"Unit n/10\" n/Bob", List.of(bob));
+        assertSearchResults(searchModel, "find ga/Main unpaid/room", List.of(alice, bob));
         assertSearchResults(searchModel, "find ga/missing", List.of());
         assertEquals(originalBook, searchModel.getAddressBook());
     }
