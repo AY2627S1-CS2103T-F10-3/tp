@@ -11,6 +11,10 @@ title: Developer Guide
 
 This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
 
+### Use of AI Tools
+
+We used AI tools, including ChatGPT and Claude, to assist with brainstorming, understanding technical concepts, drafting and reviewing code, debugging, developing test cases, and improving documentation. All AI-assisted contributions were reviewed and, where necessary, modified by the team. We take full responsibility for the submitted work and its accuracy, originality, and quality.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Setting up, getting started**
